@@ -1,84 +1,961 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-	<!-- Required meta tags -->
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <!-- <link rel="icon" href="img/favicon.png" type="image/png"> -->
-        <link rel="icon" href="img/favicon.ico" type="image/ico">
-	<title>Carlos - Welcome</title>
-
-	<!-- Bootstrap CSS -->
-	<!-- <link rel="stylesheet" href="css/bootstrap.min.5.3.3.css"> -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-	<!-- <link rel="stylesheet" href="css/font-awesome.min.css"> -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-	<!-- main css -->
-	<link rel="stylesheet" href="css/style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Carlos Fernández San Millán - Executive CIO & Head of ICT. Technology Executive specializing in Digital Transformation, Research Computing, and Cybersecurity.">
+    <meta name="keywords" content="CIO, IT Strategy, Digital Transformation, Cybersecurity, Research Computing, Technology Executive">
+    <meta name="author" content="Carlos Fernández San Millán">
+    
+    <title>Carlos Fernández San Millán | Executive CIO</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style">
+    <link rel="preload" href="photo.jpg" as="image">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS Play CDN (Production Ready) -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+    
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Custom Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0B1B3D',
+                        secondary: '#1E3A8A',
+                        accent: '#B8860B',
+                        'accent-light': '#D4A84B',
+                        'soft-text': '#475569',
+                        'light-bg': '#F8FAFC',
+                        'medium-gray': '#CBD5E1'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B1B3D;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #B8860B;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #D4A84B;
+        }
+        
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #B8860B 0%, #D4A84B 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Glass Effect */
+        .glass {
+            background: rgba(11, 27, 61, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        /* Photo Ring Animation */
+        .photo-ring {
+            position: relative;
+        }
+        .photo-ring::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #B8860B 0%, #D4A84B 50%, #B8860B 100%);
+            z-index: -1;
+            animation: rotate 8s linear infinite;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Hover Card Effect */
+        .hover-card {
+            transition: all 0.3s ease;
+        }
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(11, 27, 61, 0.15);
+        }
+        
+        /* Timeline */
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #B8860B, #1E3A8A);
+            transform: translateX(-50%);
+        }
+        
+        /* Mobile Menu */
+        .mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+    </style>
 </head>
+<body class="font-sans antialiased text-slate-800 bg-light-bg">
 
-<body>
-	<!--================ Start Home Banner Area =================-->
-	<section class="home_banner_area">
-		<div class="banner_inner">
-			<div class="container">
-				<div class="row">
-					<div class="col-lg-7">
-						<div class="banner_content">
-							<h3 class="text-uppercase">Hello</h3>
-							<h1 class="text-uppercase">I am Carlos</h1>
-							<h5 class="text-uppercase">Head of IT</h5>
-							<div class="d-flex align-items-center">
-								<a class="primary_btn" href="mailto:carlos.fernandez.san.millan@gmail.com?subject=Message from CV Website"><span>Hire Me</span></a>
-								<a class="primary_btn tr-bg" href="carlos-fernandez-san-millan.pdf"><span>Get CV</span></a>
-							</div>
-						</div>
-					</div>
-					<div class="col-lg-5">
-						<div class="home_right_img">
-							<img class="" src="img/banner/home-right.png" alt="">
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-	<!--================ End Home Banner Area =================-->
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 bg-transparent">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0">
+                    <a href="#" class="text-2xl font-bold text-white tracking-tight">
+                        CF<span class="text-accent">.</span>
+                    </a>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#home" class="text-white hover:text-accent px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</a>
+                        <a href="#about" class="text-white hover:text-accent px-3 py-2 rounded-md text-sm font-medium transition-colors">About</a>
+                        <a href="#experience" class="text-white hover:text-accent px-3 py-2 rounded-md text-sm font-medium transition-colors">Experience</a>
+                        <a href="#achievements" class="text-white hover:text-accent px-3 py-2 rounded-md text-sm font-medium transition-colors">Achievements</a>
+                        <a href="#skills" class="text-white hover:text-accent px-3 py-2 rounded-md text-sm font-medium transition-colors">Skills</a>
+                        <a href="#contact" class="bg-accent hover:bg-accent-light text-white px-6 py-2 rounded-full text-sm font-medium transition-all transform hover:scale-105">Contact</a>
+                    </div>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-white hover:text-accent p-2">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="mobile-menu fixed top-0 right-0 h-full w-64 bg-primary shadow-2xl md:hidden z-50">
+            <div class="p-6">
+                <button id="close-menu" class="absolute top-4 right-4 text-white hover:text-accent">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+                <div class="mt-12 space-y-4">
+                    <a href="#home" class="block text-white hover:text-accent py-2 text-lg">Home</a>
+                    <a href="#about" class="block text-white hover:text-accent py-2 text-lg">About</a>
+                    <a href="#experience" class="block text-white hover:text-accent py-2 text-lg">Experience</a>
+                    <a href="#achievements" class="block text-white hover:text-accent py-2 text-lg">Achievements</a>
+                    <a href="#skills" class="block text-white hover:text-accent py-2 text-lg">Skills</a>
+                    <a href="#contact" class="block text-accent py-2 text-lg font-bold">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-	<!--================ Start About Me Area =================-->
-	<section class="about_area section_gap">
-		<div class="container">
-			<div class="row justify-content-start align-items-center">
-				<div class="col-lg-5">
-					<div class="about_img">
-						<img class="" src="img/about-us.png" alt="">
-					</div>
-				</div>
+    <!-- Hero Section -->
+<section id="home" class="relative min-h-screen flex items-center justify-center bg-primary overflow-hidden">
+    <!-- Animated Background -->
+    <div class="absolute inset-0">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary via-secondary to-primary opacity-90"></div>
+        <div class="absolute top-20 left-10 w-72 h-72 bg-accent/10 rounded-full blur-3xl animate-float"></div>
+        <div class="absolute bottom-20 right-10 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-float" style="animation-delay: 2s;"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/5 rounded-full blur-3xl animate-pulse-slow"></div>
+    </div>
+    
+    <!-- Grid Pattern Overlay -->
+    <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <!-- Content -->
+            <div data-aos="fade-right" data-aos-duration="1000">
+                <div class="inline-flex items-center px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-6">
+                    <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse mr-2"></span>
+                    <span class="text-white/90 text-sm font-medium">Available for Executive Opportunities</span>
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl font-bold text-white mb-4 tracking-tight">
+                    Carlos<br>
+                    <span class="gradient-text">Fernández</span><br>
+                    San Millán
+                </h1>
+                
+                <h2 class="text-2xl md:text-3xl text-accent font-semibold mb-6">
+                    Head of ICT & Acting CIO
+                </h2>
+                
+                <p class="text-lg text-white/80 mb-8 max-w-xl leading-relaxed">
+                    Technology Executive with 20+ years leading enterprise IT, digital transformation, 
+                    and research computing in mission-driven international organizations.
+                </p>
+                
+                <div class="flex flex-wrap gap-4 mb-8">
+                    <div class="flex items-center text-white/70">
+                        <i class="fas fa-map-marker-alt text-accent mr-2"></i>
+                        <span>Milan, Italy</span>
+                    </div>
+                    <div class="flex items-center text-white/70">
+                        <i class="fas fa-euro-sign text-accent mr-2"></i>
+                        <span>14M € Budget Managed</span>
+                    </div>
+                    <div class="flex items-center text-white/70">
+                        <i class="fas fa-users text-accent mr-2"></i>
+                        <span>25+ Team Size</span>
+                    </div>
+                </div>
+                
+                <div class="flex flex-wrap gap-4">
+                    <a href="mailto:carlos.fernandez.san.millan@gmail.com" 
+                       class="inline-flex items-center px-8 py-4 bg-accent hover:bg-accent-light text-white font-semibold rounded-full transition-all transform hover:scale-105 shadow-lg hover:shadow-accent/50">
+                        <i class="fas fa-envelope mr-2"></i>
+                        Get In Touch
+                    </a>
+                    <a href="carlos-fernandez-san-millan.pdf" 
+                       class="inline-flex items-center px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-full transition-all border border-white/30 backdrop-blur-sm">
+                        <i class="fas fa-download mr-2"></i>
+                        Download CV
+                    </a>
+                </div>
+                
+                <!-- Social Links -->
+                <div class="flex gap-4 mt-8">
+                    <a href="https://linkedin.com/in/carlosfernandezsanmillan" target="_blank" 
+                       class="w-12 h-12 rounded-full bg-white/10 hover:bg-accent flex items-center justify-center text-white transition-all transform hover:scale-110">
+                        <i class="fab fa-linkedin-in text-xl"></i>
+                    </a>
+                    <a href="https://github.com/Cormite" target="_blank" 
+                       class="w-12 h-12 rounded-full bg-white/10 hover:bg-accent flex items-center justify-center text-white transition-all transform hover:scale-110">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                    <a href="#" target="_blank" 
+                       class="w-12 h-12 rounded-full bg-white/10 hover:bg-accent flex items-center justify-center text-white transition-all transform hover:scale-110">
+                        <i class="fas fa-globe text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Photo with Non-Overlapping Badges -->
+            <div class="relative flex justify-center lg:justify-end" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+                <div class="relative">
+                    <!-- Decorative Ring -->
+                    <div class="absolute inset-0 rounded-full border-4 border-accent/30 animate-pulse-slow"></div>
+                    <div class="absolute -inset-4 rounded-full border-2 border-accent/20 animate-spin" style="animation-duration: 20s;"></div>
+                    
+                    <!-- Photo Container -->
+                    <div class="photo-ring relative w-80 h-80 rounded-full overflow-hidden border-4 border-accent shadow-2xl">
+                        <img src="photo.jpg" alt="Carlos Fernández San Millán" 
+                             class="w-full h-full object-cover">
+                    </div>
+                    
+                    <!-- Badge Grid System - Positioned Around Photo -->
+                    <!-- Top Left -->
+                    <div class="absolute -top-2 -left-16 bg-white rounded-full px-4 py-2 shadow-lg animate-float" style="animation-delay: 0s;">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-shield-alt text-accent"></i>
+                            <span class="text-sm font-bold text-primary">Acting CIO</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Top Right -->
+                    <div class="absolute -top-2 -right-16 bg-white rounded-full px-4 py-2 shadow-lg animate-float" style="animation-delay: 0.5s;">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-award text-accent"></i>
+                            <span class="text-sm font-bold text-primary">Head of IT</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Middle Left (lower) -->
+                    <div class="absolute top-24 -left-20 bg-white rounded-full px-4 py-2 shadow-lg animate-float" style="animation-delay: 1s;">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-crown text-accent"></i>
+                            <span class="text-sm font-bold text-primary">SMART, PRINCE2, ITILv4</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Middle Right (lower) -->
+                    <div class="absolute top-24 -right-20 bg-white rounded-full px-4 py-2 shadow-lg animate-float" style="animation-delay: 1.5s;">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-cloud text-accent"></i>
+                            <span class="text-sm font-bold text-primary">Business continuity</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Bottom Left -->
+                    <div class="absolute bottom-20 -left-16 bg-white rounded-full px-4 py-2 shadow-lg animate-float" style="animation-delay: 2s;">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-server text-accent"></i>
+                            <span class="text-sm font-bold text-primary">Data Center </br> HPC </br> Hybrid-Cloud</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Bottom Right -->
+                    <div class="absolute bottom-20 -right-16 bg-white rounded-full px-4 py-2 shadow-lg animate-float" style="animation-delay: 2.5s;">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-lock text-accent"></i>
+                            <span class="text-sm font-bold text-primary">Cybersecurity </br> NIS2 </br> GDPR </br> Compliance</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Bottom Center -->
+                    <div class="absolute -bottom-4 left-1/2 transform -translate-x-1/2 bg-accent text-white rounded-full px-6 py-2 shadow-lg animate-float" style="animation-delay: 3s;">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-star text-white"></i>
+                            <span class="text-sm font-bold">20+ Years Experience</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-				<div class="offset-lg-1 col-lg-5">
-					<div class="main_title text-left">
-						<h2>let me <br>
-							Introduce <br>
-							myself</h2>
-						<p>
-							Head of IT with 20+ years of experience in international IT enterprise environments. Managed large scale infrastructures, with a service-oriented mindset and deep passion for enterprise-wide management, security, and resources optimization. Ability to work as a team, experience in international multidisciplinary groups, primarily in education and research environments, leadership and fast learning ability. Always interested in challenging projects, as well as close interaction with manufacturers.
-						</p>
-						<a class="primary_btn" href="carlos-fernandez-san-millan.pdf"><span>Download CV</span></a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-	<!--================ End About Me Area =================-->
+<!--     To Add More Badges:
+Simply copy a badge div and adjust:
+Position: Change top-24 to top-32 or bottom-32
+Horizontal: Change -left-16 to -left-24 (farther) or -left-12 (closer)
+Delay: Use a unique delay like 3.5s or 4s
 
-	<!-- Optional JavaScript -->
-	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-	<!-- <script src="js/jquery.min.3.7.1.js"></script> -->
-	<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-	<!-- <script src="js/bootstrap.min.3.3.7.js"></script> -->
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+Example:
+<div class="absolute top-32 -left-24 bg-white rounded-full px-4 py-2 shadow-lg animate-float" style="animation-delay: 3.5s;">
+    <div class="flex items-center gap-2">
+        <i class="fas fa-certificate text-accent"></i>
+        <span class="text-sm font-bold text-primary">New Badge</span>
+    </div>
+</div> -->
+    
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <a href="#about" class="text-white/50 hover:text-accent transition-colors">
+            <i class="fas fa-chevron-down text-2xl"></i>
+        </a>
+    </div>
+</section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 bg-light-bg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <!-- FIXED: Replaced missing about-us.png with photo.jpg -->
+                <div data-aos="fade-right">
+                    <div class="relative">
+                        <img src="photo.jpg" alt="About Carlos" class="rounded-2xl shadow-2xl w-full object-cover h-[500px]">
+                        <div class="absolute -bottom-6 -right-6 bg-primary text-white p-6 rounded-2xl shadow-xl">
+                            <div class="text-4xl font-bold text-accent">20+</div>
+                            <div class="text-sm text-white/80">Years Experience</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div data-aos="fade-left">
+                    <h2 class="text-4xl font-bold text-primary mb-6">
+                        Let Me <span class="text-accent">Introduce</span> Myself
+                    </h2>
+                    
+                    <p class="text-lg text-soft-text mb-6 leading-relaxed">
+                        Senior technology executive with 20+ years leading enterprise IT, research computing, 
+                        cybersecurity, and digital transformation in complex, mission-driven international organizations.
+                    </p>
+                    
+                    <p class="text-lg text-soft-text mb-8 leading-relaxed">
+                        Proven track record of aligning technology strategy with institutional objectives, 
+                        delivering measurable business outcomes, and building high-performing teams. Expertise 
+                        spans IT governance, digital transformation, HPC/data center operations, cybersecurity 
+                        frameworks, and research technology enablement.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mr-4 flex-shrink-0">
+                                <i class="fas fa-server text-accent text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-primary">Data Centers</h4>
+                                <p class="text-sm text-soft-text">HPC & Enterprise</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mr-4 flex-shrink-0">
+                                <i class="fas fa-shield-alt text-accent text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-primary">Cybersecurity</h4>
+                                <p class="text-sm text-soft-text">GDPR & Compliance</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mr-4 flex-shrink-0">
+                                <i class="fas fa-cloud text-accent text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-primary">Cloud</h4>
+                                <p class="text-sm text-soft-text">Hybrid Architecture</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center mr-4 flex-shrink-0">
+                                <i class="fas fa-users-cog text-accent text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-primary">Leadership</h4>
+                                <p class="text-sm text-soft-text">25+ FTEs Managed</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="carlos-fernandez-san-millan.pdf" 
+                       class="inline-flex items-center px-6 py-3 bg-primary hover:bg-secondary text-white font-semibold rounded-lg transition-all">
+                        <i class="fas fa-download mr-2"></i>
+                        Download CV
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Timeline -->
+    <section id="experience" class="py-24 bg-white relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-light-bg to-white"></div>
+        
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-4xl font-bold text-primary mb-4">Professional <span class="text-accent">Experience</span></h2>
+                <p class="text-lg text-soft-text max-w-2xl mx-auto">
+                    A track record of leadership in world-class research institutions and enterprise environments.
+                </p>
+            </div>
+            
+            <div class="relative">
+                <!-- Timeline Line -->
+                <div class="hidden lg:block timeline-line"></div>
+                
+                <!-- Experience Items -->
+                <div class="space-y-12">
+                    <!-- Current Role -->
+                    <div class="relative lg:grid lg:grid-cols-2 lg:gap-8 items-center" data-aos="fade-up">
+                        <div class="lg:text-right lg:pr-12 mb-4 lg:mb-0">
+                            <div class="inline-block bg-accent text-white px-4 py-1 rounded-full text-sm font-semibold mb-2">Current</div>
+                            <h3 class="text-2xl font-bold text-primary">Head of ICT & Digitisation</h3>
+                            <p class="text-accent font-semibold">Human Technopole</p>
+                            <p class="text-soft-text text-sm">Jan 2023 - Present | Milan, Italy</p>
+                        </div>
+                        <div class="lg:pl-12">
+                            <div class="bg-light-bg p-6 rounded-2xl hover-card border-l-4 border-accent">
+                                <ul class="space-y-2 text-soft-text">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-accent mt-1 mr-2 flex-shrink-0"></i>
+                                        <span>Strategic ICT Leadership: 25+ FTEs, 7 direct reports</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-accent mt-1 mr-2 flex-shrink-0"></i>
+                                        <span>Digital Transformation: 30% efficiency gain, 45% process reduction</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-accent mt-1 mr-2 flex-shrink-0"></i>
+                                        <span>Research Computing: 20PB+ data, 99.99% availability</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-accent mt-1 mr-2 flex-shrink-0"></i>
+                                        <span>Financial: 14M€ budget, 25% cost optimization</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- Timeline Dot -->
+                        <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-accent rounded-full border-4 border-white shadow-lg"></div>
+                    </div>
+                    
+                    <!-- Previous Roles -->
+                    <div class="relative lg:grid lg:grid-cols-2 lg:gap-8 items-center" data-aos="fade-up" data-aos-delay="100">
+                        <div class="lg:text-right lg:pr-12 mb-4 lg:mb-0 lg:order-1 order-2">
+                            <div class="bg-light-bg p-6 rounded-2xl hover-card border-l-4 border-secondary lg:border-l-0 lg:border-r-4">
+                                <p class="text-soft-text">
+                                    Managed high-performance IT infrastructure, implemented backup/DR strategies, 
+                                    defined IT standards, and planned data center procurement.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="lg:pl-12 lg:order-2 order-1">
+                            <h3 class="text-2xl font-bold text-primary">Data Center Infrastructure Manager</h3>
+                            <p class="text-secondary font-semibold">Human Technopole</p>
+                            <p class="text-soft-text text-sm">May 2022 - Dec 2022 | Milan, Italy</p>
+                        </div>
+                        <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-secondary rounded-full border-4 border-white shadow-lg"></div>
+                    </div>
+                    
+                    <div class="relative lg:grid lg:grid-cols-2 lg:gap-8 items-center" data-aos="fade-up" data-aos-delay="200">
+                        <div class="lg:text-right lg:pr-12 mb-4 lg:mb-0">
+                            <h3 class="text-2xl font-bold text-primary">Storage & Virtualisation Engineer</h3>
+                            <p class="text-secondary font-semibold">Human Technopole</p>
+                            <p class="text-soft-text text-sm">Jan 2021 - May 2022 | Milan, Italy</p>
+                        </div>
+                        <div class="lg:pl-12">
+                            <div class="bg-light-bg p-6 rounded-2xl hover-card border-l-4 border-secondary">
+                                <p class="text-soft-text">
+                                    Managed PowerScale/NetApp storage and VMware vSphere/Horizon platforms. 
+                                    Administered Linux services and supported research computing.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-secondary rounded-full border-4 border-white shadow-lg"></div>
+                    </div>
+                    
+                    <div class="relative lg:grid lg:grid-cols-2 lg:gap-8 items-center" data-aos="fade-up" data-aos-delay="300">
+                        <div class="lg:text-right lg:pr-12 mb-4 lg:mb-0 lg:order-1 order-2">
+                            <div class="bg-light-bg p-6 rounded-2xl hover-card border-l-4 border-secondary lg:border-l-0 lg:border-r-4">
+                                <p class="text-soft-text">
+                                    Managed 28-host VMware cluster (650+ VMs), 18-node NetApp storage (9PB), 
+                                    implemented vSAN for GPU VDI. Developed Python automation tools.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="lg:pl-12 lg:order-2 order-1">
+                            <h3 class="text-2xl font-bold text-primary">Systems & Virtualization Engineer</h3>
+                            <p class="text-secondary font-semibold">European Molecular Biology Laboratory</p>
+                            <p class="text-soft-text text-sm">Oct 2018 - Dec 2020 | Heidelberg, Germany</p>
+                        </div>
+                        <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-secondary rounded-full border-4 border-white shadow-lg"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Achievements -->
+    <section id="achievements" class="py-24 bg-primary relative overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute inset-0">
+            <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary via-secondary to-primary"></div>
+            <div class="absolute top-20 right-20 w-64 h-64 bg-accent/10 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-20 left-20 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-4xl font-bold text-white mb-4">Key Strategic <span class="text-accent">Achievements</span></h2>
+                <p class="text-lg text-white/70 max-w-2xl mx-auto">
+                    Measurable impact across digital transformation, cybersecurity, and financial optimization.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Achievement 1 -->
+                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover-card group" data-aos="fade-up">
+                    <div class="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mb-6 group-hover:bg-accent transition-colors">
+                        <i class="fas fa-trophy text-2xl text-accent group-hover:text-white transition-colors"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Digital Transformation Leadership</h3>
+                    <p class="text-white/70 leading-relaxed">
+                        Led organization-wide digital transformation at Human Technopole, modernizing ICT infrastructure 
+                        and implementing digital solutions that improved operational efficiency by <span class="text-accent font-bold">30%</span> 
+                        and reduced manual processes by <span class="text-accent font-bold">45%</span>.
+                    </p>
+                </div>
+                
+                <!-- Achievement 2 -->
+                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover-card group" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mb-6 group-hover:bg-accent transition-colors">
+                        <i class="fas fa-shield-alt text-2xl text-accent group-hover:text-white transition-colors"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Cybersecurity Framework</h3>
+                    <p class="text-white/70 leading-relaxed">
+                        Established comprehensive cybersecurity and data protection framework achieving full GDPR compliance, 
+                        reducing security incidents by <span class="text-accent font-bold">60%</span> through proactive monitoring, 
+                        controls, and staff training programs.
+                    </p>
+                </div>
+                
+                <!-- Achievement 3 -->
+                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover-card group" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mb-6 group-hover:bg-accent transition-colors">
+                        <i class="fas fa-server text-2xl text-accent group-hover:text-white transition-colors"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Research Computing Enablement</h3>
+                    <p class="text-white/70 leading-relaxed">
+                        Designed and implemented HPC and data center infrastructure supporting cutting-edge genomic research, 
+                        enabling processing of <span class="text-accent font-bold">20PB+</span> of scientific data with 
+                        <span class="text-accent font-bold">99.99%</span> availability for international collaborations.
+                    </p>
+                </div>
+                
+                <!-- Achievement 4 -->
+                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover-card group" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mb-6 group-hover:bg-accent transition-colors">
+                        <i class="fas fa-chart-line text-2xl text-accent group-hover:text-white transition-colors"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Financial Optimization</h3>
+                    <p class="text-white/70 leading-relaxed">
+                        Negotiated multi-year strategic agreements with technology vendors resulting in 
+                        <span class="text-accent font-bold">40-60%</span> cost optimization while improving service levels 
+                        and support capabilities across the ICT portfolio.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="py-24 bg-light-bg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-4xl font-bold text-primary mb-4">Technology <span class="text-accent">Landscape</span></h2>
+                <p class="text-lg text-soft-text max-w-2xl mx-auto">
+                    Expertise across infrastructure, cloud, storage, security, and operations.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Infrastructure & Cloud -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg hover-card" data-aos="fade-up">
+                    <div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
+                        <i class="fas fa-cloud text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-primary mb-4">Infrastructure & Cloud</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center text-soft-text">
+                            <i class="fas fa-check-circle text-accent mr-3"></i>
+                            VMware vSphere/Horizon
+                        </li>
+                        <li class="flex items-center text-soft-text">
+                            <i class="fas fa-check-circle text-accent mr-3"></i>
+                            Linux (RHEL, CentOS, Ubuntu)
+                        </li>
+                        <li class="flex items-center text-soft-text">
+                            <i class="fas fa-check-circle text-accent mr-3"></i>
+                            Windows Server
+                        </li>
+                        <li class="flex items-center text-soft-text">
+                            <i class="fas fa-check-circle text-accent mr-3"></i>
+                            Hybrid Cloud Architecture
+                        </li>
+                        <li class="flex items-center text-soft-text">
+                            <i class="fas fa-check-circle text-accent mr-3"></i>
+                            Docker, Kubernetes
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Storage & Data -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg hover-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
+                        <i class="fas fa-database text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-primary mb-4">Storage & Data</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center text-soft-text">
+                            <i class="fas fa-check-circle text-accent mr-3"></i>
+                            NetApp, Dell PowerScale
+                        </li>
+                        <li class="flex items-center text-soft-text">
+                            <i class="fas fa-check-circle text-accent mr-3"></i>
+                            vSAN, Unity
+                        </li>
+                        <li class="flex items-center text-soft-text">
+                            <i class="fas fa-check-circle text-accent mr-3"></i>
+                            Veeam, TSM, Bacula
+                        </li>
+                        <li class="flex items-center text-soft-text">
+                            <i class="fas fa-check-circle text-accent mr-3"></i>
+                            HPC/Research Computing
+                        </li>
+                        <li class="flex items-center text-soft-text">
+                            <i class="fas fa-check-circle text-accent mr-3"></i>
+                            Data Governance
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Security & Operations -->
+                <div class="bg-white rounded-2xl p-8 shadow-lg hover-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
+                        <i class="fas fa-shield-alt text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-primary mb-4">Security & Operations</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center text-soft-text">
+                            <i class="fas fa-check-circle text-accent mr-3"></i>
+                            Cybersecurity Frameworks
+                        </li>
+                        <li class="flex items-center text-soft-text">
+                            <i class="fas fa-check-circle text-accent mr-3"></i>
+                            GDPR Compliance
+                        </li>
+                        <li class="flex items-center text-soft-text">
+                            <i class="fas fa-check-circle text-accent mr-3"></i>
+                            IAM, Endpoint Security
+                        </li>
+                        <li class="flex items-center text-soft-text">
+                            <i class="fas fa-check-circle text-accent mr-3"></i>
+                            ITIL 4, PRINCE2
+                        </li>
+                        <li class="flex items-center text-soft-text">
+                            <i class="fas fa-check-circle text-accent mr-3"></i>
+                            Automation (Ansible, Puppet)
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Core Competencies Tags -->
+            <div class="mt-16" data-aos="fade-up">
+                <h3 class="text-2xl font-bold text-primary text-center mb-8">Core Competencies</h3>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">IT Strategy</span>
+                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">Digital Transformation</span>
+                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">Cybersecurity</span>
+                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">Risk Governance</span>
+                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">HPC Operations</span>
+                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">Enterprise Architecture</span>
+                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">Cloud Infrastructure</span>
+                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">Team Leadership</span>
+                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">Vendor Management</span>
+                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">Budget Planning</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16">
+                <div data-aos="fade-right">
+                    <h2 class="text-4xl font-bold text-primary mb-6">Let's <span class="text-accent">Connect</span></h2>
+                    <p class="text-lg text-soft-text mb-8 leading-relaxed">
+                        I'm always interested in hearing about new projects, opportunities, and challenges in the technology leadership space.
+                    </p>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-center group">
+                            <div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mr-4 group-hover:bg-accent transition-colors">
+                                <i class="fas fa-envelope text-xl text-primary group-hover:text-white transition-colors"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-soft-text">Email</p>
+                                <a href="mailto:carlos.fernandez.san.millan@gmail.com" class="text-primary font-semibold hover:text-accent transition-colors">
+                                    carlos.fernandez.san.millan@gmail.com
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- <div class="flex items-center group">
+                            <div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mr-4 group-hover:bg-accent transition-colors">
+                                <i class="fas fa-phone text-xl text-primary group-hover:text-white transition-colors"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-soft-text">Phone</p>
+                                <a href="tel:+393516500859" class="text-primary font-semibold hover:text-accent transition-colors">
+                                    +39 351 650 0859
+                                </a>
+                            </div>
+                        </div> -->
+                        
+                        <div class="flex items-center group">
+                            <div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mr-4 group-hover:bg-accent transition-colors">
+                                <i class="fas fa-map-marker-alt text-xl text-primary group-hover:text-white transition-colors"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-soft-text">Location</p>
+                                <p class="text-primary font-semibold">Milan, Italy</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-10">
+                        <p class="text-sm text-soft-text mb-4">Connect on social media:</p>
+                        <div class="flex gap-4">
+                            <a href="https://linkedin.com/in/carlosfernandezsanmillan" target="_blank" 
+                               class="w-12 h-12 rounded-full bg-primary hover:bg-accent flex items-center justify-center text-white transition-all transform hover:scale-110">
+                                <i class="fab fa-linkedin-in text-xl"></i>
+                            </a>
+                            <a href="https://github.com/Cormite" target="_blank" 
+                               class="w-12 h-12 rounded-full bg-primary hover:bg-accent flex items-center justify-center text-white transition-all transform hover:scale-110">
+                                <i class="fab fa-github text-xl"></i>
+                            </a>
+                            <a href="#" target="_blank" 
+                               class="w-12 h-12 rounded-full bg-primary hover:bg-accent flex items-center justify-center text-white transition-all transform hover:scale-110">
+                                <i class="fas fa-globe text-xl"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-light-bg rounded-2xl p-8" data-aos="fade-left">
+                    <h3 class="text-2xl font-bold text-primary mb-6">Send a Message</h3>
+                    <form id="contact-form" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-soft-text mb-2">Name</label>
+                            <input type="text" required 
+                                   class="w-full px-4 py-3 rounded-lg border border-medium-gray focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all bg-white"
+                                   placeholder="Your name">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-soft-text mb-2">Email</label>
+                            <input type="email" required 
+                                   class="w-full px-4 py-3 rounded-lg border border-medium-gray focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all bg-white"
+                                   placeholder="your@email.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-soft-text mb-2">Message</label>
+                            <textarea rows="4" required 
+                                      class="w-full px-4 py-3 rounded-lg border border-medium-gray focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all bg-white resize-none"
+                                      placeholder="Your message..."></textarea>
+                        </div>
+                        <button type="submit" 
+                                class="w-full py-4 bg-accent hover:bg-accent-light text-white font-semibold rounded-lg transition-all transform hover:scale-[1.02] shadow-lg hover:shadow-accent/50">
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            Send Message
+                        </button>
+                    </form>
+                    <!-- Success Message (Hidden by default) -->
+                    <div id="form-success" class="hidden mt-4 p-4 bg-green-100 text-green-700 rounded-lg">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        Message sent successfully! I'll get back to you soon.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-primary py-12 border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <span class="text-2xl font-bold text-white tracking-tight">
+                        CF<span class="text-accent">.</span>
+                    </span>
+                    <p class="text-white/60 text-sm mt-2">Technology Executive & Digital Transformation Leader</p>
+                </div>
+                
+                <div class="flex items-center gap-6 text-white/60 text-sm">
+                    <span><i class="fas fa-info-circle mr-2"></i>References available upon request</span>
+                    <span class="hidden md:inline">|</span>
+                    <span><i class="fas fa-user-tie mr-2"></i>Open to relocation</span>
+                    <span class="hidden md:inline">|</span>
+                    <span><i class="fas fa-calendar-alt mr-2"></i>Updated: <span id="current-date"></span></span>
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-8 border-t border-white/10 text-center text-white/40 text-sm">
+                <p>&copy; <span id="current-year"></span> Carlos Fernández San Millán. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS Animation Library
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+        
+        // Navbar Scroll Effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('glass', 'shadow-lg');
+                navbar.classList.remove('bg-transparent');
+            } else {
+                navbar.classList.remove('glass', 'shadow-lg');
+                navbar.classList.add('bg-transparent');
+            }
+        });
+        
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const closeMenuBtn = document.getElementById('close-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.add('open');
+        });
+        
+        closeMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.remove('open');
+        });
+        
+        // Close mobile menu when clicking on a link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+            });
+        });
+        
+        // Contact Form Handling
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            this.reset();
+            document.getElementById('form-success').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('form-success').classList.add('hidden');
+            }, 5000);
+        });
+        
+        // Set Current Date
+        const now = new Date();
+        document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', { 
+            month: 'short', 
+            year: 'numeric' 
+        });
+        document.getElementById('current-year').textContent = now.getFullYear();
+        
+        // Smooth Scroll for Anchor Links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
-
 </html>
