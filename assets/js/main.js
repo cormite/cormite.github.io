@@ -482,16 +482,14 @@ function renderStaticText(content) {
   const infoBox = byId('form-success');
   if (infoBox) infoBox.innerHTML = '<i class="fas fa-info-circle mr-2" aria-hidden="true"></i>' + text.contactInfo;
 
-  const footerReferences = document.querySelector('footer .flex.items-center.gap-6 span:first-child');
-  if (footerReferences) footerReferences.innerHTML = '<i class="fas fa-info-circle mr-2" aria-hidden="true"></i>' + text.footerReferences;
+  const footerReferences = byId('footer-references');
+  if (footerReferences) {
+    footerReferences.innerHTML = '<i class="fas fa-info-circle mr-2" aria-hidden="true"></i>' + text.footerReferences;
+  }
 
-  const updatedLabel = document.querySelector('footer .flex.items-center.gap-6 span:last-child');
-  if (updatedLabel) {
-    const dateSpan = byId('current-date');
-    if (dateSpan) {
-      updatedLabel.innerHTML = `<i class="fas fa-calendar-alt mr-2" aria-hidden="true"></i>${text.footerUpdated} <span id="current-date"></span>`;
-      setCurrentDate(content.locale);
-    }
+  const footerUpdatedLabel = byId('footer-updated-label');
+  if (footerUpdatedLabel) {
+    footerUpdatedLabel.textContent = text.footerUpdated;
   }
 }
 
