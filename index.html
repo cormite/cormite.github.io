@@ -19,129 +19,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS Play CDN (Production Ready) -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
-    
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind Config -->
+    <script src="assets/js/tailwind.config.js?v=20260218"></script>
     <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     
     <!-- AOS Animation Library -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
-    <!-- Custom Config -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#0B1B3D',
-                        secondary: '#1E3A8A',
-                        accent: '#B8860B',
-                        'accent-light': '#D4A84B',
-                        'soft-text': '#475569',
-                        'light-bg': '#F8FAFC',
-                        'medium-gray': '#CBD5E1'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-20px)' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0B1B3D;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #B8860B;
-            border-radius: 5px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #D4A84B;
-        }
-        
-        /* Smooth Scroll */
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        /* Gradient Text */
-        .gradient-text {
-            background: linear-gradient(135deg, #B8860B 0%, #D4A84B 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        /* Glass Effect */
-        .glass {
-            background: rgba(11, 27, 61, 0.8);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-        
-        /* Photo Ring Animation */
-        .photo-ring {
-            position: relative;
-        }
-        .photo-ring::before {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #B8860B 0%, #D4A84B 50%, #B8860B 100%);
-            z-index: -1;
-            animation: rotate 8s linear infinite;
-        }
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Hover Card Effect */
-        .hover-card {
-            transition: all 0.3s ease;
-        }
-        .hover-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(11, 27, 61, 0.15);
-        }
-        
-        /* Timeline */
-        .timeline-line {
-            position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: linear-gradient(to bottom, #B8860B, #1E3A8A);
-            transform: translateX(-50%);
-        }
-        
-        /* Mobile Menu */
-        .mobile-menu {
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-        }
-        .mobile-menu.open {
-            transform: translateX(0);
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/styles.css?v=20260218">
 </head>
 <body class="font-sans antialiased text-slate-800 bg-light-bg">
 
@@ -157,14 +45,7 @@
                 
                 <!-- Desktop Menu -->
                 <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-8">
-                        <a href="#home" class="text-white hover:text-accent px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</a>
-                        <a href="#about" class="text-white hover:text-accent px-3 py-2 rounded-md text-sm font-medium transition-colors">About</a>
-                        <a href="#experience" class="text-white hover:text-accent px-3 py-2 rounded-md text-sm font-medium transition-colors">Experience</a>
-                        <a href="#achievements" class="text-white hover:text-accent px-3 py-2 rounded-md text-sm font-medium transition-colors">Achievements</a>
-                        <a href="#skills" class="text-white hover:text-accent px-3 py-2 rounded-md text-sm font-medium transition-colors">Skills</a>
-                        <a href="#contact" class="bg-accent hover:bg-accent-light text-white px-6 py-2 rounded-full text-sm font-medium transition-all transform hover:scale-105">Contact</a>
-                    </div>
+                    <div id="nav-links-desktop" class="ml-10 flex items-baseline space-x-8"></div>
                 </div>
                 
                 <!-- Mobile Menu Button -->
@@ -182,14 +63,7 @@
                 <button id="close-menu" class="absolute top-4 right-4 text-white hover:text-accent">
                     <i class="fas fa-times text-2xl"></i>
                 </button>
-                <div class="mt-12 space-y-4">
-                    <a href="#home" class="block text-white hover:text-accent py-2 text-lg">Home</a>
-                    <a href="#about" class="block text-white hover:text-accent py-2 text-lg">About</a>
-                    <a href="#experience" class="block text-white hover:text-accent py-2 text-lg">Experience</a>
-                    <a href="#achievements" class="block text-white hover:text-accent py-2 text-lg">Achievements</a>
-                    <a href="#skills" class="block text-white hover:text-accent py-2 text-lg">Skills</a>
-                    <a href="#contact" class="block text-accent py-2 text-lg font-bold">Contact</a>
-                </div>
+                <div id="nav-links-mobile" class="mt-12 space-y-4"></div>
             </div>
         </div>
     </nav>
@@ -260,20 +134,7 @@
                 </div>
                 
                 <!-- Social Links -->
-                <div class="flex gap-4 mt-8">
-                    <a href="https://linkedin.com/in/carlosfernandezsanmillan" target="_blank" 
-                       class="w-12 h-12 rounded-full bg-white/10 hover:bg-accent flex items-center justify-center text-white transition-all transform hover:scale-110">
-                        <i class="fab fa-linkedin-in text-xl"></i>
-                    </a>
-                    <a href="https://github.com/Cormite" target="_blank" 
-                       class="w-12 h-12 rounded-full bg-white/10 hover:bg-accent flex items-center justify-center text-white transition-all transform hover:scale-110">
-                        <i class="fab fa-github text-xl"></i>
-                    </a>
-                    <a href="#" target="_blank" 
-                       class="w-12 h-12 rounded-full bg-white/10 hover:bg-accent flex items-center justify-center text-white transition-all transform hover:scale-110">
-                        <i class="fas fa-globe text-xl"></i>
-                    </a>
-                </div>
+                <div id="social-links-hero" class="flex gap-4 mt-8"></div>
             </div>
             
             <!-- Photo with Non-Overlapping Badges -->
@@ -578,59 +439,7 @@ Example:
                 </p>
             </div>
             
-            <div class="grid md:grid-cols-2 gap-8">
-                <!-- Achievement 1 -->
-                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover-card group" data-aos="fade-up">
-                    <div class="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mb-6 group-hover:bg-accent transition-colors">
-                        <i class="fas fa-trophy text-2xl text-accent group-hover:text-white transition-colors"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-3">Digital Transformation Leadership</h3>
-                    <p class="text-white/70 leading-relaxed">
-                        Led organization-wide digital transformation at Human Technopole, modernizing ICT infrastructure 
-                        and implementing digital solutions that improved operational efficiency by <span class="text-accent font-bold">30%</span> 
-                        and reduced manual processes by <span class="text-accent font-bold">45%</span>.
-                    </p>
-                </div>
-                
-                <!-- Achievement 2 -->
-                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover-card group" data-aos="fade-up" data-aos-delay="100">
-                    <div class="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mb-6 group-hover:bg-accent transition-colors">
-                        <i class="fas fa-shield-alt text-2xl text-accent group-hover:text-white transition-colors"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-3">Cybersecurity Framework</h3>
-                    <p class="text-white/70 leading-relaxed">
-                        Established comprehensive cybersecurity and data protection framework achieving full GDPR compliance, 
-                        reducing security incidents by <span class="text-accent font-bold">60%</span> through proactive monitoring, 
-                        controls, and staff training programs.
-                    </p>
-                </div>
-                
-                <!-- Achievement 3 -->
-                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover-card group" data-aos="fade-up" data-aos-delay="200">
-                    <div class="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mb-6 group-hover:bg-accent transition-colors">
-                        <i class="fas fa-server text-2xl text-accent group-hover:text-white transition-colors"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-3">Research Computing Enablement</h3>
-                    <p class="text-white/70 leading-relaxed">
-                        Designed and implemented HPC and data center infrastructure supporting cutting-edge genomic research, 
-                        enabling processing of <span class="text-accent font-bold">20PB+</span> of scientific data with 
-                        <span class="text-accent font-bold">99.99%</span> availability for international collaborations.
-                    </p>
-                </div>
-                
-                <!-- Achievement 4 -->
-                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover-card group" data-aos="fade-up" data-aos-delay="300">
-                    <div class="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mb-6 group-hover:bg-accent transition-colors">
-                        <i class="fas fa-chart-line text-2xl text-accent group-hover:text-white transition-colors"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-3">Financial Optimization</h3>
-                    <p class="text-white/70 leading-relaxed">
-                        Negotiated multi-year strategic agreements with technology vendors resulting in 
-                        <span class="text-accent font-bold">40-60%</span> cost optimization while improving service levels 
-                        and support capabilities across the ICT portfolio.
-                    </p>
-                </div>
-            </div>
+            <div id="achievements-grid" class="grid md:grid-cols-2 gap-8"></div>
         </div>
     </section>
 
@@ -644,113 +453,12 @@ Example:
                 </p>
             </div>
             
-            <div class="grid md:grid-cols-3 gap-8">
-                <!-- Infrastructure & Cloud -->
-                <div class="bg-white rounded-2xl p-8 shadow-lg hover-card" data-aos="fade-up">
-                    <div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
-                        <i class="fas fa-cloud text-2xl text-primary"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-primary mb-4">Infrastructure & Cloud</h3>
-                    <ul class="space-y-3">
-                        <li class="flex items-center text-soft-text">
-                            <i class="fas fa-check-circle text-accent mr-3"></i>
-                            VMware vSphere/Horizon
-                        </li>
-                        <li class="flex items-center text-soft-text">
-                            <i class="fas fa-check-circle text-accent mr-3"></i>
-                            Linux (RHEL, CentOS, Ubuntu)
-                        </li>
-                        <li class="flex items-center text-soft-text">
-                            <i class="fas fa-check-circle text-accent mr-3"></i>
-                            Windows Server
-                        </li>
-                        <li class="flex items-center text-soft-text">
-                            <i class="fas fa-check-circle text-accent mr-3"></i>
-                            Hybrid Cloud Architecture
-                        </li>
-                        <li class="flex items-center text-soft-text">
-                            <i class="fas fa-check-circle text-accent mr-3"></i>
-                            Docker, Kubernetes
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- Storage & Data -->
-                <div class="bg-white rounded-2xl p-8 shadow-lg hover-card" data-aos="fade-up" data-aos-delay="100">
-                    <div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
-                        <i class="fas fa-database text-2xl text-primary"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-primary mb-4">Storage & Data</h3>
-                    <ul class="space-y-3">
-                        <li class="flex items-center text-soft-text">
-                            <i class="fas fa-check-circle text-accent mr-3"></i>
-                            NetApp, Dell PowerScale
-                        </li>
-                        <li class="flex items-center text-soft-text">
-                            <i class="fas fa-check-circle text-accent mr-3"></i>
-                            vSAN, Unity
-                        </li>
-                        <li class="flex items-center text-soft-text">
-                            <i class="fas fa-check-circle text-accent mr-3"></i>
-                            Veeam, TSM, Bacula
-                        </li>
-                        <li class="flex items-center text-soft-text">
-                            <i class="fas fa-check-circle text-accent mr-3"></i>
-                            HPC/Research Computing
-                        </li>
-                        <li class="flex items-center text-soft-text">
-                            <i class="fas fa-check-circle text-accent mr-3"></i>
-                            Data Governance
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- Security & Operations -->
-                <div class="bg-white rounded-2xl p-8 shadow-lg hover-card" data-aos="fade-up" data-aos-delay="200">
-                    <div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
-                        <i class="fas fa-shield-alt text-2xl text-primary"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-primary mb-4">Security & Operations</h3>
-                    <ul class="space-y-3">
-                        <li class="flex items-center text-soft-text">
-                            <i class="fas fa-check-circle text-accent mr-3"></i>
-                            Cybersecurity Frameworks
-                        </li>
-                        <li class="flex items-center text-soft-text">
-                            <i class="fas fa-check-circle text-accent mr-3"></i>
-                            GDPR Compliance
-                        </li>
-                        <li class="flex items-center text-soft-text">
-                            <i class="fas fa-check-circle text-accent mr-3"></i>
-                            IAM, Endpoint Security
-                        </li>
-                        <li class="flex items-center text-soft-text">
-                            <i class="fas fa-check-circle text-accent mr-3"></i>
-                            ITIL 4, PRINCE2
-                        </li>
-                        <li class="flex items-center text-soft-text">
-                            <i class="fas fa-check-circle text-accent mr-3"></i>
-                            Automation (Ansible, Puppet)
-                        </li>
-                    </ul>
-                </div>
-            </div>
+            <div id="skills-grid" class="grid md:grid-cols-3 gap-8"></div>
             
             <!-- Core Competencies Tags -->
             <div class="mt-16" data-aos="fade-up">
                 <h3 class="text-2xl font-bold text-primary text-center mb-8">Core Competencies</h3>
-                <div class="flex flex-wrap justify-center gap-3">
-                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">IT Strategy</span>
-                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">Digital Transformation</span>
-                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">Cybersecurity</span>
-                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">Risk Governance</span>
-                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">HPC Operations</span>
-                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">Enterprise Architecture</span>
-                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">Cloud Infrastructure</span>
-                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">Team Leadership</span>
-                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">Vendor Management</span>
-                    <span class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">Budget Planning</span>
-                </div>
+                <div id="competencies-tags" class="flex flex-wrap justify-center gap-3"></div>
             </div>
         </div>
     </section>
@@ -803,20 +511,7 @@ Example:
                     
                     <div class="mt-10">
                         <p class="text-sm text-soft-text mb-4">Connect on social media:</p>
-                        <div class="flex gap-4">
-                            <a href="https://linkedin.com/in/carlosfernandezsanmillan" target="_blank" 
-                               class="w-12 h-12 rounded-full bg-primary hover:bg-accent flex items-center justify-center text-white transition-all transform hover:scale-110">
-                                <i class="fab fa-linkedin-in text-xl"></i>
-                            </a>
-                            <a href="https://github.com/Cormite" target="_blank" 
-                               class="w-12 h-12 rounded-full bg-primary hover:bg-accent flex items-center justify-center text-white transition-all transform hover:scale-110">
-                                <i class="fab fa-github text-xl"></i>
-                            </a>
-                            <a href="#" target="_blank" 
-                               class="w-12 h-12 rounded-full bg-primary hover:bg-accent flex items-center justify-center text-white transition-all transform hover:scale-110">
-                                <i class="fas fa-globe text-xl"></i>
-                            </a>
-                        </div>
+                        <div id="social-links-contact" class="flex gap-4"></div>
                     </div>
                 </div>
                 
@@ -885,77 +580,6 @@ Example:
 
     <!-- Scripts -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        // Initialize AOS Animation Library
-        AOS.init({
-            duration: 800,
-            once: true,
-            offset: 100
-        });
-        
-        // Navbar Scroll Effect
-        const navbar = document.getElementById('navbar');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navbar.classList.add('glass', 'shadow-lg');
-                navbar.classList.remove('bg-transparent');
-            } else {
-                navbar.classList.remove('glass', 'shadow-lg');
-                navbar.classList.add('bg-transparent');
-            }
-        });
-        
-        // Mobile Menu Toggle
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const closeMenuBtn = document.getElementById('close-menu');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.add('open');
-        });
-        
-        closeMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.remove('open');
-        });
-        
-        // Close mobile menu when clicking on a link
-        mobileMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.remove('open');
-            });
-        });
-        
-        // Contact Form Handling
-        document.getElementById('contact-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            this.reset();
-            document.getElementById('form-success').classList.remove('hidden');
-            setTimeout(() => {
-                document.getElementById('form-success').classList.add('hidden');
-            }, 5000);
-        });
-        
-        // Set Current Date
-        const now = new Date();
-        document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', { 
-            month: 'short', 
-            year: 'numeric' 
-        });
-        document.getElementById('current-year').textContent = now.getFullYear();
-        
-        // Smooth Scroll for Anchor Links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-    </script>
+    <script src="assets/js/main.js?v=20260218c" defer></script>
 </body>
 </html>
