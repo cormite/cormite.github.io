@@ -3,6 +3,11 @@
 const LANGS = Object.freeze(['en', 'es', 'it']);
 const DEFAULT_LANG = 'en';
 const LANG_STORAGE_KEY = 'site_lang';
+const CV_FILES = Object.freeze({
+  en: 'carlos-fernandez-san-millan-en.pdf',
+  es: 'carlos-fernandez-san-millan-es.pdf',
+  it: 'carlos-fernandez-san-millan-it.pdf'
+});
 
 const NAV_ITEMS = Object.freeze([
   Object.freeze({ href: '#home', key: 'home' }),
@@ -408,12 +413,20 @@ function renderStaticText(content) {
   const heroMailButton = document.querySelector('#home a[href^="mailto:"]');
   if (heroMailButton) heroMailButton.innerHTML = '<i class="fas fa-envelope mr-2" aria-hidden="true"></i>' + text.heroContactButton;
 
+  const selectedCvFile = CV_FILES[currentLanguage] || CV_FILES[DEFAULT_LANG];
+
   const heroDownloadButton = document.querySelector('#home a[href$=".pdf"]');
-  if (heroDownloadButton) heroDownloadButton.innerHTML = '<i class="fas fa-download mr-2" aria-hidden="true"></i>' + text.heroDownloadButton;
+  if (heroDownloadButton) {
+    heroDownloadButton.innerHTML = '<i class="fas fa-download mr-2" aria-hidden="true"></i>' + text.heroDownloadButton;
+    heroDownloadButton.setAttribute('href', selectedCvFile);
+  }
 
   setHtml('about-heading', text.aboutHeading);
   const aboutDownloadButton = document.querySelector('#about a[href$=".pdf"]');
-  if (aboutDownloadButton) aboutDownloadButton.innerHTML = '<i class="fas fa-download mr-2" aria-hidden="true"></i>' + text.aboutDownloadButton;
+  if (aboutDownloadButton) {
+    aboutDownloadButton.innerHTML = '<i class="fas fa-download mr-2" aria-hidden="true"></i>' + text.aboutDownloadButton;
+    aboutDownloadButton.setAttribute('href', selectedCvFile);
+  }
 
   const aboutYearsLabel = document.querySelector('#about-years-value + div');
   if (aboutYearsLabel) aboutYearsLabel.textContent = text.aboutYearsLabel;
