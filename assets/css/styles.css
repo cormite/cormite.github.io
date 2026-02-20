@@ -8,12 +8,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #B8860B;
+  background: #8A6508;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #D4A84B;
+  background: #9D7410;
 }
 
 /* Smooth Scroll */
@@ -21,9 +21,41 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Skip link for keyboard users */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.skip-link:focus {
+  left: 12px;
+  top: 12px;
+  width: auto;
+  height: auto;
+  padding: 10px 14px;
+  background: #ffffff;
+  color: #0B1B3D;
+  border-radius: 6px;
+  z-index: 1000;
+  box-shadow: 0 8px 20px rgba(11, 27, 61, 0.25);
+}
+
+/* Keyboard focus visibility */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #9D7410;
+  outline-offset: 2px;
+}
+
 /* Gradient Text */
 .gradient-text {
-  background: linear-gradient(135deg, #B8860B 0%, #D4A84B 100%);
+  background: linear-gradient(135deg, #8A6508 0%, #9D7410 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -46,7 +78,7 @@ html {
   position: absolute;
   inset: -4px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #B8860B 0%, #D4A84B 50%, #B8860B 100%);
+  background: linear-gradient(135deg, #8A6508 0%, #9D7410 50%, #8A6508 100%);
   z-index: -1;
   animation: rotate 8s linear infinite;
 }
@@ -78,7 +110,7 @@ html {
   top: 0;
   bottom: 0;
   width: 2px;
-  background: linear-gradient(to bottom, #B8860B, #1E3A8A);
+  background: linear-gradient(to bottom, #8A6508, #1E3A8A);
   transform: translateX(-50%);
 }
 
@@ -92,16 +124,44 @@ html {
   transform: translateX(0);
 }
 
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .animate-float,
+  .animate-bounce,
+  .animate-pulse-slow,
+  .animate-spin {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .hover-card:hover {
+    transform: none;
+    box-shadow: inherit;
+  }
+}
+
 /* Fallback color utilities if Tailwind CDN config is unavailable */
 .bg-primary { background-color: #0B1B3D; }
 .bg-secondary { background-color: #1E3A8A; }
-.bg-accent { background-color: #B8860B; }
-.bg-accent-light { background-color: #D4A84B; }
+.bg-accent { background-color: #8A6508; }
+.bg-accent-light { background-color: #9D7410; }
 .bg-light-bg { background-color: #F8FAFC; }
 
 .text-primary { color: #0B1B3D; }
 .text-secondary { color: #1E3A8A; }
-.text-accent { color: #B8860B; }
+.text-accent { color: #8A6508; }
 .text-soft-text { color: #475569; }
 
 .border-medium-gray { border-color: #CBD5E1; }

@@ -4,8 +4,8 @@ tailwind.config = {
       colors: {
         primary: '#0B1B3D',
         secondary: '#1E3A8A',
-        accent: '#B8860B',
-        'accent-light': '#D4A84B',
+        accent: '#8A6508',
+        'accent-light': '#9D7410',
         'soft-text': '#475569',
         'light-bg': '#F8FAFC',
         'medium-gray': '#CBD5E1'
