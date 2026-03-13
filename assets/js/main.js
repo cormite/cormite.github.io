@@ -744,7 +744,7 @@ function renderAll() {
   setupContactForm(content);
   markDecorativeIcons();
 
-  if (typeof AOS !== 'undefined') {
+  if (typeof AOS !== 'undefined' && typeof AOS.refreshHard === 'function') {
     AOS.refreshHard();
   }
 }
