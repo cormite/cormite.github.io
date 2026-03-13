@@ -11,18 +11,14 @@
     
     <!-- Preload critical resources -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style">
-    <link rel="preload" href="photo.jpg" as="image">
+    <link rel="preload" href="./photo.jpg" as="image">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS Play CDN (Production Ready) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Tailwind Config -->
-    <script src="assets/js/tailwind.config.js?v=20260220a11y"></script>
+    <link rel="stylesheet" href="assets/css/tailwind.css?v=20260313tailwindlocal1">
     <!-- FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     
@@ -150,7 +146,7 @@
                     
                     <!-- Photo Container -->
                     <div class="photo-ring relative w-80 h-80 rounded-full overflow-hidden border-4 border-accent shadow-2xl">
-                        <img src="photo.jpg" alt="Carlos Fernández San Millán" 
+                        <img src="./photo.jpg" alt="Carlos Fernández San Millán" 
                              class="w-full h-full object-cover">
                     </div>
                     
@@ -244,7 +240,7 @@ Example:
                 <!-- FIXED: Replaced missing about-us.png with photo.jpg -->
                 <div data-aos="fade-right">
                     <div class="relative">
-                        <img src="photo.jpg" alt="About Carlos" class="rounded-2xl shadow-2xl w-full object-cover h-[500px]">
+                        <img src="./photo.jpg" alt="About Carlos" class="rounded-2xl shadow-2xl w-full object-cover h-[500px]">
                         <div class="absolute -bottom-6 -right-6 bg-primary text-white p-6 rounded-2xl shadow-xl">
                             <div id="about-years-value" class="text-4xl font-bold text-accent">15+</div>
                             <div class="text-sm text-white/80">Years Experience</div>
@@ -498,6 +494,6 @@ Example:
 
     <!-- Scripts -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="assets/js/main.js?v=20260313loadfix1" defer></script>
+    <script src="assets/js/main.js?v=20260313loadfix2" defer></script>
 </body>
 </html>
