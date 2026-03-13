@@ -15,7 +15,7 @@ module.exports = {
         "medium-gray": "#CBD5E1"
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"]
+        sans: ["system-ui", "-apple-system", "BlinkMacSystemFont", "\"Segoe UI\"", "sans-serif"]
       },
       animation: {
         float: "float 6s ease-in-out infinite",
