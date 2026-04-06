@@ -10,6 +10,8 @@
     "tailwindcss": "^3.4.17"
   },
   "dependencies": {
+    "@fontsource/cormorant-garamond": "^5.2.11",
+    "@fontsource/eb-garamond": "^5.2.7",
     "@fortawesome/fontawesome-free": "^7.2.0",
     "aos": "^2.3.4"
   }
