@@ -8,22 +8,6 @@
 
 @font-face {
   font-family: 'EB Garamond';
-  src: url('../fonts/eb-garamond/eb-garamond-latin-400-italic.woff2') format('woff2');
-  font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'EB Garamond';
-  src: url('../fonts/eb-garamond/eb-garamond-latin-500-normal.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'EB Garamond';
   src: url('../fonts/eb-garamond/eb-garamond-latin-600-normal.woff2') format('woff2');
   font-style: normal;
   font-weight: 600;
@@ -40,33 +24,9 @@
 
 @font-face {
   font-family: 'Cormorant Garamond';
-  src: url('../fonts/cormorant-garamond/cormorant-garamond-latin-400-normal.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Cormorant Garamond';
-  src: url('../fonts/cormorant-garamond/cormorant-garamond-latin-500-normal.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Cormorant Garamond';
   src: url('../fonts/cormorant-garamond/cormorant-garamond-latin-600-normal.woff2') format('woff2');
   font-style: normal;
   font-weight: 600;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Cormorant Garamond';
-  src: url('../fonts/cormorant-garamond/cormorant-garamond-latin-700-normal.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 700;
   font-display: swap;
 }
 
@@ -101,10 +61,39 @@ select {
   letter-spacing: 0.02em;
 }
 
-html.file-protocol [data-aos] {
-  opacity: 1 !important;
-  transform: none !important;
-  transition: none !important;
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  flex-shrink: 0;
+}
+
+[data-aos] {
+  opacity: 0;
+  transition: opacity 0.65s ease, transform 0.65s ease;
+  will-change: opacity, transform;
+}
+
+[data-aos].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+[data-aos="fade-up"] {
+  transform: translate3d(0, 26px, 0);
+}
+
+[data-aos="fade-down"] {
+  transform: translate3d(0, -26px, 0);
+}
+
+[data-aos="fade-left"] {
+  transform: translate3d(26px, 0, 0);
+}
+
+[data-aos="fade-right"] {
+  transform: translate3d(-26px, 0, 0);
 }
 
 /* Smooth Scroll */
@@ -240,6 +229,12 @@ textarea:focus-visible {
   .hover-card:hover {
     transform: none;
     box-shadow: inherit;
+  }
+
+  [data-aos] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
 }
 

@@ -1,250 +1,10 @@
 'use strict';
 
-const LANGS = Object.freeze(['en', 'es', 'it']);
-const DEFAULT_LANG = 'en';
-const LANG_STORAGE_KEY = 'site_lang';
-const CV_FILES = Object.freeze({
-  en: 'carlos-fernandez-san-millan-en.pdf',
-  es: 'carlos-fernandez-san-millan-es.pdf',
-  it: 'carlos-fernandez-san-millan-it.pdf'
-});
+const { LANGS, DEFAULT_LANG, LANG_STORAGE_KEY, CV_FILES, NAV_ITEMS, SOCIAL_LINKS, I18N } = globalThis.__SITE_CONTENT || {};
 
-const NAV_ITEMS = Object.freeze([
-  Object.freeze({ href: '#home', key: 'home' }),
-  Object.freeze({ href: '#about', key: 'about' }),
-  Object.freeze({ href: '#experience', key: 'experience' }),
-  Object.freeze({ href: '#achievements', key: 'achievements' }),
-  Object.freeze({ href: '#skills', key: 'skills' }),
-  Object.freeze({ href: '#contact', key: 'contact', cta: true })
-]);
-
-const SOCIAL_LINKS = Object.freeze([
-  Object.freeze({ href: 'https://linkedin.com/in/carlosfernandezsanmillan', iconClass: 'fab fa-linkedin-in text-xl', label: 'LinkedIn' }),
-  Object.freeze({ href: 'https://github.com/Cormite', iconClass: 'fab fa-github text-xl', label: 'GitHub' }),
-  Object.freeze({ href: 'https://www.cormite.com', iconClass: 'fas fa-globe text-xl', label: 'Website' })
-]);
-
-const I18N = Object.freeze({
-  en: Object.freeze({
-    locale: 'en-US',
-    meta: Object.freeze({
-      title: 'Carlos Fernández San Millán | Head of ICT & Acting CIO',
-      description: 'Carlos Fernández San Millán - Head of ICT & Acting CIO. Technology Executive specializing in Digital Transformation, Research Computing, Cybersecurity, and Board Advisory.',
-      keywords: 'Head of ICT, Acting CIO, IT Strategy, Digital Transformation, Cybersecurity, Research Computing, Board Advisory, Technology Executive'
-    }),
-    nav: Object.freeze({ home: 'Home', about: 'About', experience: 'Experience', achievements: 'Achievements', skills: 'Skills', contact: 'Contact' }),
-    profile: Object.freeze({
-      title: 'Head of ICT & Acting CIO | Board Advisor',
-      availability: 'Available for Executive & Advisory Opportunities',
-      location: 'Milan, Italy',
-      budget: '14M € Budget Managed',
-      teamSize: '25+ Team Size',
-      yearsExperience: '15+',
-      heroSummary: 'Technology Executive with 15+ years leading enterprise IT, digital transformation, and research computing in mission-driven international organizations.',
-      aboutSummary1: 'Senior technology executive with 15+ years leading enterprise IT, research computing, cybersecurity, and digital transformation in complex, mission-driven international organizations.',
-      aboutSummary2: 'Proven track record of aligning technology strategy with institutional objectives, delivering measurable business outcomes, and building high-performing teams. Expertise spans IT governance, digital transformation, HPC/data center operations, cybersecurity frameworks, and research technology enablement.',
-      footerRole: 'Technology Executive & Digital Transformation Leader',
-      footerOpportunity: 'Open to on-prem and/or remote, Executive roles in Tech/Research Companies/Institutes',
-      contactEmail: 'carlos.fernandez.san.millan@gmail.com'
-    }),
-    staticText: Object.freeze({
-      heroContactButton: 'Get In Touch',
-      heroDownloadButton: 'Download CV',
-      aboutHeading: 'Let Me <span class="text-accent">Introduce</span> Myself',
-      aboutDownloadButton: 'Download CV',
-      aboutYearsLabel: 'Years Experience',
-      experienceHeading: 'Professional <span class="text-accent">Experience</span>',
-      experienceSubtitle: 'A track record of leadership in world-class research institutions and enterprise environments.',
-      achievementsHeading: 'Key Strategic <span class="text-accent">Achievements</span>',
-      achievementsSubtitle: 'Measurable impact across digital transformation, cybersecurity, and financial optimization.',
-      skillsHeading: 'Technology <span class="text-accent">Landscape</span>',
-      skillsSubtitle: 'Expertise across infrastructure, cloud, storage, security, and operations.',
-      competenciesHeading: 'Core Competencies',
-      contactHeading: 'Let\'s <span class="text-accent">Connect</span>',
-      contactIntro: 'I\'m always interested in hearing about new projects, opportunities, and challenges in the technology leadership space.',
-      contactEmailLabel: 'Email',
-      contactLocationLabel: 'Location',
-      contactSocialLabel: 'Connect on social media:',
-      contactFormHeading: 'Send a Message',
-      contactNameLabel: 'Name',
-      contactNamePlaceholder: 'Your name',
-      contactEmailInputLabel: 'Email',
-      contactEmailPlaceholder: 'your@email.com',
-      contactMessageLabel: 'Message',
-      contactMessagePlaceholder: 'Your message...',
-      contactSubmit: 'Open Email Draft',
-      contactInfo: 'This website does not send messages directly. Your email client will open with a prefilled draft to send.',
-      footerReferences: 'References available upon request',
-      footerUpdated: 'Updated:'
-    }),
-    achievements: Object.freeze([
-      Object.freeze({ iconClass: 'fas fa-trophy', title: 'Strategy-to-Execution Transformation', descriptionHtml: 'Converted strategy into execution at Human Technopole, delivering <span class="text-accent font-bold">30%</span> efficiency improvement and <span class="text-accent font-bold">45%</span> manual-process reduction through targeted digital modernization and automation.', delay: 0 }),
-      Object.freeze({ iconClass: 'fas fa-shield-alt', title: 'Cybersecurity & Control Maturity', descriptionHtml: 'Embedded GDPR-aligned security governance and operational controls across core services, contributing to a <span class="text-accent font-bold">60%</span> reduction in security incidents.', delay: 100 }),
-      Object.freeze({ iconClass: 'fas fa-server', title: 'Scalable Operating Reliability', descriptionHtml: 'Stabilized and scaled infrastructure supporting <span class="text-accent font-bold">20PB+</span> scientific workloads while maintaining <span class="text-accent font-bold">99.99%</span> service reliability in production environments.', delay: 200 }),
-      Object.freeze({ iconClass: 'fas fa-chart-line', title: 'Governance, Capital Efficiency & Vendor Performance', descriptionHtml: 'Restructured supplier governance and contract strategy to produce <span class="text-accent font-bold">40-60%</span> optimization in targeted agreements and improve service accountability.', delay: 300 })
-    ]),
-    skillGroups: Object.freeze([
-      Object.freeze({ iconClass: 'fas fa-cloud', title: 'Infrastructure & Cloud', items: Object.freeze(['Endpoint management', 'Collaboration stack (M365)', 'SSO / MFA / identity integrations', 'VMware vSphere/Horizon, OpenNebula, oVirt', 'Linux & Windows Server', 'Hybrid Cloud, Docker, Kubernetes']), delay: 0 }),
-      Object.freeze({ iconClass: 'fas fa-database', title: 'Storage & Data', items: Object.freeze(['NetApp, Dell PowerScale, PowerStore, Unity', 'vSAN, QNAP, Synology', 'Veeam, TSM, Bacula', 'HPC / Research Computing', 'Backup, Business Continuity, Disaster Recovery']), delay: 100 }),
-      Object.freeze({ iconClass: 'fas fa-shield-alt', title: 'Security & Operations', items: Object.freeze(['Cybersecurity frameworks / GDPR / compliance', 'ITIL 4, PRINCE2, SMART', 'IAM / RBAC / endpoint security', 'Audit readiness & controls mapping', 'Foreman, Puppet, Ansible, Zabbix, Python']), delay: 200 })
-    ]),
-    competencies: Object.freeze(['Technology Strategy & Operating Model', 'Executive Leadership (Head of ICT / Acting CIO)', 'Board Advisory & Governance', 'Digital Transformation Execution', 'Cybersecurity & Risk Governance', 'IT Governance & Compliance', 'Cloud, Data Center & HPC Operations', 'Virtualization & Storage Engineering', 'Vendor & Contract Management', 'Cross-Functional Stakeholder Leadership']),
-    experienceTimeline: Object.freeze([
-      Object.freeze({ current: true, role: 'Head of ICT & Digitisation (Acting CIO)', org: 'Human Technopole', period: 'Jan 2023 - Present | Milan, Italy', bullets: Object.freeze(['Strategic ICT leadership across infrastructure, workplace, security, and enterprise platforms (25+ FTEs; 7 direct reports).', 'Technology roadmap and execution governance aligned to institutional priorities and measurable outcomes.', '30% efficiency gain and 45% process reduction through digital transformation and automation.', '20PB+ scientific workloads supported with 99.99% service availability.']) }),
-      Object.freeze({ role: 'Data Center Infrastructure Manager', org: 'Human Technopole', period: 'May 2022 - Dec 2022 | Milan, Italy', summary: 'Led high-performance infrastructure operations, backup/DR strategy, standards definition, network security, and data center procurement planning.' }),
-      Object.freeze({ role: 'Storage & Virtualisation Engineer', org: 'Human Technopole', period: 'Jan 2021 - May 2022 | Milan, Italy', summary: 'Managed PowerScale/NetApp storage and VMware/VDI platforms, plus Linux services supporting research computing operations.' }),
-      Object.freeze({ role: 'Systems & Virtualisation Engineer', org: 'European Molecular Biology Laboratory (EMBL)', period: 'Oct 2018 - Dec 2020 | Heidelberg, Germany', summary: 'Managed 28-host VMware cluster (650+ VMs), 18-node NetApp estate (~9PB), vSAN for GPU VDI, and infrastructure automation with Python/Puppet/Foreman/Zabbix.' }),
-      Object.freeze({ role: 'Systems Engineer', org: 'European Molecular Biology Laboratory (EMBL)', period: 'Oct 2012 - Oct 2018 | Heidelberg, Germany', summary: 'Delivered enterprise virtualization and storage lifecycle upgrades (ESX/ESXi 4.1 through 6.7) across multi-site environments.' }),
-      Object.freeze({ role: 'IT Manager', org: 'Digital Arts & Designers, S.L.', period: 'Jul 2010 - Sep 2012 | Las Palmas de Gran Canaria, Spain', summary: 'Managed IT projects, Linux/server administration, network operations, monitoring, and technical procurement/vendor relationships.' })
-    ])
-  }),
-  es: Object.freeze({
-    locale: 'es-ES',
-    meta: Object.freeze({
-      title: 'Carlos Fernández San Millán | Responsable de TIC y CIO en funciones',
-      description: 'Carlos Fernández San Millán - Responsable de TIC y CIO en funciones. Ejecutivo tecnológico especializado en Transformación Digital, Computación Científica, Ciberseguridad y Asesoría de Consejo.',
-      keywords: 'Responsable de TIC, CIO en funciones, Estrategia TI, Transformación Digital, Ciberseguridad, Computación Científica, Asesoría de Consejo'
-    }),
-    nav: Object.freeze({ home: 'Inicio', about: 'Perfil', experience: 'Experiencia', achievements: 'Logros', skills: 'Capacidades', contact: 'Contacto' }),
-    profile: Object.freeze({
-      title: 'Responsable de TIC y CIO en funciones | Board Advisor',
-      availability: 'Disponible para oportunidades ejecutivas y de asesoría',
-      location: 'Milán, Italia',
-      budget: 'Presupuesto gestionado: 14M €',
-      teamSize: 'Equipo de 25+',
-      yearsExperience: '15+',
-      heroSummary: 'Ejecutivo tecnológico con más de 15 años liderando TI corporativa, transformación digital y computación científica en organizaciones internacionales orientadas a misión.',
-      aboutSummary1: 'Ejecutivo senior de tecnología con más de 15 años liderando TI corporativa, computación científica, ciberseguridad y transformación digital en organizaciones complejas e internacionales.',
-      aboutSummary2: 'Trayectoria demostrada alineando la estrategia tecnológica con objetivos institucionales, entregando resultados medibles y construyendo equipos de alto rendimiento. Experiencia en gobierno TI, transformación digital, operaciones de HPC/data center y marcos de ciberseguridad.',
-      footerRole: 'Ejecutivo Tecnológico y Líder de Transformación Digital',
-      footerOpportunity: 'Disponible para roles ejecutivos presenciales y/o remotos en empresas e institutos de tecnología e investigación',
-      contactEmail: 'carlos.fernandez.san.millan@gmail.com'
-    }),
-    staticText: Object.freeze({
-      heroContactButton: 'Contactar',
-      heroDownloadButton: 'Descargar CV',
-      aboutHeading: '<span class="text-accent">Presentación</span> Profesional',
-      aboutDownloadButton: 'Descargar CV',
-      aboutYearsLabel: 'Años de experiencia',
-      experienceHeading: '<span class="text-accent">Experiencia</span> Profesional',
-      experienceSubtitle: 'Trayectoria de liderazgo en instituciones de investigación de referencia y entornos corporativos complejos.',
-      achievementsHeading: '<span class="text-accent">Logros</span> Estratégicos',
-      achievementsSubtitle: 'Impacto medible en transformación digital, ciberseguridad y optimización financiera.',
-      skillsHeading: '<span class="text-accent">Panorama</span> Tecnológico',
-      skillsSubtitle: 'Experiencia en infraestructura, cloud, almacenamiento, seguridad y operaciones.',
-      competenciesHeading: 'Competencias Clave',
-      contactHeading: '<span class="text-accent">Conectemos</span>',
-      contactIntro: 'Me interesa conocer nuevos proyectos, oportunidades y retos dentro del liderazgo tecnológico.',
-      contactEmailLabel: 'Correo',
-      contactLocationLabel: 'Ubicación',
-      contactSocialLabel: 'Conecta en redes:',
-      contactFormHeading: 'Enviar Mensaje',
-      contactNameLabel: 'Nombre',
-      contactNamePlaceholder: 'Tu nombre',
-      contactEmailInputLabel: 'Correo',
-      contactEmailPlaceholder: 'tu@email.com',
-      contactMessageLabel: 'Mensaje',
-      contactMessagePlaceholder: 'Tu mensaje...',
-      contactSubmit: 'Abrir borrador de correo',
-      contactInfo: 'Este sitio no envía mensajes directamente. Se abrirá tu cliente de correo con un borrador precompletado.',
-      footerReferences: 'Referencias disponibles bajo solicitud',
-      footerUpdated: 'Actualizado:'
-    }),
-    achievements: Object.freeze([
-      Object.freeze({ iconClass: 'fas fa-trophy', title: 'Transformación de estrategia a ejecución', descriptionHtml: 'Convertí estrategia en ejecución en Human Technopole, logrando <span class="text-accent font-bold">30%</span> de mejora de eficiencia y <span class="text-accent font-bold">45%</span> de reducción de procesos manuales mediante modernización digital y automatización.', delay: 0 }),
-      Object.freeze({ iconClass: 'fas fa-shield-alt', title: 'Madurez en ciberseguridad y control', descriptionHtml: 'Implanté gobierno de seguridad y controles operativos alineados con GDPR, contribuyendo a una reducción del <span class="text-accent font-bold">60%</span> en incidentes.', delay: 100 }),
-      Object.freeze({ iconClass: 'fas fa-server', title: 'Fiabilidad operativa escalable', descriptionHtml: 'Estabilicé y escalé infraestructura para cargas científicas de <span class="text-accent font-bold">20PB+</span>, manteniendo <span class="text-accent font-bold">99.99%</span> de disponibilidad.', delay: 200 }),
-      Object.freeze({ iconClass: 'fas fa-chart-line', title: 'Gobierno, eficiencia de capital y proveedores', descriptionHtml: 'Reestructuré el gobierno de proveedores y estrategia contractual para lograr optimización del <span class="text-accent font-bold">40-60%</span> en acuerdos objetivo.', delay: 300 })
-    ]),
-    skillGroups: Object.freeze([
-      Object.freeze({ iconClass: 'fas fa-cloud', title: 'Infraestructura y Cloud', items: Object.freeze(['Gestión de endpoints', 'Stack de colaboración (M365)', 'Integraciones SSO / MFA / identidad', 'VMware vSphere/Horizon, OpenNebula, oVirt', 'Linux y Windows Server', 'Cloud híbrido, Docker, Kubernetes']), delay: 0 }),
-      Object.freeze({ iconClass: 'fas fa-database', title: 'Almacenamiento y Datos', items: Object.freeze(['NetApp, Dell PowerScale, PowerStore, Unity', 'vSAN, QNAP, Synology', 'Veeam, TSM, Bacula', 'HPC / Computación científica', 'Backup, continuidad de negocio, DR']), delay: 100 }),
-      Object.freeze({ iconClass: 'fas fa-shield-alt', title: 'Seguridad y Operaciones', items: Object.freeze(['Marcos de ciberseguridad / GDPR / compliance', 'ITIL 4, PRINCE2, SMART', 'IAM / RBAC / seguridad endpoint', 'Preparación de auditoría y mapeo de controles', 'Foreman, Puppet, Ansible, Zabbix, Python']), delay: 200 })
-    ]),
-    competencies: Object.freeze(['Estrategia Tecnológica y Modelo Operativo', 'Liderazgo Ejecutivo (Responsable TIC / CIO en funciones)', 'Asesoría de Consejo y Gobierno', 'Ejecución de Transformación Digital', 'Ciberseguridad y Gobierno del Riesgo', 'Gobierno TI y Cumplimiento', 'Operaciones Cloud, Data Center y HPC', 'Ingeniería de Virtualización y Storage', 'Gestión de Proveedores y Contratos', 'Liderazgo transversal de stakeholders']),
-    experienceTimeline: Object.freeze([
-      Object.freeze({ current: true, role: 'Responsable de TIC y Digitalización (CIO en funciones)', org: 'Human Technopole', period: 'Ene 2023 - Actualidad | Milán, Italia', bullets: Object.freeze(['Liderazgo estratégico de TIC en infraestructura, workplace, seguridad y plataformas enterprise (25+ FTE; 7 reportes directos).', 'Hoja de ruta tecnológica y gobierno de ejecución alineados con prioridades institucionales y resultados medibles.', '30% de mejora de eficiencia y 45% de reducción de procesos mediante transformación digital y automatización.', 'Soporte a cargas científicas de 20PB+ con 99.99% de disponibilidad.']) }),
-      Object.freeze({ role: 'Responsable de Infraestructura de Data Center', org: 'Human Technopole', period: 'May 2022 - Dic 2022 | Milán, Italia', summary: 'Lideré operaciones de infraestructura de alto rendimiento, estrategia de backup/DR, estándares, seguridad de red y planificación de compras.' }),
-      Object.freeze({ role: 'Ingeniero de Storage y Virtualización', org: 'Human Technopole', period: 'Ene 2021 - May 2022 | Milán, Italia', summary: 'Gestioné plataformas de storage PowerScale/NetApp y VMware/VDI, junto con servicios Linux para computación científica.' }),
-      Object.freeze({ role: 'Ingeniero de Sistemas y Virtualización', org: 'European Molecular Biology Laboratory (EMBL)', period: 'Oct 2018 - Dic 2020 | Heidelberg, Alemania', summary: 'Gestioné clúster VMware de 28 hosts (650+ VM), entorno NetApp de 18 nodos (~9PB), vSAN para VDI GPU y automatización con Python/Puppet/Foreman/Zabbix.' }),
-      Object.freeze({ role: 'Ingeniero de Sistemas', org: 'European Molecular Biology Laboratory (EMBL)', period: 'Oct 2012 - Oct 2018 | Heidelberg, Alemania', summary: 'Lideré operaciones de virtualización y storage y upgrades de ciclo de vida (ESX/ESXi 4.1 a 6.7) en entorno multi-sede.' }),
-      Object.freeze({ role: 'IT Manager', org: 'Digital Arts & Designers, S.L.', period: 'Jul 2010 - Sep 2012 | Las Palmas de Gran Canaria, España', summary: 'Gestioné proyectos TI, administración Linux/servidores, redes, monitorización y relación técnica con proveedores.' })
-    ])
-  }),
-  it: Object.freeze({
-    locale: 'it-IT',
-    meta: Object.freeze({
-      title: 'Carlos Fernández San Millán | Responsabile ICT e CIO ad interim',
-      description: 'Carlos Fernández San Millán - Responsabile ICT e CIO ad interim. Executive tecnologico specializzato in Trasformazione Digitale, Calcolo Scientifico, Cybersecurity e Board Advisory.',
-      keywords: 'Responsabile ICT, CIO ad interim, Strategia IT, Trasformazione Digitale, Cybersecurity, Calcolo Scientifico, Board Advisory'
-    }),
-    nav: Object.freeze({ home: 'Home', about: 'Profilo', experience: 'Esperienza', achievements: 'Risultati', skills: 'Competenze', contact: 'Contatti' }),
-    profile: Object.freeze({
-      title: 'Responsabile ICT e CIO ad interim | Board Advisor',
-      availability: 'Disponibile per opportunità executive e advisory',
-      location: 'Milano, Italia',
-      budget: 'Budget gestito: 14M €',
-      teamSize: 'Team di 25+',
-      yearsExperience: '15+',
-      heroSummary: 'Executive tecnologico con oltre 15 anni di leadership in IT enterprise, trasformazione digitale e calcolo scientifico in organizzazioni internazionali mission-driven.',
-      aboutSummary1: 'Senior technology executive con oltre 15 anni di esperienza in IT enterprise, calcolo scientifico, cybersecurity e trasformazione digitale in organizzazioni complesse e internazionali.',
-      aboutSummary2: 'Track record consolidato nell\'allineare la strategia tecnologica agli obiettivi istituzionali, generando risultati misurabili e costruendo team ad alte prestazioni. Competenze su governance IT, trasformazione digitale, operations HPC/data center e cybersecurity.',
-      footerRole: 'Technology Executive & Digital Transformation Leader',
-      footerOpportunity: 'Disponibile per ruoli executive on-site e/o remote in aziende e istituti tech/research',
-      contactEmail: 'carlos.fernandez.san.millan@gmail.com'
-    }),
-    staticText: Object.freeze({
-      heroContactButton: 'Contattami',
-      heroDownloadButton: 'Scarica CV',
-      aboutHeading: '<span class="text-accent">Profilo</span> Professionale',
-      aboutDownloadButton: 'Scarica CV',
-      aboutYearsLabel: 'Anni di esperienza',
-      experienceHeading: '<span class="text-accent">Esperienza</span> Professionale',
-      experienceSubtitle: 'Percorso di leadership in istituzioni di ricerca di livello internazionale e contesti enterprise.',
-      achievementsHeading: 'Principali <span class="text-accent">Risultati</span> Strategici',
-      achievementsSubtitle: 'Impatto misurabile su trasformazione digitale, cybersecurity e ottimizzazione finanziaria.',
-      skillsHeading: '<span class="text-accent">Panorama</span> Tecnologico',
-      skillsSubtitle: 'Competenze su infrastruttura, cloud, storage, sicurezza e operations.',
-      competenciesHeading: 'Competenze Chiave',
-      contactHeading: '<span class="text-accent">Restiamo in contatto</span>',
-      contactIntro: 'Sono interessato a nuovi progetti, opportunità e sfide nell\'ambito della leadership tecnologica.',
-      contactEmailLabel: 'Email',
-      contactLocationLabel: 'Sede',
-      contactSocialLabel: 'Connettiti sui social:',
-      contactFormHeading: 'Invia un Messaggio',
-      contactNameLabel: 'Nome',
-      contactNamePlaceholder: 'Il tuo nome',
-      contactEmailInputLabel: 'Email',
-      contactEmailPlaceholder: 'tu@email.com',
-      contactMessageLabel: 'Messaggio',
-      contactMessagePlaceholder: 'Il tuo messaggio...',
-      contactSubmit: 'Apri bozza email',
-      contactInfo: 'Questo sito non invia messaggi direttamente. Si aprirà il client email con una bozza precompilata.',
-      footerReferences: 'Referenze disponibili su richiesta',
-      footerUpdated: 'Aggiornato:'
-    }),
-    achievements: Object.freeze([
-      Object.freeze({ iconClass: 'fas fa-trophy', title: 'Trasformazione da strategia a esecuzione', descriptionHtml: 'Trasformata la strategia in esecuzione in Human Technopole, con <span class="text-accent font-bold">30%</span> di miglioramento dell\'efficienza e <span class="text-accent font-bold">45%</span> di riduzione dei processi manuali tramite modernizzazione digitale e automazione.', delay: 0 }),
-      Object.freeze({ iconClass: 'fas fa-shield-alt', title: 'Maturità in cybersecurity e controllo', descriptionHtml: 'Implementata governance della sicurezza e controlli operativi allineati al GDPR, contribuendo a una riduzione del <span class="text-accent font-bold">60%</span> degli incidenti.', delay: 100 }),
-      Object.freeze({ iconClass: 'fas fa-server', title: 'Affidabilità operativa scalabile', descriptionHtml: 'Stabilizzate e scalate infrastrutture per workload scientifici di <span class="text-accent font-bold">20PB+</span> mantenendo <span class="text-accent font-bold">99.99%</span> di disponibilità.', delay: 200 }),
-      Object.freeze({ iconClass: 'fas fa-chart-line', title: 'Governance, efficienza del capitale e fornitori', descriptionHtml: 'Ristrutturata la governance fornitori e la strategia contrattuale con ottimizzazione del <span class="text-accent font-bold">40-60%</span> su accordi mirati.', delay: 300 })
-    ]),
-    skillGroups: Object.freeze([
-      Object.freeze({ iconClass: 'fas fa-cloud', title: 'Infrastruttura e Cloud', items: Object.freeze(['Gestione endpoint', 'Stack collaboration (M365)', 'Integrazioni SSO / MFA / identità', 'VMware vSphere/Horizon, OpenNebula, oVirt', 'Linux e Windows Server', 'Cloud ibrido, Docker, Kubernetes']), delay: 0 }),
-      Object.freeze({ iconClass: 'fas fa-database', title: 'Storage e Dati', items: Object.freeze(['NetApp, Dell PowerScale, PowerStore, Unity', 'vSAN, QNAP, Synology', 'Veeam, TSM, Bacula', 'HPC / Calcolo scientifico', 'Backup, business continuity, disaster recovery']), delay: 100 }),
-      Object.freeze({ iconClass: 'fas fa-shield-alt', title: 'Sicurezza e Operations', items: Object.freeze(['Framework cybersecurity / GDPR / compliance', 'ITIL 4, PRINCE2, SMART', 'IAM / RBAC / sicurezza endpoint', 'Audit readiness e mappatura controlli', 'Foreman, Puppet, Ansible, Zabbix, Python']), delay: 200 })
-    ]),
-    competencies: Object.freeze(['Strategia Tecnologica e Modello Operativo', 'Leadership Executive (Responsabile ICT / CIO ad interim)', 'Board Advisory e Governance', 'Esecuzione Trasformazione Digitale', 'Cybersecurity e Governance del Rischio', 'Governance IT e Compliance', 'Operations Cloud, Data Center e HPC', 'Ingegneria Virtualizzazione e Storage', 'Gestione Fornitori e Contratti', 'Leadership trasversale stakeholder']),
-    experienceTimeline: Object.freeze([
-      Object.freeze({ current: true, role: 'Responsabile ICT e Digitalizzazione (CIO ad interim)', org: 'Human Technopole', period: 'Gen 2023 - Oggi | Milano, Italia', bullets: Object.freeze(['Leadership strategica ICT su infrastrutture, workplace, sicurezza e piattaforme enterprise (25+ FTE; 7 riporti diretti).', 'Roadmap tecnologica e governance esecutiva allineate alle priorità istituzionali e a risultati misurabili.', '30% di miglioramento dell\'efficienza e 45% di riduzione dei processi tramite trasformazione digitale e automazione.', 'Supporto a workload scientifici di 20PB+ con disponibilità al 99.99%.']) }),
-      Object.freeze({ role: 'Data Center Infrastructure Manager', org: 'Human Technopole', period: 'Mag 2022 - Dic 2022 | Milano, Italia', summary: 'Guidate operations infrastrutturali ad alte prestazioni, strategia backup/DR, definizione standard, sicurezza di rete e pianificazione procurement.' }),
-      Object.freeze({ role: 'Storage & Virtualisation Engineer', org: 'Human Technopole', period: 'Gen 2021 - Mag 2022 | Milano, Italia', summary: 'Gestite piattaforme storage PowerScale/NetApp e VMware/VDI, oltre a servizi Linux per il calcolo scientifico.' }),
-      Object.freeze({ role: 'Systems & Virtualisation Engineer', org: 'European Molecular Biology Laboratory (EMBL)', period: 'Ott 2018 - Dic 2020 | Heidelberg, Germania', summary: 'Gestito cluster VMware da 28 host (650+ VM), ambiente NetApp da 18 nodi (~9PB), vSAN per VDI GPU e automazione infrastrutturale con Python/Puppet/Foreman/Zabbix.' }),
-      Object.freeze({ role: 'Systems Engineer', org: 'European Molecular Biology Laboratory (EMBL)', period: 'Ott 2012 - Ott 2018 | Heidelberg, Germania', summary: 'Erogate operations di virtualizzazione/storage e upgrade lifecycle (ESX/ESXi 4.1 fino a 6.7) in ambiente multi-sito.' }),
-      Object.freeze({ role: 'IT Manager', org: 'Digital Arts & Designers, S.L.', period: 'Lug 2010 - Set 2012 | Las Palmas de Gran Canaria, Spagna', summary: 'Gestiti progetti IT, amministrazione Linux/server, rete, monitoraggio e relazioni tecniche con fornitori.' })
-    ])
-  })
-});
+if (!LANGS || !DEFAULT_LANG || !LANG_STORAGE_KEY || !CV_FILES || !NAV_ITEMS || !SOCIAL_LINKS || !I18N) {
+  throw new Error('Site content failed to load before main.js');
+}
 
 const CLASSNAMES = Object.freeze({
   desktopNavItem: 'text-white hover:text-accent px-3 py-2 rounded-md text-base font-semibold transition-colors',
@@ -253,8 +13,48 @@ const CLASSNAMES = Object.freeze({
   mobileNavCta: 'block text-accent py-2 text-xl font-bold'
 });
 
+const ICON_PATHS = Object.freeze({
+  'fa-linkedin-in': 'M6.94 8.5H3.56V20h3.38V8.5ZM5.25 3A1.97 1.97 0 1 0 5.3 6.94 1.97 1.97 0 0 0 5.25 3Zm6.89 5.5H8.91V20h3.23v-6.03c0-1.59.3-3.13 2.27-3.13 1.94 0 1.97 1.81 1.97 3.23V20h3.24v-6.6c0-3.24-.7-5.73-4.48-5.73-1.82 0-3.04 1-3.54 1.95h-.05V8.5Z',
+  'fa-github': 'M12 2C6.48 2 2 6.58 2 12.24c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-1.05-.01-1.91-2.78.62-3.37-1.2-3.37-1.2-.46-1.18-1.11-1.49-1.11-1.49-.9-.64.07-.63.07-.63 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.33 1.11 2.9.85.09-.66.35-1.11.63-1.36-2.22-.26-4.56-1.14-4.56-5.09 0-1.13.39-2.06 1.03-2.79-.1-.26-.45-1.31.1-2.73 0 0 .84-.28 2.75 1.07A9.3 9.3 0 0 1 12 6.87a9.3 9.3 0 0 1 2.5.35c1.9-1.35 2.74-1.07 2.74-1.07.56 1.42.21 2.47.1 2.73.64.73 1.03 1.66 1.03 2.8 0 3.96-2.35 4.82-4.59 5.07.36.32.69.94.69 1.9 0 1.37-.01 2.47-.01 2.8 0 .27.18.6.69.49A10.22 10.22 0 0 0 22 12.24C22 6.58 17.52 2 12 2Z',
+  'fa-globe': 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm7.93 9h-3.02a15.7 15.7 0 0 0-1.24-5A8.03 8.03 0 0 1 19.93 11ZM12 4.04c.82 1 1.97 3.18 2.46 6H9.54c.49-2.82 1.64-5 2.46-6ZM4.33 6a15.7 15.7 0 0 0-1.24 5H.07A8.03 8.03 0 0 1 4.33 6ZM4.07 13h3.02c.17 1.83.6 3.52 1.24 5A8.03 8.03 0 0 1 4.07 13Zm5.47 0h4.92c-.49 2.82-1.64 5-2.46 6-.82-1-1.97-3.18-2.46-6Zm7.13 5c.64-1.48 1.07-3.17 1.24-5h3.02A8.03 8.03 0 0 1 16.67 18Z',
+  'fa-trophy': 'M7 4V2h10v2h2a1 1 0 0 1 1 1v2a5 5 0 0 1-5 5h-.2A5.98 5.98 0 0 1 13 14.92V18h3v2H8v-2h3v-3.08A5.98 5.98 0 0 1 9.2 12H9A5 5 0 0 1 4 7V5a1 1 0 0 1 1-1h2Zm0 2H6v1a3 3 0 0 0 3 3h.08A6.02 6.02 0 0 1 7 6Zm10 0a6.02 6.02 0 0 1-2.08 4H15a3 3 0 0 0 3-3V6h-1Z',
+  'fa-shield-alt': 'M12 2 4 5v5c0 5.25 3.4 10.17 8 12 4.6-1.83 8-6.75 8-12V5l-8-3Zm0 3.13 5 1.88v3c0 3.98-2.45 7.82-5 9.4-2.55-1.58-5-5.42-5-9.4v-3l5-1.88Z',
+  'fa-server': 'M4 4h16a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 9h16a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2Zm3-6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Zm0 9a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z',
+  'fa-chart-line': 'M4 19h16v2H2V4h2v15Zm2-3.5 4.5-4.5 2.5 2.5 5-6 1.5 1.25-6.4 7.7-2.6-2.6L7.4 17 6 15.5Z',
+  'fa-cloud': 'M18.5 19h-11a4.5 4.5 0 0 1-.55-8.97A6.5 6.5 0 0 1 19 8.75 4.25 4.25 0 1 1 18.5 19Z',
+  'fa-database': 'M12 3c-4.97 0-9 1.34-9 3s4.03 3 9 3 9-1.34 9-3-4.03-3-9-3Zm-9 7v4c0 1.66 4.03 3 9 3s9-1.34 9-3v-4c-2 1.4-5.67 2-9 2s-7-.6-9-2Zm0 6v4c0 1.66 4.03 3 9 3s9-1.34 9-3v-4c-2 1.4-5.67 2-9 2s-7-.6-9-2Z',
+  'fa-map-marker-alt': 'M12 2a6 6 0 0 0-6 6c0 4.2 6 12 6 12s6-7.8 6-12a6 6 0 0 0-6-6Zm0 8.5A2.5 2.5 0 1 1 12 5a2.5 2.5 0 0 1 0 5.5Z',
+  'fa-euro-sign': 'M14.9 5.3A5.5 5.5 0 0 0 8.7 8H6v2h2.1c-.04.33-.06.66-.06 1s.02.67.06 1H6v2h2.7a5.5 5.5 0 0 0 6.2 2.7l-.5-1.94A3.5 3.5 0 0 1 10.8 14h4.2v-2h-4.8a4.7 4.7 0 0 1 0-2H15V8h-4.2a3.5 3.5 0 0 1 3.6-.76l.5-1.94Z',
+  'fa-users': 'M9 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm7 1a3 3 0 1 1 0-6 3 3 0 0 1 0 6ZM3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1H3Zm13.5 0v-.5a5.5 5.5 0 0 0-2.1-4.33A4.96 4.96 0 0 1 21 20h-4.5Z',
+  'fa-envelope': 'M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm0 2v.2l9 6.3 9-6.3V7l-9 6.3L3 7Zm18 10V9.64l-8.43 5.9a1 1 0 0 1-1.14 0L3 9.64V17h18Z',
+  'fa-download': 'M11 3h2v9.17l3.59-3.58L18 10l-6 6-6-6 1.41-1.41L11 12.17V3Zm-7 15h16v2H4v-2Z',
+  'fa-award': 'M12 2a5 5 0 0 1 5 5c0 1.2-.43 2.3-1.14 3.14L18 22l-6-2-6 2 2.14-11.86A4.98 4.98 0 0 1 7 7a5 5 0 0 1 5-5Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z',
+  'fa-crown': 'M3 18h18l-1 3H4l-1-3Zm1-10 4.5 4L12 6l3.5 6L20 8l1 8H3l1-8Z',
+  'fa-lock': 'M7 10V8a5 5 0 0 1 10 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1Zm2 0h6V8a3 3 0 1 0-6 0v2Z',
+  'fa-star': 'm12 2.5 2.94 5.96 6.58.96-4.76 4.64 1.12 6.56L12 17.48 6.12 20.62l1.12-6.56L2.48 9.42l6.58-.96L12 2.5Z',
+  'fa-chevron-down': 'm6 9 6 6 6-6',
+  'fa-users-cog': 'M9 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm-6 9v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 4.22 2.32 5.5 5.5 0 0 0-.97 1.23A2.99 2.99 0 0 0 12 20H3Zm14.94-8.56-.5 1.06a4 4 0 0 1 .44.76l1.16.18.35 1.88-1.02.6a4 4 0 0 1-.03.88l.97.67-.48 1.84-1.18.05a4 4 0 0 1-.58.67l.29 1.14-1.7.86-.85-.82a4 4 0 0 1-.86-.02l-.79.88-1.74-.78.2-1.16a4 4 0 0 1-.64-.62l-1.18.03-.4-1.86 1-.64a4 4 0 0 1 0-.88l-1.02-.61.37-1.87 1.16-.16a4 4 0 0 1 .47-.74l-.46-1.07 1.54-1.13.94.7a4 4 0 0 1 .84-.18l.57-1.04 1.9.2.34 1.14c.28.09.54.22.79.37l1-.62 1.48 1.2Zm-3.09 2.06a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z',
+  'fa-paper-plane': 'M3 11.5 21 3l-4.5 18-4.7-6.3L3 11.5Zm8.1 1.5 3.14 4.2L17 6.4 6.25 11.47 11.1 13Z',
+  'fa-info-circle': 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 4a1.25 1.25 0 1 1 0 2.5A1.25 1.25 0 0 1 12 6Zm1.5 11h-3v-1.5H11v-4h-1V10h2.5v5.5h1V17Z',
+  'fa-user-tie': 'M12 2a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm-5 18v-1a5 5 0 0 1 5-5 5 5 0 0 1 5 5v1H7Zm4-9h2l1.2 1.5L12 17l-2.2-4.5L11 11Z',
+  'fa-calendar-alt': 'M7 2h2v2h6V2h2v2h3a1 1 0 0 1 1 1v15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a1 1 0 0 1 1-1h3V2Zm12 8H5v10h14V10ZM5 8h14V6H5v2Z',
+  'fa-check': 'm5 12 4 4 10-10',
+  'fa-check-circle': 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.1 13.6L7.3 12l1.4-1.4 2.2 2.2 4.4-4.4 1.4 1.4-5.8 5.8Z',
+  'fa-bars': 'M4 7h16M4 12h16M4 17h16',
+  'fa-times': 'm6 6 12 12M18 6 6 18'
+});
+
+const FILLED_ICON_NAMES = new Set([
+  'fa-linkedin-in', 'fa-github', 'fa-globe', 'fa-trophy', 'fa-shield-alt',
+  'fa-server', 'fa-chart-line', 'fa-cloud', 'fa-database', 'fa-map-marker-alt',
+  'fa-euro-sign', 'fa-users', 'fa-envelope', 'fa-download', 'fa-award',
+  'fa-crown', 'fa-lock', 'fa-star', 'fa-users-cog', 'fa-paper-plane',
+  'fa-info-circle', 'fa-user-tie', 'fa-calendar-alt', 'fa-check-circle'
+]);
+
 let currentLanguage = DEFAULT_LANG;
 let closeMobileMenuRef = null;
+let revealObserver = null;
 
 function byId(id) {
   return document.getElementById(id);
@@ -264,10 +64,78 @@ function prefersReducedMotion() {
   return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-function revealAosContent() {
-  document.querySelectorAll('[data-aos]').forEach((node) => {
-    node.classList.add('aos-animate');
+function renderIconSvg(iconName, className, decorative) {
+  const path = ICON_PATHS[iconName];
+  if (!path) return '';
+
+  const vector = FILLED_ICON_NAMES.has(iconName)
+    ? `<path d="${path}" fill="currentColor"></path>`
+    : `<path d="${path}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>`;
+
+  return `<svg class="icon ${className || ''}" viewBox="0 0 24 24"${decorative ? ' aria-hidden="true"' : ''} focusable="false">${vector}</svg>`;
+}
+
+function extractIconName(className) {
+  return className.split(/\s+/).find((token) => token.startsWith('fa-') && token !== 'fas' && token !== 'fab' && token !== 'far') || '';
+}
+
+function upgradeLegacyIcons() {
+  document.querySelectorAll('i').forEach((node) => {
+    const className = node.getAttribute('class') || '';
+    const iconName = extractIconName(className);
+    if (!iconName) return;
+
+    const remainingClasses = className
+      .split(/\s+/)
+      .filter((token) => token && !token.startsWith('fa'))
+      .join(' ');
+
+    const wrapper = document.createElement('span');
+    wrapper.innerHTML = renderIconSvg(iconName, remainingClasses, node.getAttribute('aria-hidden') === 'true' || !node.hasAttribute('aria-label'));
+    const svg = wrapper.firstElementChild;
+    if (!svg) return;
+    if (node.getAttribute('aria-label')) svg.setAttribute('aria-label', node.getAttribute('aria-label'));
+    node.replaceWith(svg);
   });
+}
+
+function applyRevealState(node, visible) {
+  node.classList.add('reveal');
+  node.classList.add(`reveal-${node.getAttribute('data-aos') || 'fade-up'}`);
+  if (visible) {
+    node.classList.add('is-visible');
+  } else {
+    node.classList.remove('is-visible');
+  }
+}
+
+function setupRevealAnimations() {
+  const nodes = Array.from(document.querySelectorAll('[data-aos]'));
+  if (!nodes.length) return;
+
+  if (revealObserver) {
+    revealObserver.disconnect();
+    revealObserver = null;
+  }
+
+  const revealImmediately = getProtocol() === 'file:' || prefersReducedMotion() || typeof IntersectionObserver === 'undefined';
+  nodes.forEach((node) => {
+    const delay = Number(node.getAttribute('data-aos-delay') || '0');
+    node.style.transitionDelay = `${delay}ms`;
+    applyRevealState(node, revealImmediately);
+  });
+
+  if (revealImmediately) return;
+
+  revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      applyRevealState(entry.target, true);
+      revealObserver.unobserve(entry.target);
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  nodes.forEach((node) => revealObserver.observe(node));
 }
 
 function setText(id, value) {
@@ -280,10 +148,26 @@ function setHtml(id, value) {
   if (node) node.innerHTML = value;
 }
 
-function markDecorativeIcons() {
-  document.querySelectorAll('i:not([aria-label])').forEach((icon) => {
-    icon.setAttribute('aria-hidden', 'true');
-  });
+function setButtonContent(id, iconName, text) {
+  const node = byId(id);
+  if (!node) return;
+  node.innerHTML = `${renderIconSvg(iconName, 'mr-2', true)}${text}`;
+}
+
+function setInlineIconText(id, iconName, text) {
+  const node = byId(id);
+  if (!node) return;
+  node.innerHTML = `${renderIconSvg(iconName, 'mr-2', true)}${text}`;
+}
+
+function getSelectedCvFile() {
+  return CV_FILES[currentLanguage] || CV_FILES[DEFAULT_LANG];
+}
+
+function getCurrentBadgeLabel() {
+  if (currentLanguage === 'es') return 'Actual';
+  if (currentLanguage === 'it') return 'In corso';
+  return 'Current';
 }
 
 function onReady(callback) {
@@ -439,64 +323,48 @@ function renderProfileText(content) {
 
   const footerOpportunity = byId('footer-opportunity');
   if (footerOpportunity) {
-    footerOpportunity.innerHTML = `<i class="fas fa-user-tie mr-2" aria-hidden="true"></i>${profile.footerOpportunity}`;
+    footerOpportunity.innerHTML = `${renderIconSvg('fa-user-tie', 'mr-2', true)}${profile.footerOpportunity}`;
   }
 }
 
 function renderStaticText(content) {
   const text = content.staticText;
+  const selectedCvFile = getSelectedCvFile();
 
-  const heroMailButton = document.querySelector('#home a[href^="mailto:"]');
-  if (heroMailButton) heroMailButton.innerHTML = '<i class="fas fa-envelope mr-2" aria-hidden="true"></i>' + text.heroContactButton;
+  setButtonContent('hero-contact-button', 'fa-envelope', text.heroContactButton);
 
-  const selectedCvFile = CV_FILES[currentLanguage] || CV_FILES[DEFAULT_LANG];
-
-  const heroDownloadButton = document.querySelector('#home a[href$=".pdf"]');
+  const heroDownloadButton = byId('hero-download-button');
   if (heroDownloadButton) {
-    heroDownloadButton.innerHTML = '<i class="fas fa-download mr-2" aria-hidden="true"></i>' + text.heroDownloadButton;
+    setButtonContent('hero-download-button', 'fa-download', text.heroDownloadButton);
     heroDownloadButton.setAttribute('href', selectedCvFile);
   }
 
   setHtml('about-heading', text.aboutHeading);
-  const aboutDownloadButton = document.querySelector('#about a[href$=".pdf"]');
+  const aboutDownloadButton = byId('about-download-button');
   if (aboutDownloadButton) {
-    aboutDownloadButton.innerHTML = '<i class="fas fa-download mr-2" aria-hidden="true"></i>' + text.aboutDownloadButton;
+    setButtonContent('about-download-button', 'fa-download', text.aboutDownloadButton);
     aboutDownloadButton.setAttribute('href', selectedCvFile);
   }
 
-  const aboutYearsLabel = document.querySelector('#about-years-value + div');
-  if (aboutYearsLabel) aboutYearsLabel.textContent = text.aboutYearsLabel;
+  setText('about-years-label', text.aboutYearsLabel);
 
   setHtml('experience-heading', text.experienceHeading);
-  const experienceSubtitle = document.querySelector('#experience .text-center p');
-  if (experienceSubtitle) experienceSubtitle.textContent = text.experienceSubtitle;
+  setText('experience-subtitle', text.experienceSubtitle);
 
   setHtml('achievements-heading', text.achievementsHeading);
-  const achievementsSubtitle = document.querySelector('#achievements .text-center p');
-  if (achievementsSubtitle) achievementsSubtitle.textContent = text.achievementsSubtitle;
+  setText('achievements-subtitle', text.achievementsSubtitle);
 
   setHtml('skills-heading', text.skillsHeading);
-  const skillsSubtitle = document.querySelector('#skills .text-center p');
-  if (skillsSubtitle) skillsSubtitle.textContent = text.skillsSubtitle;
+  setText('skills-subtitle', text.skillsSubtitle);
 
-  const competenciesHeading = document.querySelector('#skills .mt-16 h3');
-  if (competenciesHeading) competenciesHeading.textContent = text.competenciesHeading;
+  setText('competencies-heading', text.competenciesHeading);
 
   setHtml('contact-heading', text.contactHeading);
-  const contactIntro = document.querySelector('#contact .grid > div:first-child > p');
-  if (contactIntro) contactIntro.textContent = text.contactIntro;
-
-  const emailLabel = document.querySelector('#contact .group p.text-sm.text-soft-text');
-  if (emailLabel) emailLabel.textContent = text.contactEmailLabel;
-
-  const locationLabel = document.querySelector('#contact .group:nth-of-type(2) p.text-sm.text-soft-text');
-  if (locationLabel) locationLabel.textContent = text.contactLocationLabel;
-
-  const socialLabel = document.querySelector('#contact .mt-10 p.text-sm');
-  if (socialLabel) socialLabel.textContent = text.contactSocialLabel;
-
-  const contactFormHeading = document.querySelector('#contact-form').parentElement.querySelector('h3');
-  if (contactFormHeading) contactFormHeading.textContent = text.contactFormHeading;
+  setText('contact-intro', text.contactIntro);
+  setText('contact-email-label', text.contactEmailLabel);
+  setText('contact-location-label', text.contactLocationLabel);
+  setText('contact-social-label', text.contactSocialLabel);
+  setText('contact-form-heading', text.contactFormHeading);
 
   const nameLabel = document.querySelector('label[for="contact-name"]');
   const emailInputLabel = document.querySelector('label[for="contact-email"]');
@@ -512,16 +380,11 @@ function renderStaticText(content) {
   if (emailInput) emailInput.placeholder = text.contactEmailPlaceholder;
   if (messageInput) messageInput.placeholder = text.contactMessagePlaceholder;
 
-  const submit = document.querySelector('#contact-form button[type="submit"]');
-  if (submit) submit.innerHTML = '<i class="fas fa-paper-plane mr-2" aria-hidden="true"></i>' + text.contactSubmit;
+  setButtonContent('contact-submit-button', 'fa-paper-plane', text.contactSubmit);
 
-  const infoBox = byId('form-success');
-  if (infoBox) infoBox.innerHTML = '<i class="fas fa-info-circle mr-2" aria-hidden="true"></i>' + text.contactInfo;
+  setInlineIconText('form-success', 'fa-info-circle', text.contactInfo);
 
-  const footerReferences = byId('footer-references');
-  if (footerReferences) {
-    footerReferences.innerHTML = '<i class="fas fa-info-circle mr-2" aria-hidden="true"></i>' + text.footerReferences;
-  }
+  setInlineIconText('footer-references', 'fa-info-circle', text.footerReferences);
 
   const footerUpdatedLabel = byId('footer-updated-label');
   if (footerUpdatedLabel) {
@@ -541,7 +404,7 @@ function renderExperienceTimeline(content) {
     const borderClass = item.current ? 'border-l-4 border-accent' : (isRight ? 'border-l-4 border-secondary lg:border-l-0 lg:border-r-4' : 'border-l-4 border-secondary');
     const dotClass = item.current ? 'bg-accent' : 'bg-secondary';
 
-    const currentBadge = item.current ? (currentLanguage === 'es' ? 'Actual' : (currentLanguage === 'it' ? 'In corso' : 'Current')) : '';
+    const currentBadge = item.current ? getCurrentBadgeLabel() : '';
     const headerBlock = (
       '<div class="lg:text-right lg:pr-12 mb-4 lg:mb-0">' +
       (item.current ? `<div class="inline-block bg-accent text-white px-4 py-1 rounded-full text-sm font-semibold mb-2">${currentBadge}</div>` : '') +
@@ -759,15 +622,6 @@ function setupSmoothScroll() {
   });
 }
 
-function initAOS() {
-  if (getProtocol() === 'file:' || typeof AOS === 'undefined' || prefersReducedMotion()) {
-    revealAosContent();
-    return;
-  }
-
-  AOS.init({ duration: 800, once: true, offset: 100 });
-}
-
 function renderAll() {
   const content = I18N[currentLanguage] || I18N[DEFAULT_LANG];
   applyDocumentMetadata(content);
@@ -781,11 +635,8 @@ function renderAll() {
   renderCompetencies(content);
   setCurrentDate(content.locale);
   setupContactForm(content);
-  markDecorativeIcons();
-
-  if (typeof AOS !== 'undefined' && typeof AOS.refreshHard === 'function') {
-    AOS.refreshHard();
-  }
+  upgradeLegacyIcons();
+  setupRevealAnimations();
 }
 
 function bootstrap() {
@@ -795,12 +646,10 @@ function bootstrap() {
     setupNavbarScroll();
     setupMobileMenu();
     setupSmoothScroll();
-    initAOS();
   } catch (error) {
     console.error('Site bootstrap failed:', error);
     currentLanguage = DEFAULT_LANG;
     renderAll();
-    revealAosContent();
   }
 }
 

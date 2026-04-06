@@ -9,20 +9,11 @@
     
     <title>Carlos Fernández San Millán | Head of ICT & Acting CIO</title>
 
-    <script>
-        if (window.location && window.location.protocol === 'file:') {
-            document.documentElement.classList.add('file-protocol');
-        } else {
-            document.write('<link rel="stylesheet" href="assets/vendor/aos/aos.css?v=20260407aoshttp1">');
-        }
-    </script>
-    
     <!-- Preload critical resources -->
-    <link rel="preload" href="./photo.jpg" as="image">
+    <link rel="preload" href="./photo.webp" as="image" type="image/webp">
     
     <link rel="stylesheet" href="assets/css/tailwind.css?v=20260407tailwindfirefox2">
-    <link rel="stylesheet" href="assets/vendor/fontawesome/css/all.min.css?v=20260313localfa1">
-    <link rel="stylesheet" href="assets/css/styles.css?v=20260407filefix1">
+    <link rel="stylesheet" href="assets/css/styles.css?v=20260407contentfonts1">
 </head>
 <body class="font-sans antialiased text-slate-800 bg-light-bg">
     <a href="#main-content" class="skip-link">
@@ -84,7 +75,7 @@
             <div data-aos="fade-right" data-aos-duration="1000">
                 <div class="inline-flex items-center px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-6">
                     <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse mr-2"></span>
-                    <span id="availability-text" class="text-white/90 text-sm font-medium">Available for Executive & Advisory Opportunities</span>
+                    <span id="availability-text" class="text-white/90 text-sm font-semibold">Available for Executive & Advisory Opportunities</span>
                 </div>
                 
                 <h1 class="display-font text-5xl md:text-7xl font-bold text-white mb-4 tracking-tight">
@@ -118,12 +109,12 @@
                 </div>
                 
                 <div class="flex flex-wrap gap-4">
-                    <a href="mailto:carlos.fernandez.san.millan@gmail.com" 
+                    <a id="hero-contact-button" href="mailto:carlos.fernandez.san.millan@gmail.com" 
                        class="inline-flex items-center px-8 py-4 bg-accent hover:bg-accent-light text-white font-semibold rounded-full transition-all transform hover:scale-105 shadow-lg hover:shadow-accent/50">
                             <i class="fas fa-envelope mr-2" aria-hidden="true"></i>
                             Get In Touch
                         </a>
-                    <a href="carlos-fernandez-san-millan-en.pdf" 
+                    <a id="hero-download-button" href="carlos-fernandez-san-millan-en.pdf" 
                        class="inline-flex items-center px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-full transition-all border border-white/30 backdrop-blur-sm">
                         <i class="fas fa-download mr-2" aria-hidden="true"></i>
                         Download CV
@@ -143,8 +134,11 @@
                     
                     <!-- Photo Container -->
                     <div class="photo-ring relative w-80 h-80 rounded-full overflow-hidden border-4 border-accent shadow-2xl">
-                        <img src="./photo.jpg" alt="Carlos Fernández San Millán" 
-                             class="w-full h-full object-cover">
+                        <picture>
+                            <source srcset="./photo.webp" type="image/webp">
+                            <img src="./photo.jpg" alt="Carlos Fernández San Millán" fetchpriority="high"
+                                 class="w-full h-full object-cover">
+                        </picture>
                     </div>
                     
                     <!-- Badge Grid System - Positioned Around Photo -->
@@ -237,10 +231,13 @@ Example:
                 <!-- FIXED: Replaced missing about-us.png with photo.jpg -->
                 <div data-aos="fade-right">
                     <div class="relative">
-                        <img src="./photo.jpg" alt="About Carlos" class="rounded-2xl shadow-2xl w-full object-cover h-[500px]">
+                        <picture>
+                            <source srcset="./photo.webp" type="image/webp">
+                            <img src="./photo.jpg" alt="About Carlos" loading="lazy" decoding="async" class="rounded-2xl shadow-2xl w-full object-cover h-[500px]">
+                        </picture>
                         <div class="absolute -bottom-6 -right-6 bg-primary text-white p-6 rounded-2xl shadow-xl">
                             <div id="about-years-value" class="text-4xl font-bold text-accent">15+</div>
-                            <div class="text-sm text-white/80">Years Experience</div>
+                            <div id="about-years-label" class="text-sm text-white/80">Years Experience</div>
                         </div>
                     </div>
                 </div>
@@ -301,7 +298,7 @@ Example:
                         </div>
                     </div>
                     
-                    <a href="carlos-fernandez-san-millan-en.pdf" 
+                    <a id="about-download-button" href="carlos-fernandez-san-millan-en.pdf" 
                        class="inline-flex items-center px-6 py-3 bg-primary hover:bg-secondary text-white font-semibold rounded-lg transition-all">
                         <i class="fas fa-download mr-2"></i>
                         Download CV
@@ -318,7 +315,7 @@ Example:
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16" data-aos="fade-up">
                 <h2 id="experience-heading" class="section-display text-4xl font-bold text-primary mb-4">Professional <span class="text-accent">Experience</span></h2>
-                <p class="text-lg text-soft-text max-w-2xl mx-auto">
+                <p id="experience-subtitle" class="text-lg text-soft-text max-w-2xl mx-auto">
                     A track record of leadership in world-class research institutions and enterprise environments.
                 </p>
             </div>
@@ -345,7 +342,7 @@ Example:
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16" data-aos="fade-up">
                 <h2 id="achievements-heading" class="section-display text-4xl font-bold text-white mb-4">Key Strategic <span class="text-accent">Achievements</span></h2>
-                <p class="text-lg text-white/70 max-w-2xl mx-auto">
+                <p id="achievements-subtitle" class="text-lg text-white/70 max-w-2xl mx-auto">
                     Measurable impact across digital transformation, cybersecurity, and financial optimization.
                 </p>
             </div>
@@ -359,7 +356,7 @@ Example:
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16" data-aos="fade-up">
                 <h2 id="skills-heading" class="section-display text-4xl font-bold text-primary mb-4">Technology <span class="text-accent">Landscape</span></h2>
-                <p class="text-lg text-soft-text max-w-2xl mx-auto">
+                <p id="skills-subtitle" class="text-lg text-soft-text max-w-2xl mx-auto">
                     Expertise across infrastructure, cloud, storage, security, and operations.
                 </p>
             </div>
@@ -368,7 +365,7 @@ Example:
             
             <!-- Core Competencies Tags -->
             <div class="mt-16" data-aos="fade-up">
-                <h3 class="text-2xl font-bold text-primary text-center mb-8">Core Competencies</h3>
+                <h3 id="competencies-heading" class="text-2xl font-bold text-primary text-center mb-8">Core Competencies</h3>
                 <div id="competencies-tags" role="list" class="flex flex-wrap justify-center gap-3"></div>
             </div>
         </div>
@@ -380,7 +377,7 @@ Example:
             <div class="grid lg:grid-cols-2 gap-16">
                 <div data-aos="fade-right">
                     <h2 id="contact-heading" class="section-display text-4xl font-bold text-primary mb-6">Let's <span class="text-accent">Connect</span></h2>
-                    <p class="text-lg text-soft-text mb-8 leading-relaxed">
+                    <p id="contact-intro" class="text-lg text-soft-text mb-8 leading-relaxed">
                         I'm always interested in hearing about new projects, opportunities, and challenges in the technology leadership space.
                     </p>
                     
@@ -390,7 +387,7 @@ Example:
                                 <i class="fas fa-envelope text-xl text-primary group-hover:text-white transition-colors" aria-hidden="true"></i>
                             </div>
                             <div>
-                                <p class="text-sm text-soft-text">Email</p>
+                                <p id="contact-email-label" class="text-sm text-soft-text">Email</p>
                                 <a href="mailto:carlos.fernandez.san.millan@gmail.com" class="text-primary font-semibold hover:text-accent transition-colors">
                                     carlos.fernandez.san.millan@gmail.com
                                 </a>
@@ -414,40 +411,40 @@ Example:
                                 <i class="fas fa-map-marker-alt text-xl text-primary group-hover:text-white transition-colors" aria-hidden="true"></i>
                             </div>
                             <div>
-                                <p class="text-sm text-soft-text">Location</p>
+                                <p id="contact-location-label" class="text-sm text-soft-text">Location</p>
                                 <p class="text-primary font-semibold">Milan, Italy</p>
                             </div>
                         </div>
                     </div>
                     
                     <div class="mt-10">
-                        <p class="text-sm text-soft-text mb-4">Connect on social media:</p>
+                        <p id="contact-social-label" class="text-sm text-soft-text mb-4">Connect on social media:</p>
                         <div id="social-links-contact" aria-label="Social links" class="flex gap-4"></div>
                     </div>
                 </div>
                 
                 <div class="bg-light-bg rounded-2xl p-8" data-aos="fade-left">
-                    <h3 class="text-2xl font-bold text-primary mb-6">Send a Message</h3>
+                    <h3 id="contact-form-heading" class="text-2xl font-bold text-primary mb-6">Send a Message</h3>
                     <form id="contact-form" novalidate class="space-y-6">
                         <div>
-                            <label for="contact-name" class="block text-sm font-medium text-soft-text mb-2">Name</label>
+                            <label for="contact-name" class="block text-sm font-semibold text-soft-text mb-2">Name</label>
                             <input id="contact-name" name="name" autocomplete="name" type="text" required 
                                    class="w-full px-4 py-3 rounded-lg border border-medium-gray focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all bg-white"
                                    placeholder="Your name">
                         </div>
                         <div>
-                            <label for="contact-email" class="block text-sm font-medium text-soft-text mb-2">Email</label>
+                            <label for="contact-email" class="block text-sm font-semibold text-soft-text mb-2">Email</label>
                             <input id="contact-email" name="email" autocomplete="email" type="email" required 
                                    class="w-full px-4 py-3 rounded-lg border border-medium-gray focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all bg-white"
                                    placeholder="your@email.com">
                         </div>
                         <div>
-                            <label for="contact-message" class="block text-sm font-medium text-soft-text mb-2">Message</label>
+                            <label for="contact-message" class="block text-sm font-semibold text-soft-text mb-2">Message</label>
                             <textarea id="contact-message" name="message" rows="4" required 
                                       class="w-full px-4 py-3 rounded-lg border border-medium-gray focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-all bg-white resize-none"
                                       placeholder="Your message..."></textarea>
                         </div>
-                        <button type="submit" 
+                        <button id="contact-submit-button" type="submit" 
                                 class="w-full py-4 bg-accent hover:bg-accent-light text-white font-semibold rounded-lg transition-all transform hover:scale-[1.02] shadow-lg hover:shadow-accent/50">
                             <i class="fas fa-paper-plane mr-2" aria-hidden="true"></i>
                             Open Email Draft
@@ -490,11 +487,7 @@ Example:
     </footer>
 
     <!-- Scripts -->
-    <script>
-        if (!(window.location && window.location.protocol === 'file:')) {
-            document.write('<script src="assets/vendor/aos/aos.js?v=20260407aoshttp1" defer><\/script>');
-        }
-    </script>
-    <script src="assets/js/main.js?v=20260407navsize1" defer></script>
+    <script src="assets/js/site-content.js?v=20260407content1" defer></script>
+    <script src="assets/js/main.js?v=20260407content1" defer></script>
 </body>
 </html>

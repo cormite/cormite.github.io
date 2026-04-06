@@ -2,7 +2,7 @@
   "name": "cormite-github-io",
   "private": true,
   "scripts": {
-    "build:css": "tailwindcss -c tailwind.config.cjs -i ./assets/css/tailwind.input.css -o ./assets/css/tailwind.css --minify",
+    "build:css": "tailwindcss -c tailwind.config.cjs -i ./assets/css/tailwind.input.css -o ./assets/css/tailwind.css --minify && node ./scripts/postbuild-css.mjs",
     "watch:css": "tailwindcss -c tailwind.config.cjs -i ./assets/css/tailwind.input.css -o ./assets/css/tailwind.css --watch"
   },
   "overrides": {
@@ -25,11 +25,5 @@
   "devDependencies": {
     "playwright": "^1.58.2",
     "tailwindcss": "^3.4.17"
-  },
-  "dependencies": {
-    "@fontsource/cormorant-garamond": "^5.2.11",
-    "@fontsource/eb-garamond": "^5.2.7",
-    "@fortawesome/fontawesome-free": "^7.2.0",
-    "aos": "^2.3.4"
   }
 }
