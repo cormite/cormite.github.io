@@ -101,22 +101,10 @@ select {
   letter-spacing: 0.02em;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: #0B1B3D;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #8A6508;
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #9D7410;
+html.file-protocol [data-aos] {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
 }
 
 /* Smooth Scroll */

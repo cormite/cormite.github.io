@@ -8,14 +8,21 @@
     <meta name="author" content="Carlos Fernández San Millán">
     
     <title>Carlos Fernández San Millán | Head of ICT & Acting CIO</title>
+
+    <script>
+        if (window.location && window.location.protocol === 'file:') {
+            document.documentElement.classList.add('file-protocol');
+        } else {
+            document.write('<link rel="stylesheet" href="assets/vendor/aos/aos.css?v=20260407aoshttp1">');
+        }
+    </script>
     
     <!-- Preload critical resources -->
     <link rel="preload" href="./photo.jpg" as="image">
     
-    <link rel="stylesheet" href="assets/css/tailwind.css?v=20260313tailwindlocal1">
+    <link rel="stylesheet" href="assets/css/tailwind.css?v=20260407tailwindfirefox1">
     <link rel="stylesheet" href="assets/vendor/fontawesome/css/all.min.css?v=20260313localfa1">
-    <link rel="stylesheet" href="assets/vendor/aos/aos.css?v=20260313localaos1">
-    <link rel="stylesheet" href="assets/css/styles.css?v=20260407typography1">
+    <link rel="stylesheet" href="assets/css/styles.css?v=20260407filefix1">
 </head>
 <body class="font-sans antialiased text-slate-800 bg-light-bg">
     <a href="#main-content" class="skip-link">
@@ -483,7 +490,11 @@ Example:
     </footer>
 
     <!-- Scripts -->
-    <script src="assets/vendor/aos/aos.js?v=20260313localaos1"></script>
-    <script src="assets/js/main.js?v=20260313loadfix2" defer></script>
+    <script>
+        if (!(window.location && window.location.protocol === 'file:')) {
+            document.write('<script src="assets/vendor/aos/aos.js?v=20260407aoshttp1" defer><\/script>');
+        }
+    </script>
+    <script src="assets/js/main.js?v=20260407navsize1" defer></script>
 </body>
 </html>

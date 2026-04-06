@@ -247,10 +247,10 @@ const I18N = Object.freeze({
 });
 
 const CLASSNAMES = Object.freeze({
-  desktopNavItem: 'text-white hover:text-accent px-3 py-2 rounded-md text-sm font-medium transition-colors',
-  desktopNavCta: 'bg-accent hover:bg-accent-light text-white px-6 py-2 rounded-full text-sm font-medium transition-all transform hover:scale-105',
-  mobileNavItem: 'block text-white hover:text-accent py-2 text-lg',
-  mobileNavCta: 'block text-accent py-2 text-lg font-bold'
+  desktopNavItem: 'text-white hover:text-accent px-3 py-2 rounded-md text-base font-semibold transition-colors',
+  desktopNavCta: 'bg-accent hover:bg-accent-light text-white px-6 py-2.5 rounded-full text-base font-semibold transition-all transform hover:scale-105',
+  mobileNavItem: 'block text-white hover:text-accent py-2 text-xl font-semibold',
+  mobileNavCta: 'block text-accent py-2 text-xl font-bold'
 });
 
 let currentLanguage = DEFAULT_LANG;
@@ -262,6 +262,12 @@ function byId(id) {
 
 function prefersReducedMotion() {
   return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function revealAosContent() {
+  document.querySelectorAll('[data-aos]').forEach((node) => {
+    node.classList.add('aos-animate');
+  });
 }
 
 function setText(id, value) {
@@ -288,12 +294,29 @@ function onReady(callback) {
   callback();
 }
 
+function getSafeStorage() {
+  try {
+    return window.localStorage;
+  } catch (error) {
+    return null;
+  }
+}
+
+function getProtocol() {
+  try {
+    return window.location.protocol || '';
+  } catch (error) {
+    return '';
+  }
+}
+
 function detectLanguage() {
   const params = new URLSearchParams(window.location.search);
   const queryLang = params.get('lang');
   if (queryLang && LANGS.includes(queryLang)) return queryLang;
 
-  const stored = window.localStorage.getItem(LANG_STORAGE_KEY);
+  const storage = getSafeStorage();
+  const stored = storage ? storage.getItem(LANG_STORAGE_KEY) : null;
   if (stored && LANGS.includes(stored)) return stored;
 
   const browser = (navigator.language || '').slice(0, 2).toLowerCase();
@@ -303,9 +326,15 @@ function detectLanguage() {
 }
 
 function updateLanguageInUrl(lang) {
-  const url = new URL(window.location.href);
-  url.searchParams.set('lang', lang);
-  window.history.replaceState({}, '', url.toString());
+  if (getProtocol() === 'file:') return;
+
+  try {
+    const url = new URL(window.location.href);
+    url.searchParams.set('lang', lang);
+    window.history.replaceState({}, '', url.toString());
+  } catch (error) {
+    // Ignore URL/history updates in restricted contexts.
+  }
 }
 
 function applyDocumentMetadata(content) {
@@ -361,7 +390,14 @@ function renderNavigationLinks(content) {
       const lang = button.getAttribute('data-lang');
       if (!lang || lang === currentLanguage || !LANGS.includes(lang)) return;
       currentLanguage = lang;
-      window.localStorage.setItem(LANG_STORAGE_KEY, lang);
+      const storage = getSafeStorage();
+      if (storage) {
+        try {
+          storage.setItem(LANG_STORAGE_KEY, lang);
+        } catch (error) {
+          // Ignore storage writes when blocked by the browser.
+        }
+      }
       updateLanguageInUrl(lang);
       renderAll();
       if (closeMobileMenuRef) closeMobileMenuRef(false);
@@ -724,7 +760,10 @@ function setupSmoothScroll() {
 }
 
 function initAOS() {
-  if (typeof AOS === 'undefined' || prefersReducedMotion()) return;
+  if (getProtocol() === 'file:' || typeof AOS === 'undefined' || prefersReducedMotion()) {
+    revealAosContent();
+    return;
+  }
 
   AOS.init({ duration: 800, once: true, offset: 100 });
 }
@@ -750,12 +789,19 @@ function renderAll() {
 }
 
 function bootstrap() {
-  currentLanguage = detectLanguage();
-  renderAll();
-  setupNavbarScroll();
-  setupMobileMenu();
-  setupSmoothScroll();
-  initAOS();
+  try {
+    currentLanguage = detectLanguage();
+    renderAll();
+    setupNavbarScroll();
+    setupMobileMenu();
+    setupSmoothScroll();
+    initAOS();
+  } catch (error) {
+    console.error('Site bootstrap failed:', error);
+    currentLanguage = DEFAULT_LANG;
+    renderAll();
+    revealAosContent();
+  }
 }
 
 onReady(bootstrap);
