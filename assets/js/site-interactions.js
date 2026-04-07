@@ -17,6 +17,34 @@
 
   let revealObserver = null;
 
+  function trackEvent(name, params = {}) {
+    if (typeof global.gtag !== 'function') return;
+
+    global.gtag('event', name, {
+      page_language: getCurrentLanguage(),
+      ...params
+    });
+  }
+
+  function inferSocialPlatform(href) {
+    if (!href) return 'unknown';
+    if (href.includes('linkedin.com')) return 'linkedin';
+    if (href.includes('github.com')) return 'github';
+    if (href.includes('cormite.com')) return 'website';
+    return 'external';
+  }
+
+  function bindClickTracking(node, eventName, paramsFactory) {
+    if (!node || node.getAttribute('data-analytics-bound') === 'true') return;
+
+    node.addEventListener('click', () => {
+      const params = typeof paramsFactory === 'function' ? paramsFactory(node) : {};
+      trackEvent(eventName, params);
+    });
+
+    node.setAttribute('data-analytics-bound', 'true');
+  }
+
   function applyRevealState(node, visible) {
     node.classList.add('reveal');
     node.classList.add(`reveal-${node.getAttribute('data-aos') || 'fade-up'}`);
@@ -169,6 +197,12 @@ Message:
 ${message}`);
 
       const mailto = `mailto:${content.profile.contactEmail}?subject=${safeEncode(subjectText)}&body=${safeEncode(bodyPrefix)}`;
+      trackEvent('contact_email_draft_opened', {
+        method: 'contact_form',
+        has_name: Boolean(name),
+        has_email: Boolean(email),
+        has_message: Boolean(message)
+      });
       global.location.href = mailto;
       status.classList.remove('hidden');
       form.reset();
@@ -179,6 +213,36 @@ ${message}`);
     });
 
     form.setAttribute('data-bound', 'true');
+  }
+
+  function setupAnalyticsTracking() {
+    bindClickTracking(byId('hero-download-button'), 'cv_download', () => ({
+      source: 'hero',
+      file_name: byId('hero-download-button')?.getAttribute('href') || ''
+    }));
+
+    bindClickTracking(byId('about-download-button'), 'cv_download', () => ({
+      source: 'about',
+      file_name: byId('about-download-button')?.getAttribute('href') || ''
+    }));
+
+    bindClickTracking(byId('hero-contact-button'), 'contact_email_draft_opened', () => ({
+      method: 'hero_cta'
+    }));
+
+    document.querySelectorAll('.lang-btn').forEach((node) => {
+      bindClickTracking(node, 'language_switch', (target) => ({
+        target_language: target.getAttribute('data-lang') || ''
+      }));
+    });
+
+    document.querySelectorAll('#social-links-hero a, #social-links-contact a').forEach((node) => {
+      bindClickTracking(node, 'social_link_click', (target) => ({
+        platform: inferSocialPlatform(target.getAttribute('href') || ''),
+        location: target.closest('#social-links-hero') ? 'hero' : 'contact',
+        destination: target.getAttribute('href') || ''
+      }));
+    });
   }
 
   function setupSmoothScroll() {
@@ -202,6 +266,7 @@ ${message}`);
     setupNavbarScroll();
     setupMobileMenu();
     setupContactForm();
+    setupAnalyticsTracking();
     setupSmoothScroll();
   }
 
