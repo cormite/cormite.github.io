@@ -6,9 +6,9 @@
   const utils = global.__SITE_UTILS || {};
   const icons = global.__SITE_ICONS || {};
 
-  const { LANGS, DEFAULT_LANG, LANG_STORAGE_KEY, SITE_CONFIG, CV_FILES, NAV_ITEMS, SOCIAL_LINKS, I18N } = siteContent;
+  const { LANGS, DEFAULT_LANG, SITE_CONFIG, CV_FILES, NAV_ITEMS, SOCIAL_LINKS, I18N } = siteContent;
   const { CLASSNAMES, byId, setText, setHtml, setButtonContent, setInlineIconText, setInputPlaceholder, setHref, setAttr } = dom;
-  const { getSafeStorage, getProtocol } = utils;
+  const { getProtocol } = utils;
   const { renderIconSvg } = icons;
 
   const HERO_BADGE_LAYOUT = Object.freeze([
@@ -28,11 +28,11 @@
     Object.freeze({ key: 'leadership', icon: 'fa-users-cog' })
   ]);
 
-  if (!LANGS || !DEFAULT_LANG || !LANG_STORAGE_KEY || !SITE_CONFIG || !CV_FILES || !NAV_ITEMS || !SOCIAL_LINKS || !I18N) {
+  if (!LANGS || !DEFAULT_LANG || !SITE_CONFIG || !CV_FILES || !NAV_ITEMS || !SOCIAL_LINKS || !I18N) {
     throw new Error('Site content failed to load before site-render.js');
   }
 
-  if (!CLASSNAMES || !byId || !setText || !setHtml || !setButtonContent || !setInlineIconText || !setInputPlaceholder || !setHref || !setAttr || !getSafeStorage || !getProtocol || !renderIconSvg) {
+  if (!CLASSNAMES || !byId || !setText || !setHtml || !setButtonContent || !setInlineIconText || !setInputPlaceholder || !setHref || !setAttr || !getProtocol || !renderIconSvg) {
     throw new Error('site-render.js requires site-dom.js, site-utils.js, and site-icons.js');
   }
 
@@ -78,18 +78,7 @@
     const langParam = url.searchParams.get('lang');
     if (langParam && LANGS.includes(langParam)) return langParam;
 
-    const storage = getSafeStorage();
-    if (storage) {
-      try {
-        const stored = storage.getItem(LANG_STORAGE_KEY);
-        if (stored && LANGS.includes(stored)) return stored;
-      } catch (error) {
-        // Ignore blocked storage.
-      }
-    }
-
-    const browserLanguage = (navigator.language || DEFAULT_LANG).slice(0, 2).toLowerCase();
-    return LANGS.includes(browserLanguage) ? browserLanguage : DEFAULT_LANG;
+    return DEFAULT_LANG;
   }
 
   function updateLanguageInUrl() {
@@ -292,15 +281,6 @@ function applyDocumentMetadata(content) {
       link.addEventListener('click', () => {
         const lang = link.getAttribute('data-lang');
         if (!lang || !LANGS.includes(lang)) return;
-
-        const storage = getSafeStorage();
-        if (storage) {
-          try {
-            storage.setItem(LANG_STORAGE_KEY, lang);
-          } catch (error) {
-            // Ignore blocked storage writes.
-          }
-        }
 
         closeMobileMenuIfOpen();
       });
