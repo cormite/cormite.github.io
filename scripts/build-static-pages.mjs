@@ -320,6 +320,39 @@ function setAria(document, id, value) {
   if (node) node.setAttribute('aria-label', value);
 }
 
+function injectGoogleAnalytics(document, siteContent) {
+  const measurementId = siteContent.SITE_CONFIG.googleAnalyticsId;
+  if (!measurementId) return;
+
+  const existingLoader = document.querySelector('script[data-google-analytics="loader"]');
+  const existingConfig = document.querySelector('script[data-google-analytics="config"]');
+  if (existingLoader || existingConfig) return;
+
+  const loader = document.createElement('script');
+  loader.async = true;
+  loader.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+  loader.setAttribute('data-google-analytics', 'loader');
+
+  const config = document.createElement('script');
+  config.setAttribute('data-google-analytics', 'config');
+  config.textContent = [
+    'window.dataLayer = window.dataLayer || [];',
+    'function gtag(){dataLayer.push(arguments);}',
+    "gtag('js', new Date());",
+    `gtag('config', '${measurementId}');`
+  ].join('\n');
+
+  const structuredData = document.getElementById('structured-data');
+  if (structuredData && structuredData.parentNode) {
+    structuredData.insertAdjacentElement('afterend', loader);
+    loader.insertAdjacentElement('afterend', config);
+    return;
+  }
+
+  document.head.appendChild(loader);
+  document.head.appendChild(config);
+}
+
 function updateAssetPaths(document, lang) {
   const prefix = relativePrefix(lang);
   if (!prefix) return;
@@ -364,6 +397,7 @@ function populateDocument(document, siteContent, lang) {
   const prefix = relativePrefix(lang);
 
   sanitizeTemplate(document);
+  injectGoogleAnalytics(document, siteContent);
 
   document.documentElement.lang = lang;
   document.title = content.meta.title;

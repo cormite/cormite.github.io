@@ -9,7 +9,8 @@ const SITE_CONFIG = Object.freeze({
   siteUrl: 'https://www.cormite.com',
   siteName: 'Carlos Fernández San Millán',
   author: 'Carlos Fernández San Millán',
-  defaultImage: 'https://www.cormite.com/photo.jpg'
+  defaultImage: 'https://www.cormite.com/photo.jpg',
+  googleAnalyticsId: 'G-6TC2GBF93J'
 });
 const CV_FILES = Object.freeze({
   en: 'carlos-fernandez-san-millan-en.pdf',
