@@ -5,6 +5,12 @@
 const LANGS = Object.freeze(['en', 'es', 'it']);
 const DEFAULT_LANG = 'en';
 const LANG_STORAGE_KEY = 'site_lang';
+const SITE_CONFIG = Object.freeze({
+  siteUrl: 'https://www.cormite.com',
+  siteName: 'Carlos Fernández San Millán',
+  author: 'Carlos Fernández San Millán',
+  defaultImage: 'https://www.cormite.com/photo.jpg'
+});
 const CV_FILES = Object.freeze({
   en: 'carlos-fernandez-san-millan-en.pdf',
   es: 'carlos-fernandez-san-millan-es.pdf',
@@ -21,9 +27,9 @@ const NAV_ITEMS = Object.freeze([
 ]);
 
 const SOCIAL_LINKS = Object.freeze([
-  Object.freeze({ href: 'https://linkedin.com/in/carlosfernandezsanmillan', iconClass: 'fab fa-linkedin-in text-xl', label: 'LinkedIn' }),
-  Object.freeze({ href: 'https://github.com/Cormite', iconClass: 'fab fa-github text-xl', label: 'GitHub' }),
-  Object.freeze({ href: 'https://www.cormite.com', iconClass: 'fas fa-globe text-xl', label: 'Website' })
+  Object.freeze({ href: 'https://linkedin.com/in/carlosfernandezsanmillan', iconClass: 'fab fa-linkedin-in text-xl', key: 'linkedin' }),
+  Object.freeze({ href: 'https://github.com/Cormite', iconClass: 'fab fa-github text-xl', key: 'github' }),
+  Object.freeze({ href: 'https://www.cormite.com', iconClass: 'fas fa-globe text-xl', key: 'website' })
 ]);
 
 const I18N = Object.freeze({
@@ -47,7 +53,22 @@ const I18N = Object.freeze({
       aboutSummary2: 'Proven track record of aligning technology strategy with institutional objectives, delivering measurable business outcomes, and building high-performing teams. Expertise spans IT governance, digital transformation, HPC/data center operations, cybersecurity frameworks, and research technology enablement.',
       footerRole: 'Technology Executive & Digital Transformation Leader',
       footerOpportunity: 'Open to on-prem and/or remote, Executive roles in Tech/Research Companies/Institutes',
-      contactEmail: 'carlos.fernandez.san.millan@gmail.com'
+      contactEmail: 'carlos.fernandez.san.millan@gmail.com',
+      badges: Object.freeze({
+        actingCio: 'Acting CIO',
+        headOfIt: 'Head of IT',
+        certifications: 'SMART, PRINCE2, ITILv4',
+        continuity: 'Business continuity',
+        infrastructure: 'Data Center<br>HPC<br>Hybrid-Cloud',
+        security: 'Cybersecurity<br>NIS2<br>GDPR<br>Compliance',
+        years: '15+ Years Experience'
+      }),
+      features: Object.freeze({
+        dataCenters: Object.freeze({ title: 'Data Centers', subtitle: 'HPC & Enterprise' }),
+        cybersecurity: Object.freeze({ title: 'Cybersecurity', subtitle: 'GDPR & Compliance' }),
+        cloud: Object.freeze({ title: 'Cloud', subtitle: 'Hybrid Architecture' }),
+        leadership: Object.freeze({ title: 'Leadership', subtitle: '25+ FTEs Managed' })
+      })
     }),
     staticText: Object.freeze({
       heroContactButton: 'Get In Touch',
@@ -77,7 +98,29 @@ const I18N = Object.freeze({
       contactSubmit: 'Open Email Draft',
       contactInfo: 'This website does not send messages directly. Your email client will open with a prefilled draft to send.',
       footerReferences: 'References available upon request',
-      footerUpdated: 'Updated:'
+      footerUpdated: 'Updated:',
+      footerCopyright: 'Carlos Fernández San Millán. All rights reserved.',
+      ui: Object.freeze({
+        skipLink: 'Skip to main content',
+        primaryNavLabel: 'Primary',
+        homeLinkLabel: 'Carlos Fernandez San Millan home',
+        openMenuLabel: 'Open navigation menu',
+        mobileNavLabel: 'Mobile navigation',
+        closeMenuLabel: 'Close navigation menu',
+        heroStatsLabel: 'Executive metrics',
+        heroBadgesLabel: 'Executive strengths',
+        socialLinksLabel: 'Social links',
+        aboutFeaturesLabel: 'Core profile highlights',
+        contactMethodsLabel: 'Primary contact methods',
+        scrollToAboutLabel: 'Scroll to About section',
+        languageSwitcherLabel: 'Language switcher',
+        currentBadgeLabel: 'Current Role',
+        socialLinkLabels: Object.freeze({
+          linkedin: 'LinkedIn',
+          github: 'GitHub',
+          website: 'Website'
+        })
+      })
     }),
     achievements: Object.freeze([
       Object.freeze({ iconClass: 'fas fa-trophy', title: 'Strategy-to-Execution Transformation', descriptionHtml: 'Converted strategy into execution at Human Technopole, delivering <span class="text-accent font-bold">30%</span> efficiency improvement and <span class="text-accent font-bold">45%</span> manual-process reduction through targeted digital modernization and automation.', delay: 0 }),
@@ -120,7 +163,22 @@ const I18N = Object.freeze({
       aboutSummary2: 'Trayectoria demostrada alineando la estrategia tecnológica con objetivos institucionales, entregando resultados medibles y construyendo equipos de alto rendimiento. Experiencia en gobierno TI, transformación digital, operaciones de HPC/data center y marcos de ciberseguridad.',
       footerRole: 'Ejecutivo Tecnológico y Líder de Transformación Digital',
       footerOpportunity: 'Disponible para roles ejecutivos presenciales y/o remotos en empresas e institutos de tecnología e investigación',
-      contactEmail: 'carlos.fernandez.san.millan@gmail.com'
+      contactEmail: 'carlos.fernandez.san.millan@gmail.com',
+      badges: Object.freeze({
+        actingCio: 'CIO en funciones',
+        headOfIt: 'Responsable de TI',
+        certifications: 'SMART, PRINCE2, ITILv4',
+        continuity: 'Continuidad de negocio',
+        infrastructure: 'Centro de Datos<br>HPC<br>Cloud Híbrido',
+        security: 'Ciberseguridad<br>NIS2<br>GDPR<br>Compliance',
+        years: '15+ años de experiencia'
+      }),
+      features: Object.freeze({
+        dataCenters: Object.freeze({ title: 'Centros de Datos', subtitle: 'HPC y Enterprise' }),
+        cybersecurity: Object.freeze({ title: 'Ciberseguridad', subtitle: 'GDPR y Compliance' }),
+        cloud: Object.freeze({ title: 'Cloud', subtitle: 'Arquitectura Híbrida' }),
+        leadership: Object.freeze({ title: 'Liderazgo', subtitle: '25+ FTE gestionados' })
+      })
     }),
     staticText: Object.freeze({
       heroContactButton: 'Contactar',
@@ -150,7 +208,29 @@ const I18N = Object.freeze({
       contactSubmit: 'Abrir borrador de correo',
       contactInfo: 'Este sitio no envía mensajes directamente. Se abrirá tu cliente de correo con un borrador precompletado.',
       footerReferences: 'Referencias disponibles bajo solicitud',
-      footerUpdated: 'Actualizado:'
+      footerUpdated: 'Actualizado:',
+      footerCopyright: 'Carlos Fernández San Millán. Todos los derechos reservados.',
+      ui: Object.freeze({
+        skipLink: 'Ir al contenido principal',
+        primaryNavLabel: 'Principal',
+        homeLinkLabel: 'Inicio de Carlos Fernández San Millán',
+        openMenuLabel: 'Abrir menú de navegación',
+        mobileNavLabel: 'Navegación móvil',
+        closeMenuLabel: 'Cerrar menú de navegación',
+        heroStatsLabel: 'Indicadores ejecutivos',
+        heroBadgesLabel: 'Fortalezas ejecutivas',
+        socialLinksLabel: 'Enlaces sociales',
+        aboutFeaturesLabel: 'Aspectos clave del perfil',
+        contactMethodsLabel: 'Métodos principales de contacto',
+        scrollToAboutLabel: 'Ir a la sección Perfil',
+        languageSwitcherLabel: 'Selector de idioma',
+        currentBadgeLabel: 'Cargo Actual',
+        socialLinkLabels: Object.freeze({
+          linkedin: 'LinkedIn',
+          github: 'GitHub',
+          website: 'Sitio web'
+        })
+      })
     }),
     achievements: Object.freeze([
       Object.freeze({ iconClass: 'fas fa-trophy', title: 'Transformación de estrategia a ejecución', descriptionHtml: 'Convertí estrategia en ejecución en Human Technopole, logrando <span class="text-accent font-bold">30%</span> de mejora de eficiencia y <span class="text-accent font-bold">45%</span> de reducción de procesos manuales mediante modernización digital y automatización.', delay: 0 }),
@@ -193,7 +273,22 @@ const I18N = Object.freeze({
       aboutSummary2: 'Track record consolidato nell\'allineare la strategia tecnologica agli obiettivi istituzionali, generando risultati misurabili e costruendo team ad alte prestazioni. Competenze su governance IT, trasformazione digitale, operations HPC/data center e cybersecurity.',
       footerRole: 'Technology Executive & Digital Transformation Leader',
       footerOpportunity: 'Disponibile per ruoli executive on-site e/o remote in aziende e istituti tech/research',
-      contactEmail: 'carlos.fernandez.san.millan@gmail.com'
+      contactEmail: 'carlos.fernandez.san.millan@gmail.com',
+      badges: Object.freeze({
+        actingCio: 'CIO ad interim',
+        headOfIt: 'Responsabile IT',
+        certifications: 'SMART, PRINCE2, ITILv4',
+        continuity: 'Business continuity',
+        infrastructure: 'Data Center<br>HPC<br>Hybrid Cloud',
+        security: 'Cybersecurity<br>NIS2<br>GDPR<br>Compliance',
+        years: '15+ anni di esperienza'
+      }),
+      features: Object.freeze({
+        dataCenters: Object.freeze({ title: 'Data Center', subtitle: 'HPC & Enterprise' }),
+        cybersecurity: Object.freeze({ title: 'Cybersecurity', subtitle: 'GDPR & Compliance' }),
+        cloud: Object.freeze({ title: 'Cloud', subtitle: 'Architettura Ibrida' }),
+        leadership: Object.freeze({ title: 'Leadership', subtitle: '25+ FTE gestiti' })
+      })
     }),
     staticText: Object.freeze({
       heroContactButton: 'Contattami',
@@ -223,7 +318,29 @@ const I18N = Object.freeze({
       contactSubmit: 'Apri bozza email',
       contactInfo: 'Questo sito non invia messaggi direttamente. Si aprirà il client email con una bozza precompilata.',
       footerReferences: 'Referenze disponibili su richiesta',
-      footerUpdated: 'Aggiornato:'
+      footerUpdated: 'Aggiornato:',
+      footerCopyright: 'Carlos Fernández San Millán. Tutti i diritti riservati.',
+      ui: Object.freeze({
+        skipLink: 'Vai al contenuto principale',
+        primaryNavLabel: 'Principale',
+        homeLinkLabel: 'Home di Carlos Fernández San Millán',
+        openMenuLabel: 'Apri menu di navigazione',
+        mobileNavLabel: 'Navigazione mobile',
+        closeMenuLabel: 'Chiudi menu di navigazione',
+        heroStatsLabel: 'Metriche executive',
+        heroBadgesLabel: 'Punti di forza executive',
+        socialLinksLabel: 'Link social',
+        aboutFeaturesLabel: 'Punti chiave del profilo',
+        contactMethodsLabel: 'Principali metodi di contatto',
+        scrollToAboutLabel: 'Vai alla sezione Profilo',
+        languageSwitcherLabel: 'Selettore lingua',
+        currentBadgeLabel: 'Ruolo Attuale',
+        socialLinkLabels: Object.freeze({
+          linkedin: 'LinkedIn',
+          github: 'GitHub',
+          website: 'Sito web'
+        })
+      })
     }),
     achievements: Object.freeze([
       Object.freeze({ iconClass: 'fas fa-trophy', title: 'Trasformazione da strategia a esecuzione', descriptionHtml: 'Trasformata la strategia in esecuzione in Human Technopole, con <span class="text-accent font-bold">30%</span> di miglioramento dell\'efficienza e <span class="text-accent font-bold">45%</span> di riduzione dei processi manuali tramite modernizzazione digitale e automazione.', delay: 0 }),
@@ -253,6 +370,7 @@ global.__SITE_CONTENT = Object.freeze({
   LANGS,
   DEFAULT_LANG,
   LANG_STORAGE_KEY,
+  SITE_CONFIG,
   CV_FILES,
   NAV_ITEMS,
   SOCIAL_LINKS,
