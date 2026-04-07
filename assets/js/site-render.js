@@ -65,8 +65,16 @@
     return content.staticText.ui.currentBadgeLabel;
   }
 
+  function getPathForLanguage(lang) {
+    if (lang === DEFAULT_LANG) return '/';
+    return `/${lang}/`;
+  }
+
   function detectLanguage() {
     const url = new URL(global.location.href);
+    const pathMatch = url.pathname.match(/^\/(es|it)(?:\/|$)/i);
+    if (pathMatch) return pathMatch[1].toLowerCase();
+
     const langParam = url.searchParams.get('lang');
     if (langParam && LANGS.includes(langParam)) return langParam;
 
@@ -84,18 +92,33 @@
     return LANGS.includes(browserLanguage) ? browserLanguage : DEFAULT_LANG;
   }
 
-  function updateLanguageInUrl(lang) {
-    if (getProtocol() === 'file:') return;
-    const url = new URL(global.location.href);
-    url.searchParams.set('lang', lang);
-    global.history.replaceState({}, '', url.toString());
+  function updateLanguageInUrl() {
+    // Static localized pages own the canonical URL.
   }
 
+  function getLanguageUrl(lang) {
+    return `${SITE_CONFIG.siteUrl}${getPathForLanguage(lang)}`;
+  }
 
-function getLanguageUrl(lang) {
-  if (lang === DEFAULT_LANG) return `${SITE_CONFIG.siteUrl}/`;
-  return `${SITE_CONFIG.siteUrl}/?lang=${lang}`;
-}
+  function getLanguageHref(lang) {
+    const protocol = getProtocol();
+
+    if (protocol === 'file:') {
+      const pathname = global.location.pathname || '';
+      const isNestedLanguagePage = /\/(es|it)\/index\.html$/i.test(pathname);
+
+      if (isNestedLanguagePage) {
+        if (lang === DEFAULT_LANG) return '../index.html';
+        const currentMatch = pathname.match(/\/(es|it)\/index\.html$/i);
+        const currentPathLang = currentMatch ? currentMatch[1].toLowerCase() : DEFAULT_LANG;
+        return currentPathLang === lang ? './index.html' : `../${lang}/index.html`;
+      }
+
+      return lang === DEFAULT_LANG ? './index.html' : `./${lang}/index.html`;
+    }
+
+    return getPathForLanguage(lang);
+  }
 
 function setMetaContent(selector, value, attributeName = 'content') {
   const node = document.querySelector(selector);
@@ -121,15 +144,35 @@ function updateAlternateLinks() {
   });
 }
 
+function collectKnowsAbout(content) {
+  const topics = new Set(content.competencies || []);
+
+  (content.skillGroups || []).forEach((group) => {
+    topics.add(group.title);
+    (group.items || []).forEach((item) => topics.add(item));
+  });
+
+  return Array.from(topics);
+}
+
 function buildStructuredData(content) {
   const sameAs = SOCIAL_LINKS.map((item) => item.href);
   const knowsLanguage = LANGS.map((lang) => I18N[lang]?.locale || lang);
+  const knowsAbout = collectKnowsAbout(content);
   const languageUrl = getLanguageUrl(currentLanguage);
+  const nowIso = new Date().toISOString();
+  const personId = `${SITE_CONFIG.siteUrl}/#person`;
+  const websiteId = `${SITE_CONFIG.siteUrl}/#website`;
+  const profileId = `${languageUrl}#profile`;
+  const orgHumanTechnopoleId = `${SITE_CONFIG.siteUrl}/#human-technopole`;
+  const orgEmblId = `${SITE_CONFIG.siteUrl}/#embl`;
+  const currentRole = content.experienceTimeline?.[0];
 
   return [
     {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
+      '@id': websiteId,
       name: SITE_CONFIG.siteName,
       url: `${SITE_CONFIG.siteUrl}/`,
       inLanguage: content.locale,
@@ -137,8 +180,25 @@ function buildStructuredData(content) {
     },
     {
       '@context': 'https://schema.org',
+      '@type': 'ProfilePage',
+      '@id': profileId,
+      url: languageUrl,
+      name: content.meta.title,
+      isPartOf: { '@id': websiteId },
+      about: { '@id': personId },
+      mainEntity: { '@id': personId },
+      primaryImageOfPage: SITE_CONFIG.defaultImage,
+      inLanguage: content.locale,
+      dateModified: nowIso,
+      description: content.meta.description
+    },
+    {
+      '@context': 'https://schema.org',
       '@type': 'Person',
+      '@id': personId,
       name: SITE_CONFIG.siteName,
+      givenName: 'Carlos',
+      familyName: 'Fernández San Millán',
       url: languageUrl,
       image: SITE_CONFIG.defaultImage,
       jobTitle: content.profile.title,
@@ -148,8 +208,24 @@ function buildStructuredData(content) {
         '@type': 'PostalAddress',
         addressLocality: content.profile.location
       },
+      worksFor: { '@id': orgHumanTechnopoleId },
+      alumniOf: [{ '@id': orgEmblId }],
       knowsLanguage,
-      sameAs
+      knowsAbout,
+      sameAs,
+      mainEntityOfPage: { '@id': profileId }
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      '@id': orgHumanTechnopoleId,
+      name: currentRole?.org || 'Human Technopole'
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      '@id': orgEmblId,
+      name: 'European Molecular Biology Laboratory (EMBL)'
     }
   ];
 }
@@ -172,10 +248,12 @@ function applyDocumentMetadata(content) {
   setMetaContent('meta[property="og:image"]', SITE_CONFIG.defaultImage);
   setMetaContent('meta[property="og:site_name"]', SITE_CONFIG.siteName);
   setMetaContent('meta[property="og:locale"]', ogLocale);
+  setMetaContent('meta[property="og:image:alt"]', content.meta.title);
   setMetaContent('meta[name="twitter:card"]', 'summary_large_image');
   setMetaContent('meta[name="twitter:title"]', content.meta.title);
   setMetaContent('meta[name="twitter:description"]', content.meta.description);
   setMetaContent('meta[name="twitter:image"]', SITE_CONFIG.defaultImage);
+  setMetaContent('meta[name="twitter:image:alt"]', content.meta.title);
 
   updateAlternateLinks();
 
@@ -202,19 +280,19 @@ function applyDocumentMetadata(content) {
 
     wrapper.innerHTML = LANGS.map((lang) => {
       const label = lang.toUpperCase();
-      return `<button type="button" class="${languageButtonClass(lang)}" data-lang="${lang}" aria-pressed="${lang === currentLanguage}">${label}</button>`;
+      const ariaCurrent = lang === currentLanguage ? ' aria-current="true"' : '';
+      return `<a href="${getLanguageHref(lang)}" class="${languageButtonClass(lang)}" data-lang="${lang}"${ariaCurrent}>${label}</a>`;
     }).join('');
 
     container.appendChild(wrapper);
   }
 
   function bindLanguageSwitchers() {
-    document.querySelectorAll('.lang-btn').forEach((button) => {
-      button.addEventListener('click', () => {
-        const lang = button.getAttribute('data-lang');
-        if (!lang || lang === currentLanguage || !LANGS.includes(lang)) return;
+    document.querySelectorAll('.lang-btn').forEach((link) => {
+      link.addEventListener('click', () => {
+        const lang = link.getAttribute('data-lang');
+        if (!lang || !LANGS.includes(lang)) return;
 
-        currentLanguage = lang;
         const storage = getSafeStorage();
         if (storage) {
           try {
@@ -224,8 +302,6 @@ function applyDocumentMetadata(content) {
           }
         }
 
-        updateLanguageInUrl(lang);
-        renderAll();
         closeMobileMenuIfOpen();
       });
     });
