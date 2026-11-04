@@ -2,7 +2,9 @@ import { defineConfig } from 'playwright/test';
 
 // PW_CHANNEL=chrome uses locally installed Google Chrome (no browser download).
 const channel = process.env.PW_CHANNEL || undefined;
-const baseURL = process.env.BASE_URL || 'http://localhost:4173';
+// Tests use their own port so they never collide with a preview server (npm run serve uses 4173).
+const TEST_PORT = 4174;
+const baseURL = process.env.BASE_URL || `http://localhost:${TEST_PORT}`;
 
 export default defineConfig({
   testDir: './tests',
@@ -15,8 +17,8 @@ export default defineConfig({
     { name: 'mobile', use: { viewport: { width: 390, height: 844 } } }
   ],
   webServer: process.env.BASE_URL ? undefined : {
-    command: 'node scripts/serve.mjs',
-    url: 'http://localhost:4173',
-    reuseExistingServer: !process.env.CI
+    command: `PORT=${TEST_PORT} node scripts/serve.mjs`,
+    url: `http://localhost:${TEST_PORT}`,
+    reuseExistingServer: false
   }
 });
