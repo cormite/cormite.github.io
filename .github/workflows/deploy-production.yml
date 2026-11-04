@@ -54,7 +54,7 @@ jobs:
       - name: Assemble site (allowlist + reference check)
         run: node scripts/assemble-site.mjs --out _site
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
       - id: deployment
