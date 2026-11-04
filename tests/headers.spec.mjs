@@ -79,4 +79,13 @@ test.describe('security headers (Cloudflare _headers)', () => {
   test('cannot combine staging and cloudflare layouts', () => {
     expect(() => assemble('--staging', '--cloudflare')).toThrow();
   });
+  test('production workflow deploys from inside _site so the staging gate (functions/) is never bundled', () => {
+    const wf = fs.readFileSync('.github/workflows/deploy-production.yml', 'utf8');
+    const step = wf.split('- name: Deploy to Cloudflare Pages')[1].split('- name:')[0];
+    expect(step).toMatch(/working-directory: _site/);
+    expect(step).toMatch(/pages deploy \./);
+    const out = assemble('--cloudflare');
+    try { expect(fs.existsSync(path.join(out, 'functions'))).toBe(false); }
+    finally { fs.rmSync(out, { recursive: true, force: true }); }
+  });
 });
