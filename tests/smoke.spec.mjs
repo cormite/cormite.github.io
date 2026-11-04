@@ -106,3 +106,13 @@ test('scroll-reveal and hero float animations work over http', async ({ page, vi
   const anim = await page.locator('.hero-badge').first().evaluate((e) => getComputedStyle(e).animationName);
   expect(anim).toBe('float');
 });
+
+test('mobile hamburger button sits inside the navbar row', async ({ page, viewport }) => {
+  test.skip(viewport.width >= 768, 'mobile-only');
+  await page.goto('/');
+  const nav = await page.locator('#navbar').boundingBox();
+  const btn = await page.locator('#mobile-menu-btn').boundingBox();
+  expect(nav.height).toBeLessThanOrEqual(90);
+  expect(btn.y + btn.height).toBeLessThanOrEqual(nav.y + nav.height);
+  expect(btn.x).toBeGreaterThan(viewport.width / 2);
+});
