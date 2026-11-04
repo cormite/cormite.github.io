@@ -19,7 +19,7 @@ Production is never updated by a push. Two gates apply:
 1. Work on `test` (or a branch merged into it). Push.
 2. CI runs (reproducible build check + Playwright smoke tests, desktop and mobile).
 3. Staging redeploys. Review it in the browser.
-4. Happy? Open a PR `test` → `master`, merge it (does **not** publish).
+4. Happy? Open a PR `test` → `master`, merge it (does **not** publish once Pages source is GitHub Actions).
 5. Run **Deploy production**, type `DEPLOY`, approve. Live in about a minute.
 
 ## Local
@@ -43,12 +43,12 @@ npm test               # Playwright with bundled Chromium (CI)
    Cloudflare -> Workers & Pages -> `cormite-staging` -> Settings -> Variables and Secrets -> Add -> type **Secret**, name `STAGING_PASSWORD`, paste the value, for **both Production and Preview**. Then Deployments -> Retry (or push). Rotate the password any time by changing the secret.
    Cloudflare Access (SSO/MFA) is the stronger alternative but requires payment details even on the free plan, so it is intentionally not used.
 
-**B. GitHub**
-1. Settings -> Environments: create `production` (Required reviewers = you; Deployment branches = `master` only).
-2. Settings -> Branches: protect `master` (require PR, require status check `verify`, block force-push/deletion).
-3. Last, after staging works: Settings -> Pages -> Source = **GitHub Actions** (keep custom domain `www.cormite.com`, Enforce HTTPS).
-
-> Switching Pages to "GitHub Actions" means a push to `master` no longer publishes. Do it only after staging has been verified.
+**B. GitHub** (order matters: merging into `master` publishes immediately while Pages still deploys from the branch, so switch Pages to Actions BEFORE the first merge)
+1. Settings -> Environments -> New environment `production`: Required reviewers = you; Deployment branches = Selected branches -> `master`.
+2. Settings -> Branches -> Add rule for `master`: require a pull request, require status check `verify`, block force-push and deletion.
+3. Settings -> Pages -> Source = **GitHub Actions** (keep custom domain `www.cormite.com`, Enforce HTTPS). The already-published site keeps being served; pushes to `master` no longer publish.
+4. Open a pull request `test` -> `master` and merge it (publishes nothing).
+5. Actions -> **Deploy production** -> Run workflow on `master` -> type `DEPLOY` -> approve the run.
 
 `scripts/assemble-site.mjs` is shared by staging and production: it copies an explicit allowlist of files (never the whole repo), and fails if any file referenced by the pages is missing.
 
