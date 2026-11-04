@@ -31,6 +31,10 @@ jobs:
           git add -A
           git diff --cached --exit-code --ignore-matching-lines='id="structured-data"' -- . ':!package-lock.json' \
             || { echo "::error::Committed build output is stale. Run 'npm run build' and commit the result."; exit 1; }
+      - name: Assemble staging and production layouts (checks every referenced file exists)
+        run: |
+          node scripts/assemble-site.mjs --staging --out /tmp/site-staging
+          node scripts/assemble-site.mjs --out /tmp/site-production
       - run: npx playwright install --with-deps chromium
       - run: npm test
       - uses: actions/upload-artifact@v4

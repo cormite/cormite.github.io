@@ -8,7 +8,7 @@ feature/* ──PR──▶ test ──auto──▶ STAGING (browser-testable)
 
 | Environment | Branch | URL | Trigger |
 |---|---|---|---|
-| Staging (private) | `test` | https://cormite-staging.pages.dev (Cloudflare Access login) | automatic on every push to `test` |
+| Staging (private) | `test` | https://cormite-staging.pages.dev (Cloudflare Access login) | automatic on every push to `test` (Cloudflare Pages Git integration) |
 | Production | `master` | https://www.cormite.com | **manual only** (`Deploy production` workflow) |
 
 Production is never updated by a push. Two gates apply:
@@ -32,20 +32,22 @@ npm test               # Playwright with bundled Chromium (CI)
 ```
 
 ## One-time setup (cannot be done from code)
-**A. Cloudflare (private staging)**
-1. Create a free account at https://dash.cloudflare.com/sign-up.
-2. Workers & Pages → Create → Pages → "Upload assets" → project name `cormite-staging` → upload any small file once (creates the project).
-3. Create an API token: My Profile → API Tokens → Create Token → template "Edit Cloudflare Workers" is too broad; use Custom token with **Account → Cloudflare Pages → Edit** only. Copy it.
-4. Copy your Account ID (Workers & Pages overview, right-hand side).
-5. Zero Trust → Access → Applications → Add → Self-hosted. Application domains: `cormite-staging.pages.dev` **and** `*.cormite-staging.pages.dev`. Policy: Allow → Emails → your address(es). Login method: One-time PIN.
+**A. Cloudflare Pages (private staging)** - no tokens or secrets are stored in GitHub.
+1. Free account at https://dash.cloudflare.com/sign-up.
+2. Workers & Pages -> Create -> Pages -> **Connect to Git** -> authorise the Cloudflare GitHub app for **only** `cormite/cormite.github.io` -> select it.
+3. Project name `cormite-staging`. **Production branch: `test`**. Framework preset: None.
+   Build command: `node scripts/assemble-site.mjs --staging --out _site` Build output directory: `_site`.
+   Environment variable: `NODE_VERSION` = `22`. Save and deploy.
+4. Zero Trust -> Access -> Applications -> Add -> Self-hosted. Domains: `cormite-staging.pages.dev` and `*.cormite-staging.pages.dev`. Policy: Allow -> Emails -> your address. Login method: One-time PIN.
 
 **B. GitHub**
-1. Settings → Environments: create `staging` (no rules) and `production` (Required reviewers = you; Deployment branches = `master` only).
-2. In environment `staging` add secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
-3. Branch protection on `master`: require PR, require status check `verify`, block force-push and deletion.
-4. Last, after staging works: Settings → Pages → Source = **GitHub Actions** (keep custom domain `www.cormite.com`, Enforce HTTPS).
+1. Settings -> Environments: create `production` (Required reviewers = you; Deployment branches = `master` only).
+2. Settings -> Branches: protect `master` (require PR, require status check `verify`, block force-push/deletion).
+3. Last, after staging works: Settings -> Pages -> Source = **GitHub Actions** (keep custom domain `www.cormite.com`, Enforce HTTPS).
 
-> Switching Pages to "GitHub Actions" means a push to `master` no longer publishes. Do it only after a successful staging run.
+> Switching Pages to "GitHub Actions" means a push to `master` no longer publishes. Do it only after staging has been verified.
+
+`scripts/assemble-site.mjs` is shared by staging and production: it copies an explicit allowlist of files (never the whole repo), and fails if any file referenced by the pages is missing.
 
 ## Rollback
 Re-run **Deploy production** after `git revert` on `master`, or run it on an earlier commit via a `hotfix/*` PR into `master`.

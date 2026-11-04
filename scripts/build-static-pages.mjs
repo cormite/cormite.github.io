@@ -640,6 +640,12 @@ function buildPage(siteContent, lang, bundles) {
   dom.window.__SITE_RENDER.setCurrentLanguage(lang);
   dom.window.__SITE_RENDER.renderAll();
 
+  // The browser-side renderer writes bare CV file names, which 404 on /es/ and /it/ (a bug that
+  // existed in production). Re-apply the correct, language-prefixed paths.
+  ['hero-download-button', 'about-download-button'].forEach((id) => {
+    setHref(dom.window.document, id, `${relativePrefix(lang)}carlos-fernandez-san-millan-${lang}.pdf`);
+  });
+
   // Convert legacy <i class="fas ..."> icons to inline SVG now, so the browser never has to.
   dom.window.__SITE_ICONS.upgradeLegacyIcons();
   splitKineticName(dom.window.document);

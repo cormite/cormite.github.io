@@ -70,6 +70,17 @@ for (const { path, lang } of PAGES) {
   });
 }
 
+test('CV download buttons on every language page resolve to a real PDF', async ({ page, request }) => {
+  for (const p of ['/', '/es/', '/it/']) {
+    await page.goto(p);
+    for (const id of ['hero-download-button', 'about-download-button']) {
+      const href = await page.locator('#' + id).evaluate((a) => a.href);
+      const res = await request.get(href);
+      expect(res.status(), `${p} ${id} -> ${href}`).toBe(200);
+    }
+  }
+});
+
 test('CV PDFs are reachable', async ({ request }) => {
   for (const l of ['en', 'es', 'it']) {
     const res = await request.get(`/carlos-fernandez-san-millan-${l}.pdf`);
