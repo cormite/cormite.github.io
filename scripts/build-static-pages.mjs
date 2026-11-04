@@ -215,14 +215,11 @@ function renderExperienceTimeline(content) {
       : `<div class="bg-light-bg p-6 rounded-2xl hover-card ${borderClass}"><p class="text-soft-text">${item.summary}</p></div>`;
     const headerContent = `${currentBadge}<h3 class="text-2xl font-bold text-primary">${item.role}</h3><p class="${item.current ? 'text-accent' : 'text-secondary'} font-semibold">${item.org}</p><p class="text-soft-text text-sm">${item.period}</p>`;
 
-    const leftPane = isRight
-      ? `<div class="${summaryAlignmentClass} ${summarySpacingClass} mb-4 lg:mb-0 lg:order-1 order-2">${summaryContent}</div>`
-      : `<div class="${headerAlignmentClass} ${headerSpacingClass} mb-4 lg:mb-0">${headerContent}</div>`;
-    const rightPane = isRight
-      ? `<div class="${headerAlignmentClass} ${headerSpacingClass} lg:order-2 order-1">${headerContent}</div>`
-      : `<div class="${summaryAlignmentClass} ${summarySpacingClass}">${summaryContent}</div>`;
+    // Source order is always title -> description; `lg:order-*` swaps the sides on desktop.
+    const headerPane = `<div class="${headerAlignmentClass} ${headerSpacingClass} mb-4 lg:mb-0${isRight ? ' lg:order-2' : ''}">${headerContent}</div>`;
+    const contentPane = `<div class="${summaryAlignmentClass} ${summarySpacingClass}${isRight ? ' lg:order-1' : ''}">${summaryContent}</div>`;
 
-    return `<li class="relative lg:grid lg:grid-cols-2 lg:gap-8 items-center" data-aos="fade-up"${delay ? ` data-aos-delay="${delay}"` : ''}>${leftPane}${rightPane}<div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-4 h-4 ${dotClass} rounded-full border-4 border-white shadow-lg"></div></li>`;
+    return `<li class="relative lg:grid lg:grid-cols-2 lg:gap-8 items-center" data-aos="fade-up"${delay ? ` data-aos-delay="${delay}"` : ''}>${headerPane}${contentPane}<div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-4 h-4 ${dotClass} rounded-full border-4 border-white shadow-lg"></div></li>`;
   }).join('');
 }
 

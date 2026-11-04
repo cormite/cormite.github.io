@@ -15,6 +15,7 @@
   const doc = global.document;
   let loaded = false;
   let banner = null;
+  let returnFocusTo = null; // only set when the banner was reopened from the footer button
 
   function readChoice() {
     try { return global.localStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
@@ -72,12 +73,15 @@
     writeChoice(value);
     if (value === 'granted') loadAnalytics(); else revokeAnalytics();
     closeBanner();
-    const trigger = doc.getElementById('privacy-settings-btn');
-    if (trigger) trigger.focus();
+    // Give focus back only to the control that opened the banner, and never scroll to do it:
+    // on a first visit nothing opened it, and the footer button is far below the fold.
+    if (returnFocusTo) returnFocusTo.focus({ preventScroll: true });
+    returnFocusTo = null;
   }
 
-  function openBanner() {
+  function openBanner(opener) {
     if (banner) return;
+    returnFocusTo = opener || null;
     const ui = text();
     banner = doc.createElement('section');
     banner.id = 'consent-banner';
@@ -114,7 +118,7 @@
     btn.id = 'privacy-settings-btn';
     btn.className = 'privacy-settings-btn';
     btn.textContent = text().consentSettings;
-    btn.addEventListener('click', openBanner);
+    btn.addEventListener('click', () => openBanner(btn));
     footerText.insertAdjacentElement('afterend', btn);
   }
 

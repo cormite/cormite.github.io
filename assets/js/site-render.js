@@ -461,8 +461,10 @@ function applyDocumentMetadata(content) {
     container.innerHTML = content.experienceTimeline.map((item, index) => {
       const isRight = index % 2 === 1;
       const delay = Math.min(index * 100, 400);
-      const rolePaneOrder = isRight ? 'lg:order-2 order-1 lg:pl-12' : 'lg:text-right lg:pr-12';
-      const summaryPaneOrder = isRight ? 'lg:text-right lg:pr-12 mb-4 lg:mb-0 lg:order-1 order-2' : 'lg:pl-12';
+      // Source order is always title -> description (what mobile, screen readers and crawlers follow).
+      // On desktop the grid places each pane left/right; `lg:order-*` swaps the sides for every second position.
+      const headerPane = isRight ? 'lg:order-2 lg:pl-12 mb-4 lg:mb-0' : 'lg:text-right lg:pr-12 mb-4 lg:mb-0';
+      const contentPane = isRight ? 'lg:order-1 lg:text-right lg:pr-12' : 'lg:pl-12';
       const borderClass = item.current ? 'border-l-4 border-accent' : (isRight ? 'border-l-4 border-secondary lg:border-l-0 lg:border-r-4' : 'border-l-4 border-secondary');
       const dotClass = item.current ? 'bg-accent' : 'bg-secondary';
       const currentBadge = item.current ? getCurrentBadgeLabel(content) : '';
@@ -486,8 +488,8 @@ function applyDocumentMetadata(content) {
 
       return (
         `<li class="relative lg:grid lg:grid-cols-2 lg:gap-8 items-center" data-aos="fade-up"${delay ? ` data-aos-delay="${delay}"` : ''}>` +
-        `<div class="${isRight ? summaryPaneOrder : rolePaneOrder} mb-4 lg:mb-0">${isRight ? contentBlock : headerBlock}</div>` +
-        `<div class="${isRight ? rolePaneOrder : summaryPaneOrder}">${isRight ? headerBlock : contentBlock}</div>` +
+        `<div class="${headerPane}">${headerBlock}</div>` +
+        `<div class="${contentPane}">${contentBlock}</div>` +
         `<div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-4 h-4 ${dotClass} rounded-full border-4 border-white shadow-lg"></div>` +
         '</li>'
       );
