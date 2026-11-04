@@ -1,15 +1,19 @@
 // Assembles the deployable site into an output folder using an ALLOWLIST (nothing is published by accident).
-//   node scripts/assemble-site.mjs                 -> production layout in ./_site
+//   node scripts/assemble-site.mjs                 -> production layout for GitHub Pages in ./_site
+//   node scripts/assemble-site.mjs --cloudflare    -> production layout for Cloudflare Pages (adds real response headers)
 //   node scripts/assemble-site.mjs --staging       -> private-staging layout (noindex, headers, no sitemap/CNAME)
 //   node scripts/assemble-site.mjs --out <dir>
 // It also verifies that every local file referenced by the built pages exists in the output.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { productionHeaders, stagingHeaders } from './security-headers.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
 const staging = args.includes('--staging');
+const cloudflare = args.includes('--cloudflare');
+if (staging && cloudflare) throw new Error('Use either --staging or --cloudflare, not both');
 const outIdx = args.indexOf('--out');
 const out = path.resolve(root, outIdx >= 0 ? args[outIdx + 1] : '_site');
 
@@ -19,7 +23,8 @@ const ALLOW = [
   'photo.jpg', 'favicon.ico', 'robots.txt',
   'carlos-fernandez-san-millan-en.pdf', 'carlos-fernandez-san-millan-es.pdf', 'carlos-fernandez-san-millan-it.pdf'
 ];
-if (!staging) ALLOW.push('sitemap.xml', 'CNAME');
+if (!staging) ALLOW.push('sitemap.xml');
+if (!staging && !cloudflare) ALLOW.push('CNAME'); // GitHub Pages custom-domain file; Cloudflare manages the domain itself
 
 fs.rmSync(out, { recursive: true, force: true });
 fs.mkdirSync(out, { recursive: true });
@@ -41,18 +46,11 @@ if (staging) {
     fs.writeFileSync(file, next);
   }
   fs.writeFileSync(path.join(out, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
-  fs.writeFileSync(path.join(out, '_headers'), [
-    '/*',
-    '  X-Robots-Tag: noindex, nofollow',
-    '  X-Frame-Options: DENY',
-    '  X-Content-Type-Options: nosniff',
-    '  Referrer-Policy: strict-origin-when-cross-origin',
-    '  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()',
-    '  Strict-Transport-Security: max-age=31536000; includeSubDomains',
-    ''
-  ].join('\n'));
+  fs.writeFileSync(path.join(out, '_headers'), stagingHeaders());
   fs.writeFileSync(path.join(out, 'BUILD.txt'), `Staging build ${process.env.GITHUB_SHA || process.env.CF_PAGES_COMMIT_SHA || 'local'} ${new Date().toISOString()}\n`);
 }
+
+if (cloudflare) fs.writeFileSync(path.join(out, '_headers'), productionHeaders());
 
 // Verify every local reference in the pages resolves to a file in the output.
 const missing = [];
@@ -73,4 +71,4 @@ if (missing.length) {
   console.error('Referenced files missing from the output:\n  ' + [...new Set(missing)].join('\n  '));
   process.exit(1);
 }
-console.log(`Assembled ${staging ? 'STAGING' : 'PRODUCTION'} site in ${path.relative(root, out) || '.'} (${ALLOW.length} entries, all references resolve)`);
+console.log(`Assembled ${staging ? 'STAGING' : cloudflare ? 'PRODUCTION (Cloudflare)' : 'PRODUCTION (GitHub Pages)'} site in ${path.relative(root, out) || '.'} (${ALLOW.length} entries, all references resolve)`);

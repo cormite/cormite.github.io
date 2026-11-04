@@ -167,6 +167,7 @@ test.describe('search snippets', () => {
 });
 
 test.describe('analytics link classification', () => {
+  // Absolute URLs only: a relative string resolves against the page's own host, which differs per environment.
   test('social platform is derived from the hostname, never from a substring', async ({ page }) => {
     await page.goto('/');
     const out = await page.evaluate(() => {
@@ -180,10 +181,11 @@ test.describe('analytics link classification', () => {
         evilHost: f('https://notlinkedin.com/in/x'),
         evilSub: f('https://linkedin.com.evil.example/'),
         evilQuery: f('https://evil.example/?u=github.com'),
-        garbage: f('not a url at all')
+        unparseable: f('http://'),
+        empty: f('')
       };
     });
-    expect(out).toEqual({ linkedin: 'linkedin', linkedinBare: 'linkedin', github: 'github', website: 'website', evilPath: 'external', evilHost: 'external', evilSub: 'external', evilQuery: 'external', garbage: 'external' });
+    expect(out).toEqual({ linkedin: 'linkedin', linkedinBare: 'linkedin', github: 'github', website: 'website', evilPath: 'external', evilHost: 'external', evilSub: 'external', evilQuery: 'external', unparseable: 'external', empty: 'unknown' });
   });
 });
 

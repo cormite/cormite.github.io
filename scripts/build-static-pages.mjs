@@ -5,6 +5,7 @@ import vm from 'node:vm';
 import crypto from 'node:crypto';
 import { JSDOM } from 'jsdom';
 import { transformSync } from 'esbuild';
+import { CSP } from './security-headers.mjs';
 
 // Deterministic builds: set SOURCE_DATE (ISO 8601) to pin the generated date.
 const BUILD_DATE = process.env.SOURCE_DATE ? new Date(process.env.SOURCE_DATE) : new Date();
@@ -345,19 +346,6 @@ function buildBundles() {
   fs.writeFileSync(path.join(distDir, cssName), cssOut);
   return { js: `assets/dist/${jsName}`, css: `assets/dist/${cssName}` };
 }
-
-const CSP = [
-  "default-src 'self'",
-  "script-src 'self' https://www.googletagmanager.com",
-  "style-src 'self'",
-  "style-src-attr 'unsafe-inline'",
-  "img-src 'self' data: https://*.google-analytics.com https://*.googletagmanager.com",
-  "font-src 'self'",
-  "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'"
-].join('; ');
 
 const FONT_FILES = [
   'assets/fonts/eb-garamond/eb-garamond-latin-400-normal.woff2',
