@@ -1,0 +1,62 @@
+# Deploys the `test` branch to the STAGING site (separate repository's GitHub Pages).
+# Production (www.cormite.com) is never touched by this workflow.
+name: Deploy staging
+
+on:
+  push:
+    branches: [test]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: true
+
+env:
+  STAGING_REPO: cormite/cormite-staging
+  STAGING_BASE: /cormite-staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Assemble staging site
+        run: |
+          mkdir -p _site
+          rsync -a --exclude '.git' --exclude '.github' --exclude 'node_modules' --exclude 'tests' \
+            --exclude 'scripts' --exclude 'docs' --exclude '_site' --exclude 'CNAME' \
+            --exclude 'package*.json' --exclude '*.config.*' --exclude 'test-results' ./ _site/
+          # Staging lives under a sub-path: make root-absolute links work, and keep it out of search engines.
+          for f in _site/index.html _site/es/index.html _site/it/index.html; do
+            sed -i "s#href=\"/#href=\"${STAGING_BASE}/#g; s#<head>#<head><meta name=\"robots\" content=\"noindex,nofollow\">#" "$f"
+          done
+          printf 'User-agent: *\nDisallow: /\n' > _site/robots.txt
+          rm -f _site/sitemap.xml
+          echo "Staging build of ${GITHUB_SHA} at $(date -u +%FT%TZ)" > _site/BUILD.txt
+      - name: Publish to staging repo
+        env:
+          DEPLOY_KEY: ${{ secrets.STAGING_DEPLOY_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_staging && chmod 600 ~/.ssh/id_staging
+          export GIT_SSH_COMMAND="ssh -i ~/.ssh/id_staging -o StrictHostKeyChecking=accept-new"
+          git clone --depth 1 "git@github.com:${STAGING_REPO}.git" _staging
+          find _staging -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a _site/. _staging/
+          cd _staging
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "Staging: ${GITHUB_SHA::7} from test"
+          git push origin HEAD:main
+          echo "Staging URL: https://cormite.github.io/cormite-staging/" >> "$GITHUB_STEP_SUMMARY"

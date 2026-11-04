@@ -4,6 +4,10 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 import { JSDOM } from 'jsdom';
 
+// Deterministic builds: set SOURCE_DATE (ISO 8601) to pin the generated date.
+const BUILD_DATE = process.env.SOURCE_DATE ? new Date(process.env.SOURCE_DATE) : new Date();
+if (Number.isNaN(BUILD_DATE.getTime())) throw new Error('Invalid SOURCE_DATE');
+
 const scriptFile = fileURLToPath(import.meta.url);
 const scriptDir = path.dirname(scriptFile);
 const rootDir = path.resolve(scriptDir, '..');
@@ -100,7 +104,7 @@ function buildStructuredData(siteContent, lang, content) {
       mainEntity: { '@id': personId },
       primaryImageOfPage: SITE_CONFIG.defaultImage,
       inLanguage: content.locale,
-      dateModified: new Date().toISOString(),
+      dateModified: BUILD_DATE.toISOString(),
       description: content.meta.description
     },
     {
@@ -391,8 +395,8 @@ function sanitizeTemplate(document) {
 
 function populateDocument(document, siteContent, lang) {
   const content = siteContent.I18N[lang];
-  const currentDate = new Date().toLocaleDateString(content.locale, { month: 'short', year: 'numeric' });
-  const currentYear = String(new Date().getFullYear());
+  const currentDate = BUILD_DATE.toLocaleDateString(content.locale, { month: 'short', year: 'numeric' });
+  const currentYear = String(BUILD_DATE.getFullYear());
   const canonical = canonicalUrl(siteContent.SITE_CONFIG, lang);
   const prefix = relativePrefix(lang);
 

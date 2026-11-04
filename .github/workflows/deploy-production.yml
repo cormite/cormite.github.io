@@ -1,0 +1,65 @@
+# PRODUCTION deploy. Manual only. Two gates:
+#   1. You must type DEPLOY in the dispatch form.
+#   2. The `production` GitHub Environment requires an approval from a reviewer.
+# Requires repo Settings > Pages > Source = "GitHub Actions".
+name: Deploy production
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type DEPLOY to publish master to www.cormite.com'
+        required: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require explicit confirmation and master ref
+        run: |
+          [ "${{ inputs.confirm }}" = "DEPLOY" ] || { echo "Confirmation text must be DEPLOY"; exit 1; }
+          [ "${{ github.ref }}" = "refs/heads/master" ] || { echo "Production deploys only from master"; exit 1; }
+
+  verify:
+    needs: guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm test
+
+  deploy:
+    needs: verify
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://www.cormite.com/
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble site
+        run: |
+          mkdir -p _site
+          rsync -a --exclude '.git' --exclude '.github' --exclude 'node_modules' --exclude 'tests' \
+            --exclude 'scripts' --exclude 'docs' --exclude '_site' --exclude 'package*.json' \
+            --exclude '*.config.*' --exclude 'test-results' ./ _site/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
