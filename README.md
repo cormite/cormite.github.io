@@ -5,7 +5,7 @@ Static site (EN / ES / IT), hosted on GitHub Pages, built to look and feel execu
 
 | | |
 |---|---|
-| **Production** | `master` → <https://www.cormite.com> (published only by the manual **Deploy production** workflow) |
+| **Production** | `master` → <https://www.cormite.com> (published only by the manual **Deploy production** workflow; GitHub Pages today, Cloudflare Pages after the optional cutover in [docs/RELEASE.md](docs/RELEASE.md)) |
 | **Staging (private)** | `test` → Cloudflare Pages, password protected |
 | **Stack** | Tailwind 3 (pinned on purpose), vanilla JS, esbuild, jsdom build-time rendering, Playwright + axe tests |
 

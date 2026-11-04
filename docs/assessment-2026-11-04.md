@@ -81,3 +81,22 @@ Scope: repo `cormite/cormite.github.io` @ `7914973` (master, last commit 2026-04
 - No Lighthouse/axe run (Playwright browsers not installed here); perf numbers come from in-browser Navigation/Resource Timing on one load.
 - Mobile layout checked only by code/CSS reading, not rendered.
 - Real-user data (GA) not available to me.
+
+---
+
+## Resolution status (updated 2026-11-04, end of day)
+
+| Finding | Status |
+|---|---|
+| F1-F5 release process, broken build, no tests | Done: gated pipeline, CI, 170 Playwright/axe tests, fixed build scripts |
+| F6 GA without consent | Done: opt-in, Consent Mode v2 |
+| F7 no CSP / security headers | CSP `<meta>` done; **real headers ready, pending the optional Cloudflare cutover** (see RELEASE.md) |
+| F8 dependency vulnerabilities | Done: 0 open alerts; Tailwind deliberately kept on 3.x |
+| F9 contact exposure | Accepted: public address is intentional |
+| F11-F17 performance | Done: hashed bundles, no re-render, responsive AVIF/WebP, preloads, social card, CLS 0 |
+| F18-F21 accessibility | Done: landmarks, valid ARIA (axe zero violations), pixel-measured contrast, badges |
+| F22-F23 hero/data viz | Done: constellation, spotlight, kinetic name, counters, scroll-linked timeline |
+| F24 dark/light preference | Not done (not needed: single deliberate theme) |
+| F25 multi-page depth | Not started (content decision for the owner) |
+| F26 language persistence | Not changed: language is the URL (/, /es/, /it/) |
+| Mobile experience order, consent scroll jump | Found after release, fixed with failing tests first |

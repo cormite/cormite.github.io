@@ -1,33 +1,39 @@
 # PRODUCTION deploy. Manual only. Two gates:
 #   1. You must type DEPLOY in the dispatch form.
 #   2. The `production` GitHub Environment requires an approval from a reviewer.
-# Requires repo Settings > Pages > Source = "GitHub Actions".
+#
+# Where it publishes is controlled by the repository variable PRODUCTION_TARGET:
+#   github-pages (default) -> GitHub Pages (needs Settings > Pages > Source = "GitHub Actions")
+#   cloudflare             -> Cloudflare Pages project (real security headers, immutable caching)
+# Rollback = set the variable back and re-run this workflow. See docs/RELEASE.md.
 name: Deploy production
 
 on:
   workflow_dispatch:
     inputs:
       confirm:
-        description: 'Type DEPLOY to publish master to www.cormite.com'
+        description: 'Type DEPLOY to publish master to production'
         required: true
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: deploy-production
   cancel-in-progress: false
 
+env:
+  PRODUCTION_TARGET: ${{ vars.PRODUCTION_TARGET || 'github-pages' }}
+
 jobs:
   guard:
     runs-on: ubuntu-24.04
     steps:
-      - name: Require explicit confirmation and master ref
+      - name: Require explicit confirmation, master ref and a known target
         run: |
           [ "${{ inputs.confirm }}" = "DEPLOY" ] || { echo "Confirmation text must be DEPLOY"; exit 1; }
           [ "${{ github.ref }}" = "refs/heads/master" ] || { echo "Production deploys only from master"; exit 1; }
+          case "$PRODUCTION_TARGET" in github-pages|cloudflare) echo "Target: $PRODUCTION_TARGET";; *) echo "PRODUCTION_TARGET must be github-pages or cloudflare"; exit 1;; esac
 
   verify:
     needs: guard
@@ -43,9 +49,14 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm test
 
-  deploy:
+  deploy-github-pages:
+    if: ${{ (vars.PRODUCTION_TARGET || 'github-pages') == 'github-pages' }}
     needs: verify
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: production
       url: https://www.cormite.com/
@@ -59,3 +70,37 @@ jobs:
           path: _site
       - id: deployment
         uses: actions/deploy-pages@v5
+
+  deploy-cloudflare:
+    if: ${{ vars.PRODUCTION_TARGET == 'cloudflare' }}
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: ${{ vars.PRODUCTION_URL || 'https://cormite-production.pages.dev' }}
+    env:
+      PRODUCTION_URL: ${{ vars.PRODUCTION_URL || 'https://cormite-production.pages.dev' }}
+      CF_PROJECT: ${{ vars.CLOUDFLARE_PROJECT || 'cormite-production' }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Assemble site (allowlist, reference check, production headers)
+        run: node scripts/assemble-site.mjs --cloudflare --out _site
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: >
+          npx --yes wrangler@4.157.0 pages deploy _site
+          --project-name "$CF_PROJECT" --branch main
+          --commit-hash "$GITHUB_SHA" --commit-message "Deploy production ${GITHUB_SHA::7}"
+      - name: Verify the live site (security headers, caching, nothing internal published)
+        run: |
+          for attempt in 1 2 3 4 5 6; do
+            if node scripts/verify-live.mjs "$PRODUCTION_URL"; then exit 0; fi
+            echo "Attempt $attempt failed; waiting for the edge to update..."; sleep 15
+          done
+          exit 1

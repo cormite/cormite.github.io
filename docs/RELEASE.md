@@ -79,6 +79,40 @@ runner image is pinned to `ubuntu-24.04` so builds do not change under us.
 
 `scripts/assemble-site.mjs` is shared by staging and production: it copies an explicit allowlist of files (never the whole repo), and fails if any file referenced by the pages is missing.
 
+## Production on Cloudflare Pages (real security headers) - optional cutover
+GitHub Pages cannot send HTTP response headers, so the live site has no HSTS, clickjacking protection, Referrer/Permissions
+policy or CSP *header* (the CSP `<meta>` still applies). Cloudflare Pages can, and it also allows one-year immutable caching
+for the content-hashed bundles. The same `Deploy production` workflow (DEPLOY + reviewer approval) publishes to either target,
+chosen by the repository variable `PRODUCTION_TARGET` (`github-pages` default, or `cloudflare`).
+
+What ships: `scripts/security-headers.mjs` generates `_headers` (`assemble-site.mjs --cloudflare`); after every deploy
+`scripts/verify-live.mjs` fails the run if any header, cache rule or exposure check is wrong.
+
+**One-time setup** (needs your Cloudflare and GitHub accounts):
+1. Cloudflare: My Profile -> API Tokens -> Create Token -> Custom token. Permission: **Account -> Cloudflare Pages -> Edit** only.
+   Name it `github-deploy-production`. Copy the token (shown once). Copy your **Account ID** (Workers & Pages overview).
+2. Create the project (your terminal; the token stays in your shell, nothing is written to disk):
+   `CLOUDFLARE_API_TOKEN=<token> CLOUDFLARE_ACCOUNT_ID=<id> npx wrangler@4.157.0 pages project create cormite-production --production-branch main`
+3. GitHub -> Settings -> Environments -> `production` -> add secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+4. GitHub -> Settings -> Secrets and variables -> Actions -> Variables: `PRODUCTION_TARGET` = `cloudflare`,
+   `PRODUCTION_URL` = `https://cormite-production.pages.dev` (temporary, until step 6).
+
+**Rehearsal (no visitor impact):** run Deploy production. It publishes to `cormite-production.pages.dev`, verifies headers there, and
+the real site is untouched. Open that URL and check it.
+
+**Cutover:**
+5. Cloudflare -> DNS -> delete the `www` CNAME (-> `cormite.github.io`).
+6. Cloudflare -> Workers & Pages -> `cormite-production` -> Custom domains -> add `www.cormite.com` (Cloudflare creates the record and the certificate).
+7. Set the variable `PRODUCTION_URL` = `https://www.cormite.com`, re-run Deploy production, confirm it verifies on the real domain.
+8. GitHub -> Settings -> Pages: remove the custom domain (the site is no longer served from there).
+The apex redirect rule (`cormite.com` -> `www`) is unchanged.
+
+**Rollback (about 2 minutes):** Cloudflare DNS: point `www` CNAME back to `cormite.github.io` and re-add the GitHub Pages custom domain;
+set `PRODUCTION_TARGET` = `github-pages`; re-run Deploy production.
+
+HSTS is sent with `includeSubDomains` on `www.cormite.com` only (it covers `*.www.cormite.com`, nothing else), so your other
+subdomains (mail, bastion, ...) are not affected. Preload is deliberately not enabled.
+
 ## Rollback
 Re-run **Deploy production** after `git revert` on `master`, or run it on an earlier commit via a `hotfix/*` PR into `master`.
 
