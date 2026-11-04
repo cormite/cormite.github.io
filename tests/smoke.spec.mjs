@@ -94,3 +94,17 @@ test('mobile menu opens and closes (Escape)', async ({ page, isMobile, viewport 
   await page.keyboard.press('Escape');
   await expect(page.locator('#mobile-menu')).toHaveAttribute('aria-hidden', 'true');
 });
+
+test('scroll-reveal and hero float animations work over http', async ({ page, viewport }) => {
+  test.skip(viewport.width < 768, 'desktop-only layout check');
+  await page.goto('/');
+  const total = await page.locator('[data-aos]').count();
+  expect(total).toBeGreaterThan(15);
+  // Below-the-fold elements start hidden, then reveal after scrolling.
+  const before = await page.locator('[data-aos].is-visible').count();
+  expect(before).toBeLessThan(total);
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await expect.poll(() => page.locator('[data-aos].is-visible').count()).toBeGreaterThan(before);
+  const anim = await page.locator('.hero-badge').first().evaluate((e) => getComputedStyle(e).animationName);
+  expect(anim).toBe('float');
+});
