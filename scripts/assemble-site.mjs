@@ -14,7 +14,7 @@ const outIdx = args.indexOf('--out');
 const out = path.resolve(root, outIdx >= 0 ? args[outIdx + 1] : '_site');
 
 const ALLOW = [
-  'index.html', 'es', 'it',
+  'index.html', '404.html', 'es', 'it',
   'assets/dist', 'assets/fonts', 'assets/img', 'assets/og',
   'photo.jpg', 'favicon.ico', 'robots.txt',
   'carlos-fernandez-san-millan-en.pdf', 'carlos-fernandez-san-millan-es.pdf', 'carlos-fernandez-san-millan-it.pdf'
@@ -34,7 +34,11 @@ if (staging) {
     const file = path.join(out, page);
     const html = fs.readFileSync(file, 'utf8');
     if (!html.includes('<head>')) throw new Error(`No <head> in ${page}`);
-    fs.writeFileSync(file, html.replace('<head>', '<head><meta name="robots" content="noindex,nofollow">'));
+    // Replace the existing robots meta (don't add a conflicting second one).
+    const next = /<meta name="robots"[^>]*>/.test(html)
+      ? html.replace(/<meta name="robots"[^>]*>/, '<meta name="robots" content="noindex,nofollow">')
+      : html.replace('<head>', '<head><meta name="robots" content="noindex,nofollow">');
+    fs.writeFileSync(file, next);
   }
   fs.writeFileSync(path.join(out, 'robots.txt'), 'User-agent: *\nDisallow: /\n');
   fs.writeFileSync(path.join(out, '_headers'), [

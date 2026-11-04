@@ -303,3 +303,10 @@ test('photo tilt is limited to the area around the photo', async ({ page, viewpo
   expect(near).toBeGreaterThan(1);
   expect(near).toBeLessThanOrEqual(7.1);
 });
+
+test('missing pages return a real 404 with the branded page', async ({ page, request }) => {
+  const res = await request.get('/definitely-not-here/');
+  expect(res.status()).toBe(404);
+  await page.goto('/definitely-not-here/');
+  await expect(page.locator('h1')).toContainText(/does not exist/i);
+});

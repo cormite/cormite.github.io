@@ -19,7 +19,13 @@ http.createServer((req, res) => {
   let file = path.join(root, path.normalize(urlPath));
   if (!file.startsWith(root)) { res.writeHead(403).end('Forbidden'); return; }
   if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
-  if (!fs.existsSync(file)) { res.writeHead(404).end('Not found'); return; }
+  if (!fs.existsSync(file)) {
+    // Behave like GitHub Pages: serve 404.html with a 404 status.
+    const notFound = path.join(root, '404.html');
+    res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8' });
+    fs.existsSync(notFound) ? fs.createReadStream(notFound).pipe(res) : res.end('Not found');
+    return;
+  }
   res.writeHead(200, { 'Content-Type': types[path.extname(file)] || 'application/octet-stream' });
   fs.createReadStream(file).pipe(res);
 }).listen(port, () => console.log(`Serving ${root} at http://localhost:${port}`));

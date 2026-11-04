@@ -449,6 +449,29 @@ function injectPerformanceAndSecurity(document, prefix, bundles) {
   });
 }
 
+function build404(siteContent, bundles) {
+  const base = siteContent.SITE_CONFIG.siteUrl;
+  return `<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="${CSP}">
+<meta name="robots" content="noindex">
+<title>Page not found | Carlos Fernández San Millán</title>
+<link rel="stylesheet" href="/${bundles.css}">
+</head>
+<body class="font-sans antialiased bg-primary text-white on-dark">
+<main class="min-h-screen flex items-center justify-center text-center px-6">
+<div>
+<p class="display-font text-accent text-5xl mb-4">404</p>
+<h1 class="display-font text-4xl font-bold mb-4">This page does not exist</h1>
+<p class="text-white/80 mb-8">The page you are looking for has moved or never existed.</p>
+<a href="/" class="cta-button cta-button-primary">Back to the home page</a>
+</div>
+</main>
+</body></html>
+`;
+}
+
 function buildSitemap(siteContent) {
   const base = siteContent.SITE_CONFIG.siteUrl;
   const lastmod = BUILD_DATE.toISOString().slice(0, 10);
@@ -663,3 +686,4 @@ writePage(path.join(rootDir, 'index.html'), buildPage(siteContent, 'en', bundles
 writePage(path.join(rootDir, 'es', 'index.html'), buildPage(siteContent, 'es', bundles));
 writePage(path.join(rootDir, 'it', 'index.html'), buildPage(siteContent, 'it', bundles));
 fs.writeFileSync(path.join(rootDir, 'sitemap.xml'), buildSitemap(siteContent));
+fs.writeFileSync(path.join(rootDir, '404.html'), build404(siteContent, bundles));
