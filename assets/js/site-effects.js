@@ -159,7 +159,11 @@
       global.requestAnimationFrame(tick);
     };
 
-    prepared.forEach((item) => { item.el.classList.add('count-up'); });
+    // Reserve the final width so counting up from 0 never reflows the row.
+    prepared.forEach((item) => {
+      item.el.classList.add('count-up');
+      item.el.style.minWidth = `${Math.ceil(item.el.getBoundingClientRect().width)}px`;
+    });
     if (!('IntersectionObserver' in global)) return;
 
     // Off-screen numbers keep their real text until they scroll into view (crawler/screen-reader safe).

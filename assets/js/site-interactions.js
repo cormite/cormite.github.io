@@ -28,9 +28,17 @@
 
   function inferSocialPlatform(href) {
     if (!href) return 'unknown';
-    if (href.includes('linkedin.com')) return 'linkedin';
-    if (href.includes('github.com')) return 'github';
-    if (href.includes('cormite.com')) return 'website';
+    let host;
+    try {
+      host = new URL(href, global.location.href).hostname.toLowerCase();
+    } catch (error) {
+      return 'external';
+    }
+    // Exact host or a true subdomain: never a substring of the path, query or an unrelated host.
+    const isDomain = (domain) => host === domain || host.endsWith(`.${domain}`);
+    if (isDomain('linkedin.com')) return 'linkedin';
+    if (isDomain('github.com')) return 'github';
+    if (isDomain('cormite.com')) return 'website';
     return 'external';
   }
 
@@ -286,6 +294,7 @@ ${message}`);
 
   global.__SITE_INTERACTIONS = Object.freeze({
     enhanceUi,
+    inferSocialPlatform,
     refreshAnimatedUi: setupRevealAnimations
   });
 }(globalThis));

@@ -51,7 +51,16 @@ test.describe('staging password gate (Pages Function)', () => {
 
   test('is excluded from the production layout', async () => {
     const { execFileSync } = await import('node:child_process');
-    execFileSync('node', ['scripts/assemble-site.mjs', '--out', '/tmp/gate-prod-check']);
-    expect(fs.existsSync('/tmp/gate-prod-check/functions')).toBe(false);
+    const os = await import('node:os');
+    const path = await import('node:path');
+    // Unique folder per run: the desktop and mobile projects execute this test in parallel.
+    const out = fs.mkdtempSync(path.join(os.tmpdir(), 'gate-prod-check-'));
+    try {
+      execFileSync('node', ['scripts/assemble-site.mjs', '--out', out]);
+      expect(fs.existsSync(path.join(out, 'functions'))).toBe(false);
+      expect(fs.existsSync(path.join(out, 'index.html'))).toBe(true);
+    } finally {
+      fs.rmSync(out, { recursive: true, force: true });
+    }
   });
 });

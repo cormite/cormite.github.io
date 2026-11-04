@@ -39,7 +39,7 @@ const I18N = Object.freeze({
     locale: 'en-US',
     meta: Object.freeze({
       title: 'Carlos Fernández San Millán | Head of ICT & Acting CIO',
-      description: 'Carlos Fernández San Millán - Head of ICT & Acting CIO. Technology Executive specializing in Digital Transformation, Research Computing, Cybersecurity, and Board Advisory.',
+      description: 'Carlos Fernández San Millán, Head of ICT & Acting CIO. Technology executive in digital transformation, research computing, cybersecurity and board advisory.',
       keywords: 'Head of ICT, Acting CIO, IT Strategy, Digital Transformation, Cybersecurity, Research Computing, Board Advisory, Technology Executive'
     }),
     nav: Object.freeze({ home: 'Home', about: 'About', experience: 'Experience', achievements: 'Achievements', skills: 'Skills', contact: 'Contact' }),
@@ -149,8 +149,8 @@ const I18N = Object.freeze({
   es: Object.freeze({
     locale: 'es-ES',
     meta: Object.freeze({
-      title: 'Carlos Fernández San Millán | Responsable de TIC y CIO en funciones',
-      description: 'Carlos Fernández San Millán - Responsable de TIC y CIO en funciones. Ejecutivo tecnológico especializado en Transformación Digital, Computación Científica, Ciberseguridad y Asesoría de Consejo.',
+      title: 'Carlos Fernández San Millán | Responsable TIC y CIO interino',
+      description: 'Carlos Fernández San Millán, CIO en funciones. Ejecutivo tecnológico en transformación digital, computación científica, ciberseguridad y asesoría de consejo.',
       keywords: 'Responsable de TIC, CIO en funciones, Estrategia TI, Transformación Digital, Ciberseguridad, Computación Científica, Asesoría de Consejo'
     }),
     nav: Object.freeze({ home: 'Inicio', about: 'Perfil', experience: 'Experiencia', achievements: 'Logros', skills: 'Capacidades', contact: 'Contacto' }),
@@ -260,8 +260,8 @@ const I18N = Object.freeze({
   it: Object.freeze({
     locale: 'it-IT',
     meta: Object.freeze({
-      title: 'Carlos Fernández San Millán | Responsabile ICT e CIO ad interim',
-      description: 'Carlos Fernández San Millán - Responsabile ICT e CIO ad interim. Executive tecnologico specializzato in Trasformazione Digitale, Calcolo Scientifico, Cybersecurity e Board Advisory.',
+      title: 'Carlos Fernández San Millán | Responsabile ICT e CIO a.i.',
+      description: 'Carlos Fernández San Millán, CIO ad interim. Executive tecnologico in trasformazione digitale, calcolo scientifico, cybersecurity e board advisory.',
       keywords: 'Responsabile ICT, CIO ad interim, Strategia IT, Trasformazione Digitale, Cybersecurity, Calcolo Scientifico, Board Advisory'
     }),
     nav: Object.freeze({ home: 'Home', about: 'Profilo', experience: 'Esperienza', achievements: 'Risultati', skills: 'Competenze', contact: 'Contatti' }),

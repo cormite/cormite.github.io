@@ -27,9 +27,36 @@ Production is never updated by a push. Two gates apply:
 npm ci
 npm run build          # tailwind + static pages (set SOURCE_DATE=<ISO date> for a reproducible build)
 npm run serve          # http://localhost:4173
-npm run test:local     # Playwright using installed Google Chrome
-npm test               # Playwright with bundled Chromium (CI)
+npx playwright install chromium   # one-time
+npm test               # Playwright with its own Chromium (same as CI)
 ```
+
+### Local testing: why not `PW_CHANNEL=chrome`?
+`npm run test:local` runs the suite in your installed Google Chrome. On macOS that works, but **Chrome starts
+GoogleUpdater, which inherits Playwright's stdout/stderr pipes and keeps running for minutes**, so the runner
+sometimes waits long after the last test (root cause verified by inspecting the stuck worker's open sockets).
+Use `npm test` with Playwright's own Chromium for normal work; it is hermetic and identical to CI.
+
+### Layout-shift budget
+`tests/quality.spec.mjs` measures CLS on a throttled connection. The web fonts have metric-matched Georgia
+fallbacks (`assets/css/styles.css`), so the budget is 0.02 where Georgia exists (macOS/iOS/Windows) and the official
+"good" limit of 0.1 elsewhere (typically Linux CI). If you change fonts or font sizes, recompute the fallback metrics.
+
+### Contrast
+axe cannot judge text over gradients, so `tests/contrast.spec.mjs` measures contrast from rendered pixels for every
+visible text element. Small text on dark surfaces uses `--color-accent-on-dark` (`#EFC54F`).
+
+### Regenerating binary assets (outputs are committed)
+```bash
+npm run build:images                      # responsive AVIF/WebP/JPG from docs/source-assets/new-photo.png
+PW_CHANNEL=chrome npm run build:social    # 1200x630 link-preview card
+PW_CHANNEL=chrome npm run build:icons     # favicon.ico, PNG icons and site.webmanifest
+```
+
+### Dependencies
+Dependabot opens weekly PRs against `test`. **Tailwind stays on 3.x on purpose** (4.x changes the CLI, config format and
+CSS defaults); Dependabot is configured to skip that major bump. GitHub Actions are pinned to current majors and the CI
+runner image is pinned to `ubuntu-24.04` so builds do not change under us.
 
 ## One-time setup (cannot be done from code)
 **A. Cloudflare Pages (private staging)** - no tokens or secrets are stored in GitHub.

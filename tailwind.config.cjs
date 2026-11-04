@@ -19,7 +19,7 @@ module.exports = {
         "medium-gray": "#CBD5E1"
       },
       fontFamily: {
-        sans: ["\"EB Garamond\"", "Georgia", "serif"]
+        sans: ["\"EB Garamond\"", "\"EB Garamond Fallback\"", "Georgia", "serif"]
       },
       animation: {
         float: "float 6s ease-in-out infinite",
