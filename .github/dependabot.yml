@@ -9,6 +9,11 @@ updates:
     groups:
       dev-tooling:
         patterns: ["*"]
+    ignore:
+      # Tailwind 4 changes the CLI, config format and many CSS defaults. Stay on the maintained 3.x line
+      # until a deliberate, visually-verified migration is planned.
+      - dependency-name: "tailwindcss"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     target-branch: test

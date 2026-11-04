@@ -265,6 +265,7 @@ function applyDocumentMetadata(content) {
   function renderLanguageSwitcher(container, mobile, content) {
     const wrapper = document.createElement('div');
     wrapper.className = mobile ? 'pt-6 mt-6 border-t border-white/10 flex gap-2' : 'ml-6 flex gap-2';
+    wrapper.setAttribute('role', 'group');
     wrapper.setAttribute('aria-label', content.staticText.ui.languageSwitcherLabel);
 
     wrapper.innerHTML = LANGS.map((lang) => {
@@ -325,10 +326,12 @@ function applyDocumentMetadata(content) {
     }).join('');
 
     if (heroContainer) {
+      heroContainer.setAttribute('role', 'group');
       heroContainer.setAttribute('aria-label', socialLabel);
       heroContainer.innerHTML = renderLinks(CLASSNAMES.heroSocialLink);
     }
     if (contactContainer) {
+      contactContainer.setAttribute('role', 'group');
       contactContainer.setAttribute('aria-label', socialLabel);
       contactContainer.innerHTML = renderLinks(CLASSNAMES.contactSocialLink);
     }
@@ -482,11 +485,11 @@ function applyDocumentMetadata(content) {
         : `<div class="bg-light-bg p-6 rounded-2xl hover-card ${borderClass}"><p class="text-soft-text">${item.summary}</p></div>`;
 
       return (
-        `<article role="listitem" class="relative lg:grid lg:grid-cols-2 lg:gap-8 items-center" data-aos="fade-up"${delay ? ` data-aos-delay="${delay}"` : ''}>` +
+        `<li class="relative lg:grid lg:grid-cols-2 lg:gap-8 items-center" data-aos="fade-up"${delay ? ` data-aos-delay="${delay}"` : ''}>` +
         `<div class="${isRight ? summaryPaneOrder : rolePaneOrder} mb-4 lg:mb-0">${isRight ? contentBlock : headerBlock}</div>` +
         `<div class="${isRight ? rolePaneOrder : summaryPaneOrder}">${isRight ? headerBlock : contentBlock}</div>` +
         `<div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-4 h-4 ${dotClass} rounded-full border-4 border-white shadow-lg"></div>` +
-        '</article>'
+        '</li>'
       );
     }).join('');
   }
@@ -499,13 +502,13 @@ function applyDocumentMetadata(content) {
       const iconName = item.iconClass.split(/\s+/).find((token) => token.startsWith('fa-'));
       const delayAttr = item.delay ? ` data-aos-delay="${item.delay}"` : '';
       return (
-        `<article role="listitem" class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover-card group" data-aos="fade-up"${delayAttr}>` +
+        `<li class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover-card group" data-aos="fade-up"${delayAttr}>` +
         '<div class="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mb-6 group-hover:bg-accent transition-colors">' +
         renderIconSvg(iconName, 'text-2xl text-accent group-hover:text-white transition-colors', true) +
         '</div>' +
         `<h3 class="text-xl font-bold text-white mb-3">${item.title}</h3>` +
         `<p class="text-white/70 leading-relaxed">${item.descriptionHtml}</p>` +
-        '</article>'
+        '</li>'
       );
     }).join('');
   }
@@ -522,13 +525,13 @@ function applyDocumentMetadata(content) {
       )).join('');
 
       return (
-        `<article role="listitem" class="bg-white rounded-2xl p-8 shadow-lg hover-card" data-aos="fade-up"${delayAttr}>` +
+        `<li class="bg-white rounded-2xl p-8 shadow-lg hover-card" data-aos="fade-up"${delayAttr}>` +
         '<div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6">' +
         renderIconSvg(iconName, 'text-2xl text-primary', true) +
         '</div>' +
         `<h3 class="text-xl font-bold text-primary mb-4">${group.title}</h3>` +
         `<ul class="space-y-3">${itemsHtml}</ul>` +
-        '</article>'
+        '</li>'
       );
     }).join('');
   }
@@ -538,9 +541,9 @@ function applyDocumentMetadata(content) {
     if (!container) return;
 
     container.innerHTML = content.competencies.map((item) => (
-      '<span role="listitem" class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">' +
+      '<li class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">' +
       item +
-      '</span>'
+      '</li>'
     )).join('');
   }
 

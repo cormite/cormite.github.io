@@ -34,13 +34,55 @@
   font-display: swap;
 }
 
+/* Metric-matched fallbacks: until the web fonts arrive, text is laid out with Georgia scaled to EB Garamond /
+   Cormorant Garamond metrics (measured from the real page text), so the swap does not move anything. */
+@font-face {
+  font-family: 'EB Garamond Fallback';
+  src: local('Georgia'), local('Georgia-Regular');
+  font-weight: 400;
+  size-adjust: 86.6%;
+  ascent-override: 116.28%;
+  descent-override: 34.41%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'EB Garamond Fallback';
+  src: local('Georgia Bold'), local('Georgia-Bold');
+  font-weight: 600;
+  size-adjust: 79.19%;
+  ascent-override: 127.16%;
+  descent-override: 37.63%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'EB Garamond Fallback';
+  src: local('Georgia Bold'), local('Georgia-Bold');
+  font-weight: 700;
+  size-adjust: 81.49%;
+  ascent-override: 123.58%;
+  descent-override: 36.57%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Cormorant Garamond Fallback';
+  src: local('Georgia Bold'), local('Georgia-Bold');
+  font-weight: 600;
+  size-adjust: 76.6%;
+  ascent-override: 120.62%;
+  descent-override: 37.47%;
+  line-gap-override: 0%;
+}
+
 /* ==========================================================================
    Tokens
    ========================================================================== */
 
 :root {
-  /* Brighter gold for text on dark/blue surfaces: 4.4:1 on blue, 7.1:1 on navy (WCAG AA). The darker --color-accent is kept for light surfaces. */
-  --color-accent-on-dark: #D4A017;
+  /* Brighter gold for small text on dark/blue surfaces (measured from rendered pixels: at least 4.5:1 everywhere, WCAG AA). The darker --color-accent is kept for light surfaces. */
+  --color-accent-on-dark: #EFC54F;
   --color-primary: #0B1B3D;
   --color-secondary: #1E3A8A;
   --color-accent: #8A6508;
@@ -79,21 +121,21 @@ button,
 input,
 textarea,
 select {
-  font-family: 'EB Garamond', Georgia, serif;
+  font-family: 'EB Garamond', 'EB Garamond Fallback', Georgia, serif;
   font-kerning: normal;
   text-rendering: optimizeLegibility;
 }
 
 .display-font,
 .gradient-text {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Cormorant Garamond', 'Cormorant Garamond Fallback', Georgia, serif;
   font-weight: 600;
   letter-spacing: 0.01em;
   line-height: 1.05;
 }
 
 .section-display {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Cormorant Garamond', 'Cormorant Garamond Fallback', Georgia, serif;
   font-weight: 600;
   letter-spacing: 0.015em;
   line-height: 1.1;
@@ -537,11 +579,11 @@ html {
   transform-origin: top;
 }
 
-#experience-timeline > article {
+#experience-timeline > li {
   transition: opacity var(--transition-reveal), transform var(--transition-reveal), filter 0.4s ease;
 }
 
-#experience-timeline > article.is-current {
+#experience-timeline > li.is-current {
   filter: drop-shadow(0 12px 28px rgba(11, 27, 61, 0.12));
 }
 
@@ -684,4 +726,9 @@ footer .text-accent,
 #home .gradient-text,
 #home .gradient-text .kn-ch {
   background-image: linear-gradient(135deg, #D4A017 0%, #E8C14A 100%);
+}
+
+/* Hero badges: a 24px radius is a perfect pill for one-line badges and keeps multi-line text inside the shape. */
+.hero-badge {
+  border-radius: 1.5rem;
 }

@@ -15,7 +15,7 @@ const out = path.resolve(root, outIdx >= 0 ? args[outIdx + 1] : '_site');
 
 const ALLOW = [
   'index.html', '404.html', 'es', 'it',
-  'assets/dist', 'assets/fonts', 'assets/img', 'assets/og',
+  'assets/dist', 'assets/fonts', 'assets/img', 'assets/og', 'assets/icons', 'site.webmanifest',
   'photo.jpg', 'favicon.ico', 'robots.txt',
   'carlos-fernandez-san-millan-en.pdf', 'carlos-fernandez-san-millan-es.pdf', 'carlos-fernandez-san-millan-it.pdf'
 ];

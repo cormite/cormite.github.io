@@ -170,7 +170,7 @@ function renderLanguageLinks(siteContent, currentLang, mobile = false, label = '
     const ariaCurrent = isActive ? ' aria-current="true"' : '';
     return `<a href="${pathForLanguage(lang)}" class="${className}" data-lang="${lang}"${ariaCurrent}>${lang.toUpperCase()}</a>`;
   }).join('');
-  return `<div class="${wrapperClass}" aria-label="${label}">${links}</div>`;
+  return `<div class="${wrapperClass}" role="group" aria-label="${label}">${links}</div>`;
 }
 
 function renderSocialLinks(siteContent, content, hero = true) {
@@ -222,7 +222,7 @@ function renderExperienceTimeline(content) {
       ? `<div class="${headerAlignmentClass} ${headerSpacingClass} lg:order-2 order-1">${headerContent}</div>`
       : `<div class="${summaryAlignmentClass} ${summarySpacingClass}">${summaryContent}</div>`;
 
-    return `<article role="listitem" class="relative lg:grid lg:grid-cols-2 lg:gap-8 items-center" data-aos="fade-up"${delay ? ` data-aos-delay="${delay}"` : ''}>${leftPane}${rightPane}<div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-4 h-4 ${dotClass} rounded-full border-4 border-white shadow-lg"></div></article>`;
+    return `<li class="relative lg:grid lg:grid-cols-2 lg:gap-8 items-center" data-aos="fade-up"${delay ? ` data-aos-delay="${delay}"` : ''}>${leftPane}${rightPane}<div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-4 h-4 ${dotClass} rounded-full border-4 border-white shadow-lg"></div></li>`;
   }).join('');
 }
 
@@ -230,7 +230,7 @@ function renderAchievements(content) {
   return content.achievements.map((item) => {
     const delayAttr = item.delay ? ` data-aos-delay="${item.delay}"` : '';
     const iconName = item.iconClass.split(/\s+/).find((token) => token.startsWith('fa-')) || 'fa-star';
-    return `<article role="listitem" class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover-card group" data-aos="fade-up"${delayAttr}><div class="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mb-6 group-hover:bg-accent transition-colors">${iconMarkup(iconName, 'text-2xl text-accent group-hover:text-white transition-colors')}</div><h3 class="text-xl font-bold text-white mb-3">${item.title}</h3><p class="text-white/70 leading-relaxed">${item.descriptionHtml}</p></article>`;
+    return `<li class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover-card group" data-aos="fade-up"${delayAttr}><div class="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mb-6 group-hover:bg-accent transition-colors">${iconMarkup(iconName, 'text-2xl text-accent group-hover:text-white transition-colors')}</div><h3 class="text-xl font-bold text-white mb-3">${item.title}</h3><p class="text-white/70 leading-relaxed">${item.descriptionHtml}</p></li>`;
   }).join('');
 }
 
@@ -239,12 +239,12 @@ function renderSkills(content) {
     const delayAttr = group.delay ? ` data-aos-delay="${group.delay}"` : '';
     const iconName = group.iconClass.split(/\s+/).find((token) => token.startsWith('fa-')) || 'fa-star';
     const itemsHtml = group.items.map((item) => `<li class="flex items-center text-soft-text">${iconMarkup('fa-check-circle', 'text-accent mr-3')}${item}</li>`).join('');
-    return `<article role="listitem" class="bg-white rounded-2xl p-8 shadow-lg hover-card" data-aos="fade-up"${delayAttr}><div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6">${iconMarkup(iconName, 'text-2xl text-primary')}</div><h3 class="text-xl font-bold text-primary mb-4">${group.title}</h3><ul class="space-y-3">${itemsHtml}</ul></article>`;
+    return `<li class="bg-white rounded-2xl p-8 shadow-lg hover-card" data-aos="fade-up"${delayAttr}><div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6">${iconMarkup(iconName, 'text-2xl text-primary')}</div><h3 class="text-xl font-bold text-primary mb-4">${group.title}</h3><ul class="space-y-3">${itemsHtml}</ul></li>`;
   }).join('');
 }
 
 function renderCompetencies(content) {
-  return content.competencies.map((item) => `<span role="listitem" class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">${item}</span>`).join('');
+  return content.competencies.map((item) => `<li class="px-6 py-3 bg-white rounded-full text-primary font-semibold shadow-md hover:shadow-lg transition-shadow cursor-default border border-medium-gray">${item}</li>`).join('');
 }
 
 function renderExperienceSection(content) {
@@ -257,7 +257,7 @@ function renderExperienceSection(content) {
             </div>
             <div class="relative">
                 <div class="hidden lg:block timeline-line"></div>
-                <div id="experience-timeline" role="list" class="space-y-12">${renderExperienceTimeline(content)}</div>
+                <ul id="experience-timeline" role="list" class="space-y-12">${renderExperienceTimeline(content)}</ul>
             </div>
         </div>
     </section>`;
@@ -275,7 +275,7 @@ function renderAchievementsSection(content) {
                 <h2 id="achievements-heading" class="section-display text-4xl font-bold text-white mb-4">${content.staticText.achievementsHeading}</h2>
                 <p id="achievements-subtitle" class="text-lg text-white/70 max-w-2xl mx-auto">${content.staticText.achievementsSubtitle}</p>
             </div>
-            <div id="achievements-grid" role="list" class="grid md:grid-cols-2 gap-8">${renderAchievements(content)}</div>
+            <ul id="achievements-grid" role="list" class="grid md:grid-cols-2 gap-8">${renderAchievements(content)}</ul>
         </div>
     </section>`;
 }
@@ -287,10 +287,10 @@ function renderSkillsSection(content) {
                 <h2 id="skills-heading" class="section-display text-4xl font-bold text-primary mb-4">${content.staticText.skillsHeading}</h2>
                 <p id="skills-subtitle" class="text-lg text-soft-text max-w-2xl mx-auto">${content.staticText.skillsSubtitle}</p>
             </div>
-            <div id="skills-grid" role="list" class="grid md:grid-cols-3 gap-8">${renderSkills(content)}</div>
+            <ul id="skills-grid" role="list" class="grid md:grid-cols-3 gap-8">${renderSkills(content)}</ul>
             <div class="mt-16" data-aos="fade-up">
                 <h3 id="competencies-heading" class="text-2xl font-bold text-primary text-center mb-8">${content.staticText.competenciesHeading}</h3>
-                <div id="competencies-tags" role="list" class="flex flex-wrap justify-center gap-3">${renderCompetencies(content)}</div>
+                <ul id="competencies-tags" role="list" class="flex flex-wrap justify-center gap-3">${renderCompetencies(content)}</ul>
             </div>
         </div>
     </section>`;
@@ -362,6 +362,12 @@ const CSP = [
   "form-action 'self'"
 ].join('; ');
 
+const FONT_FILES = [
+  'assets/fonts/eb-garamond/eb-garamond-latin-400-normal.woff2',
+  'assets/fonts/eb-garamond/eb-garamond-latin-600-normal.woff2',
+  'assets/fonts/eb-garamond/eb-garamond-latin-700-normal.woff2',
+  'assets/fonts/cormorant-garamond/cormorant-garamond-latin-600-normal.woff2'
+];
 const PHOTO_WIDTHS = [320, 640, 881];
 const PHOTO_SIZE = { width: 881, height: 1011 };
 
@@ -438,8 +444,12 @@ function injectPerformanceAndSecurity(document, prefix, bundles) {
   ensureMeta(document, 'property', 'og:image:type', 'image/jpeg');
   addHead(document, [
     `\n<link rel="preload" as="image" type="image/avif" href="${prefix}assets/img/photo-640.avif" imagesrcset="${photoSet(prefix, 'avif')}" imagesizes="320px" fetchpriority="high">`,
-    `<link rel="preload" as="font" type="font/woff2" href="${prefix}assets/fonts/eb-garamond/eb-garamond-latin-400-normal.woff2" crossorigin>`,
-    `<link rel="preload" as="font" type="font/woff2" href="${prefix}assets/fonts/cormorant-garamond/cormorant-garamond-latin-600-normal.woff2" crossorigin>`,
+    ...FONT_FILES.map((f) => `<link rel="preload" as="font" type="font/woff2" href="${prefix}${f}" crossorigin>`),
+    '<link rel="icon" href="/favicon.ico" sizes="any">',
+    '<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">',
+    '<link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">',
+    '<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">',
+    '<link rel="manifest" href="/site.webmanifest">',
     `<link rel="stylesheet" href="${prefix}${bundles.css}">`
   ].join('\n'));
   document.body.insertAdjacentHTML('beforeend', `\n<script src="${prefix}${bundles.js}" defer></script>\n`);
@@ -457,6 +467,9 @@ function build404(siteContent, bundles) {
 <meta http-equiv="Content-Security-Policy" content="${CSP}">
 <meta name="robots" content="noindex">
 <title>Page not found | Carlos Fernández San Millán</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="stylesheet" href="/${bundles.css}">
 </head>
 <body class="font-sans antialiased bg-primary text-white on-dark">

@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   guard:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Require explicit confirmation and master ref
         run: |
@@ -31,11 +31,11 @@ jobs:
 
   verify:
     needs: guard
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -45,17 +45,17 @@ jobs:
 
   deploy:
     needs: verify
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment:
       name: production
       url: https://www.cormite.com/
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Assemble site (allowlist + reference check)
         run: node scripts/assemble-site.mjs --out _site
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

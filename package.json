@@ -10,7 +10,8 @@
     "test": "playwright test",
     "test:local": "PW_CHANNEL=chrome playwright test",
     "build:images": "node ./scripts/build-images.mjs",
-    "build:social": "node ./scripts/build-social-card.mjs"
+    "build:social": "node ./scripts/build-social-card.mjs",
+    "build:icons": "node ./scripts/build-icons.mjs"
   },
   "overrides": {
     "anymatch": {
@@ -32,8 +33,8 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
     "esbuild": "^0.28.2",
-    "jsdom": "^29.0.2",
-    "playwright": "^1.58.2",
+    "jsdom": "^30.1.3",
+    "playwright": "^1.64.1",
     "sharp": "^0.35.5",
     "tailwindcss": "^3.4.17"
   },
