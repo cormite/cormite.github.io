@@ -272,3 +272,23 @@ test.describe('motion layer', () => {
     await expect.poll(() => page.locator('.timeline-line').evaluate((e) => parseFloat(getComputedStyle(e).getPropertyValue('--tl') || '0'))).toBeGreaterThan(0.05);
   });
 });
+
+test('photo tilt is limited to the area around the photo', async ({ page, viewport }) => {
+  test.skip(viewport.width < 1024, 'desktop pointer only');
+  await page.goto('/');
+  await page.waitForTimeout(1500);
+  const box = await page.locator('.photo-stage').boundingBox();
+  const cy = box.y + box.height / 2;
+  const angle = async () => page.locator('.photo-stage').evaluate((e) => {
+    const m = new DOMMatrix(getComputedStyle(e).transform);
+    return Math.abs(Math.asin(Math.max(-1, Math.min(1, m.m13))) * 180 / Math.PI);
+  });
+  await page.mouse.move(box.x - box.width * 2, cy); // far left, same height as the photo
+  await page.waitForTimeout(400);
+  expect(await angle()).toBeLessThan(0.5);
+  await page.mouse.move(box.x + box.width * 0.9, cy); // over the photo's edge
+  await page.waitForTimeout(400);
+  const near = await angle();
+  expect(near).toBeGreaterThan(1);
+  expect(near).toBeLessThanOrEqual(7.1);
+});

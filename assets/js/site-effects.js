@@ -108,12 +108,20 @@
 
     const ring = hero.querySelector('.photo-ring');
     const stage = ring && ring.parentElement;
+    // Tilt only reacts near the photo: full strength over it, fading to zero about one photo-width away.
+    const TILT_MAX_DEG = 7;
+    const TILT_REACH = 1.1; // in photo-widths measured from the photo centre
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
     function tilt(e) {
       if (!stage) return;
       const r = stage.getBoundingClientRect();
-      const px = ((e.clientX - r.left) / r.width - 0.5);
-      const py = ((e.clientY - r.top) / r.height - 0.5);
-      stage.style.transform = 'perspective(900px) rotateY(' + (px * 8).toFixed(2) + 'deg) rotateX(' + (-py * 8).toFixed(2) + 'deg)';
+      const dx = (e.clientX - (r.left + r.width / 2)) / r.width;
+      const dy = (e.clientY - (r.top + r.height / 2)) / r.height;
+      const strength = clamp(1 - (Math.hypot(dx, dy) - 0.5) / (TILT_REACH - 0.5), 0, 1);
+      if (strength === 0) { untilt(); return; }
+      const ry = clamp(dx * 2, -1, 1) * TILT_MAX_DEG * strength;
+      const rx = -clamp(dy * 2, -1, 1) * TILT_MAX_DEG * strength;
+      stage.style.transform = 'perspective(900px) rotateY(' + ry.toFixed(2) + 'deg) rotateX(' + rx.toFixed(2) + 'deg)';
     }
     function untilt() { if (stage) stage.style.transform = ''; }
   }
