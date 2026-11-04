@@ -8,7 +8,7 @@ feature/* ──PR──▶ test ──auto──▶ STAGING (browser-testable)
 
 | Environment | Branch | URL | Trigger |
 |---|---|---|---|
-| Staging (private) | `test` | https://cormite-staging.pages.dev (Cloudflare Access login) | automatic on every push to `test` (Cloudflare Pages Git integration) |
+| Staging (private) | `test` | https://cormite-staging.pages.dev (password prompt) | automatic on every push to `test` (Cloudflare Pages Git integration) |
 | Production | `master` | https://www.cormite.com | **manual only** (`Deploy production` workflow) |
 
 Production is never updated by a push. Two gates apply:
@@ -38,7 +38,10 @@ npm test               # Playwright with bundled Chromium (CI)
 3. Project name `cormite-staging`. **Production branch: `test`**. Framework preset: None.
    Build command: `node scripts/assemble-site.mjs --staging --out _site` Build output directory: `_site`.
    Environment variable: `NODE_VERSION` = `22`. Save and deploy.
-4. Zero Trust -> Access -> Applications -> Add -> Self-hosted. Domains: `cormite-staging.pages.dev` and `*.cormite-staging.pages.dev`. Policy: Allow -> Emails -> your address. Login method: One-time PIN.
+4. Password gate (free, no payment details): `functions/_middleware.js` asks for a password on every request and **fails closed** (503) if no password is set. Generate one and copy it to the clipboard without printing it, then store it in your password manager:
+   `openssl rand -base64 24 | tr -d '\n' | pbcopy`
+   Cloudflare -> Workers & Pages -> `cormite-staging` -> Settings -> Variables and Secrets -> Add -> type **Secret**, name `STAGING_PASSWORD`, paste the value, for **both Production and Preview**. Then Deployments -> Retry (or push). Rotate the password any time by changing the secret.
+   Cloudflare Access (SSO/MFA) is the stronger alternative but requires payment details even on the free plan, so it is intentionally not used.
 
 **B. GitHub**
 1. Settings -> Environments: create `production` (Required reviewers = you; Deployment branches = `master` only).
