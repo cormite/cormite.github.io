@@ -1,8 +1,7 @@
 module.exports = {
+  // Scan ONLY real sources. Never the generated pages (index.html, es/, it/): they contain classes from the
+  // previous build, so stale rules would survive one extra build and the output would not be reproducible.
   content: [
-    "./index.html",
-    "./es/index.html",
-    "./it/index.html",
     "./scripts/page-template.html",
     "./scripts/build-static-pages.mjs",
     "./assets/js/**/*.js"
