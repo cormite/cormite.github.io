@@ -159,3 +159,24 @@ test.describe('search snippets', () => {
     });
   }
 });
+
+test.describe('analytics link classification', () => {
+  test('social platform is derived from the hostname, never from a substring', async ({ page }) => {
+    await page.goto('/');
+    const out = await page.evaluate(() => {
+      const f = window.__SITE_INTERACTIONS.inferSocialPlatform;
+      return {
+        linkedin: f('https://www.linkedin.com/in/someone'),
+        linkedinBare: f('https://linkedin.com/in/someone'),
+        github: f('https://github.com/Cormite'),
+        website: f('https://www.cormite.com/es/'),
+        evilPath: f('https://evil.example/linkedin.com'),
+        evilHost: f('https://notlinkedin.com/in/x'),
+        evilSub: f('https://linkedin.com.evil.example/'),
+        evilQuery: f('https://evil.example/?u=github.com'),
+        garbage: f('not a url at all')
+      };
+    });
+    expect(out).toEqual({ linkedin: 'linkedin', linkedinBare: 'linkedin', github: 'github', website: 'website', evilPath: 'external', evilHost: 'external', evilSub: 'external', evilQuery: 'external', garbage: 'external' });
+  });
+});
