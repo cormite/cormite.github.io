@@ -116,3 +116,159 @@ test('mobile hamburger button sits inside the navbar row', async ({ page, viewpo
   expect(btn.y + btn.height).toBeLessThanOrEqual(nav.y + nav.height);
   expect(btn.x).toBeGreaterThan(viewport.width / 2);
 });
+
+/* ------------------------------------------------------------------ */
+/* Phase 2-5 regression tests: privacy, security, performance, a11y    */
+/* ------------------------------------------------------------------ */
+
+const GA_HOST = /googletagmanager\.com|google-analytics\.com/;
+
+test.describe('privacy and security', () => {
+  test('no Google Analytics request before consent; banner is shown', async ({ page }) => {
+    const ga = [];
+    page.on('request', (r) => { if (GA_HOST.test(r.url())) ga.push(r.url()); });
+    await page.goto('/');
+    await expect(page.locator('#consent-banner')).toBeVisible();
+    await page.waitForTimeout(800);
+    expect(ga).toEqual([]);
+    expect(await page.evaluate(() => typeof window.gtag)).toBe('undefined');
+  });
+
+  test('declining persists and never loads analytics', async ({ page }) => {
+    const ga = [];
+    page.on('request', (r) => { if (GA_HOST.test(r.url())) ga.push(r.url()); });
+    await page.goto('/');
+    await page.locator('#consent-banner button', { hasText: /decline/i }).click();
+    await expect(page.locator('#consent-banner')).toHaveCount(0);
+    await page.reload();
+    await expect(page.locator('#consent-banner')).toHaveCount(0);
+    await page.waitForTimeout(500);
+    expect(ga).toEqual([]);
+  });
+
+  test('accepting loads analytics with consent mode defaults denied', async ({ page }) => {
+    const ga = [];
+    page.on('request', (r) => { if (GA_HOST.test(r.url())) ga.push(r.url()); });
+    await page.route(GA_HOST, (route) => route.abort());
+    await page.goto('/');
+    await page.locator('#consent-banner button', { hasText: /accept/i }).click();
+    await expect.poll(() => ga.length).toBeGreaterThan(0);
+    const dl = await page.evaluate(() => window.dataLayer.map((e) => Array.from(e).slice(0, 3)));
+    const def = dl.find((e) => e[0] === 'consent' && e[1] === 'default');
+    expect(def[2]).toMatchObject({ ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied' });
+  });
+
+  test('privacy settings can be reopened from the footer', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('#consent-banner button', { hasText: /decline/i }).click();
+    await page.locator('#privacy-settings-btn').click();
+    await expect(page.locator('#consent-banner')).toBeVisible();
+  });
+
+  test('CSP is present, with no inline scripts and no unsafe-eval', async ({ page }) => {
+    await page.goto('/');
+    const csp = await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute('content');
+    expect(csp).toContain("object-src 'none'");
+    expect(csp).not.toContain('unsafe-eval');
+    expect(csp).not.toMatch(/script-src[^;]*unsafe-inline/);
+    const inline = await page.evaluate(() => [...document.scripts].filter((s) => !s.src && s.type !== 'application/ld+json').length);
+    expect(inline).toBe(0);
+  });
+});
+
+test.describe('performance and assets', () => {
+  test('one hashed JS bundle and one hashed CSS bundle', async ({ page }) => {
+    await page.goto('/');
+    const scripts = await page.evaluate(() => [...document.scripts].filter((s) => s.src).map((s) => new URL(s.src).pathname));
+    const sheets = await page.evaluate(() => [...document.querySelectorAll('link[rel="stylesheet"]')].map((l) => new URL(l.href).pathname));
+    expect(scripts).toHaveLength(1);
+    expect(scripts[0]).toMatch(/\/assets\/dist\/app\.[0-9a-f]{10}\.js$/);
+    expect(sheets).toHaveLength(1);
+    expect(sheets[0]).toMatch(/\/assets\/dist\/site\.[0-9a-f]{10}\.css$/);
+  });
+
+  test('page is pre-rendered and the client does not re-render it', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('html')).toHaveAttribute('data-prerendered', 'true');
+    expect(await page.locator('svg.icon').count()).toBeGreaterThan(5);
+    expect(await page.locator('i.fas, i.fab').count()).toBe(0);
+  });
+
+  test('responsive portrait loads (AVIF/WebP) and is not upscaled', async ({ page }) => {
+    await page.goto('/');
+    const info = await page.locator('#home img').evaluate((img) => ({ src: img.currentSrc, w: img.naturalWidth, shown: img.getBoundingClientRect().width }));
+    expect(info.w).toBeGreaterThan(0);
+    expect(info.src).toMatch(/assets\/img\/photo-\d+\.(avif|webp|jpg)$/);
+    expect(info.w).toBeLessThanOrEqual(881);
+  });
+
+  test('social card meta points to an existing 1200x630 image', async ({ page, request }) => {
+    await page.goto('/');
+    const og = await page.locator('meta[property="og:image"]').getAttribute('content');
+    expect(og).toMatch(/og-card\.jpg$/);
+    await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', '1200');
+    await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', '630');
+    const res = await request.get(new URL(og).pathname);
+    expect(res.status()).toBe(200);
+  });
+
+  test('es and it pages use correct relative asset paths', async ({ browser, baseURL }) => {
+    for (const p of ['/es/', '/it/']) {
+      const ctx = await browser.newContext({ baseURL });
+      const page = await ctx.newPage();
+      const bad = [];
+      page.on('response', (r) => { if (r.status() >= 400) bad.push(r.url()); });
+      page.on('requestfailed', (r) => { if (!/ERR_ABORTED/.test(r.failure()?.errorText || '')) bad.push(r.url()); });
+      await page.goto(p, { waitUntil: 'networkidle' });
+      expect(bad, p).toEqual([]);
+      await ctx.close();
+    }
+  });
+});
+
+test.describe('motion layer', () => {
+  test('kinetic name keeps an accessible name and a single h1', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('h1')).toHaveCount(1);
+    await expect(page.locator('h1')).toHaveAttribute('aria-label', /Carlos Fernández San Millán/);
+    expect(await page.locator('h1 .kn-ch').count()).toBeGreaterThan(15);
+  });
+
+  test('counters settle on the exact original values', async ({ page, viewport }) => {
+    test.skip(viewport.width < 768, 'desktop layout');
+    await page.goto('/');
+    await expect(page.locator('#hero-budget')).toHaveText(/14M/, { timeout: 5000 });
+    await expect(page.locator('#hero-team-size')).toHaveText(/25\+/, { timeout: 5000 });
+  });
+
+  test('reduced motion: no kinetic/animated effects, final values immediately', async ({ browser, baseURL }) => {
+    const ctx = await browser.newContext({ reducedMotion: 'reduce', baseURL });
+    const page = await ctx.newPage();
+    await page.goto('/');
+    const name = await page.locator('.kn-ch').first().evaluate((e) => getComputedStyle(e).animationName);
+    expect(name).toBe('none');
+    await expect(page.locator('#hero-budget')).toHaveText(/14M/);
+    expect(await page.locator('[data-aos].reveal:not(.is-visible)').count()).toBe(0);
+    await ctx.close();
+  });
+
+  test('works without JavaScript: all content visible', async ({ browser, baseURL }) => {
+    const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL });
+    const page = await ctx.newPage();
+    await page.goto('/');
+    await expect(page.locator('h1')).toBeVisible();
+    await page.waitForTimeout(1800); // let the CSS-only entrance animations finish
+    const hidden = await page.evaluate(() => [...document.querySelectorAll('main *')].filter((e) => getComputedStyle(e).opacity === '0' && e.getBoundingClientRect().width > 0 && !e.classList.contains('hero-canvas')).length);
+    expect(hidden).toBe(0);
+    await ctx.close();
+  });
+
+  test('scroll progress bar and timeline fill respond to scrolling', async ({ page, viewport }) => {
+    test.skip(viewport.width < 768, 'desktop layout');
+    await page.goto('/');
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await expect.poll(() => page.locator('#scroll-progress').evaluate((e) => e.style.transform)).toContain('scaleX(1');
+    await page.evaluate(() => document.getElementById('experience-timeline').scrollIntoView({ block: 'center' }));
+    await expect.poll(() => page.locator('.timeline-line').evaluate((e) => parseFloat(getComputedStyle(e).getPropertyValue('--tl') || '0'))).toBeGreaterThan(0.05);
+  });
+});

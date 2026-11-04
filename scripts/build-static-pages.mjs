@@ -2,7 +2,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
+import crypto from 'node:crypto';
 import { JSDOM } from 'jsdom';
+import { transformSync } from 'esbuild';
 
 // Deterministic builds: set SOURCE_DATE (ISO 8601) to pin the generated date.
 const BUILD_DATE = process.env.SOURCE_DATE ? new Date(process.env.SOURCE_DATE) : new Date();
@@ -102,7 +104,7 @@ function buildStructuredData(siteContent, lang, content) {
       isPartOf: { '@id': websiteId },
       about: { '@id': personId },
       mainEntity: { '@id': personId },
-      primaryImageOfPage: SITE_CONFIG.defaultImage,
+      primaryImageOfPage: SITE_CONFIG.portraitImage,
       inLanguage: content.locale,
       dateModified: BUILD_DATE.toISOString(),
       description: content.meta.description
@@ -115,7 +117,7 @@ function buildStructuredData(siteContent, lang, content) {
       givenName: 'Carlos',
       familyName: 'Fernández San Millán',
       url,
-      image: SITE_CONFIG.defaultImage,
+      image: SITE_CONFIG.portraitImage,
       jobTitle: content.profile.title,
       description: content.meta.description,
       email: `mailto:${content.profile.contactEmail}`,
@@ -324,38 +326,149 @@ function setAria(document, id, value) {
   if (node) node.setAttribute('aria-label', value);
 }
 
-function injectGoogleAnalytics(document, siteContent) {
-  const measurementId = siteContent.SITE_CONFIG.googleAnalyticsId;
-  if (!measurementId) return;
+// ---------------------------------------------------------------------------
+// Asset pipeline: one hashed JS bundle + one hashed CSS bundle (assets/dist)
+// ---------------------------------------------------------------------------
+const JS_ORDER = ['site-content', 'site-utils', 'site-icons', 'site-dom', 'site-render', 'site-interactions', 'site-effects', 'consent', 'main'];
+const CSS_ORDER = ['assets/css/tailwind.css', 'assets/css/styles.css'];
+const distDir = path.join(rootDir, 'assets', 'dist');
 
-  const existingLoader = document.querySelector('script[data-google-analytics="loader"]');
-  const existingConfig = document.querySelector('script[data-google-analytics="config"]');
-  if (existingLoader || existingConfig) return;
+function buildBundles() {
+  const js = JS_ORDER.map((name) => fs.readFileSync(path.join(rootDir, 'assets/js', `${name}.js`), 'utf8')).join('\n;\n');
+  const css = CSS_ORDER.map((file) => fs.readFileSync(path.join(rootDir, file), 'utf8')).join('\n');
+  const jsOut = transformSync(js, { loader: 'js', minify: true, target: 'es2019', legalComments: 'none' }).code;
+  const cssOut = transformSync(css, { loader: 'css', minify: true, legalComments: 'none' }).code;
+  const hash = (text) => crypto.createHash('sha256').update(text).digest('hex').slice(0, 10);
+  const jsName = `app.${hash(jsOut)}.js`;
+  const cssName = `site.${hash(cssOut)}.css`;
 
-  const loader = document.createElement('script');
-  loader.async = true;
-  loader.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
-  loader.setAttribute('data-google-analytics', 'loader');
-
-  const config = document.createElement('script');
-  config.setAttribute('data-google-analytics', 'config');
-  config.textContent = [
-    'window.dataLayer = window.dataLayer || [];',
-    'function gtag(){dataLayer.push(arguments);}',
-    "gtag('js', new Date());",
-    `gtag('config', '${measurementId}');`
-  ].join('\n');
-
-  const structuredData = document.getElementById('structured-data');
-  if (structuredData && structuredData.parentNode) {
-    structuredData.insertAdjacentElement('afterend', loader);
-    loader.insertAdjacentElement('afterend', config);
-    return;
-  }
-
-  document.head.appendChild(loader);
-  document.head.appendChild(config);
+  fs.mkdirSync(distDir, { recursive: true });
+  for (const old of fs.readdirSync(distDir)) fs.rmSync(path.join(distDir, old));
+  fs.writeFileSync(path.join(distDir, jsName), jsOut);
+  fs.writeFileSync(path.join(distDir, cssName), cssOut);
+  return { js: `assets/dist/${jsName}`, css: `assets/dist/${cssName}` };
 }
+
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' https://www.googletagmanager.com",
+  "style-src 'self'",
+  "style-src-attr 'unsafe-inline'",
+  "img-src 'self' data: https://*.google-analytics.com https://*.googletagmanager.com",
+  "font-src 'self'",
+  "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'"
+].join('; ');
+
+const PHOTO_WIDTHS = [320, 640, 881];
+const PHOTO_SIZE = { width: 881, height: 1011 };
+
+function photoSet(prefix, ext) {
+  return PHOTO_WIDTHS.map((w) => `${prefix}assets/img/photo-${w}.${ext} ${w}w`).join(', ');
+}
+
+function pictureMarkup(prefix, kind) {
+  const hero = kind === 'hero';
+  const sizes = hero ? '320px' : '(min-width: 1024px) 576px, calc(100vw - 2rem)';
+  const alt = hero ? 'Carlos Fernández San Millán' : 'About Carlos';
+  const imgAttrs = hero
+    ? 'fetchpriority="high" decoding="async" class="w-full h-full object-cover"'
+    : 'loading="lazy" decoding="async" class="rounded-2xl shadow-2xl w-full object-cover h-[500px]"';
+  return `<source type="image/avif" srcset="${photoSet(prefix, 'avif')}" sizes="${sizes}">`
+    + `<source type="image/webp" srcset="${photoSet(prefix, 'webp')}" sizes="${sizes}">`
+    + `<img src="${prefix}assets/img/photo-640.jpg" srcset="${photoSet(prefix, 'jpg')}" sizes="${sizes}" width="${PHOTO_SIZE.width}" height="${PHOTO_SIZE.height}" alt="${alt}" ${imgAttrs}>`;
+}
+
+function splitKineticName(document) {
+  const h1 = document.querySelector('#home h1');
+  if (!h1) return;
+  const label = h1.textContent.replace(/\s+/g, ' ').trim();
+  let index = 0;
+  const walk = (node) => {
+    Array.from(node.childNodes).forEach((child) => {
+      if (child.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        child.textContent.split(/(\s+)/).forEach((token) => {
+          if (!token) return;
+          if (/^\s+$/.test(token)) { frag.appendChild(document.createTextNode(' ')); return; }
+          const word = document.createElement('span');
+          word.className = 'kn-word';
+          word.setAttribute('aria-hidden', 'true');
+          Array.from(token).forEach((ch) => {
+            const c = document.createElement('span');
+            c.className = 'kn-ch';
+            c.setAttribute('style', `--i:${index}`);
+            index += 1;
+            c.textContent = ch;
+            word.appendChild(c);
+          });
+          frag.appendChild(word);
+        });
+        child.replaceWith(frag);
+      } else if (child.nodeType === 1 && child.tagName !== 'BR') {
+        walk(child);
+      }
+    });
+  };
+  walk(h1);
+  h1.setAttribute('aria-label', label);
+}
+
+function addHead(document, html) {
+  document.head.insertAdjacentHTML('beforeend', html);
+}
+
+function ensureMeta(document, attr, key, value) {
+  let node = document.querySelector(`meta[${attr}="${key}"]`);
+  if (!node) {
+    node = document.createElement('meta');
+    node.setAttribute(attr, key);
+    document.head.appendChild(node);
+  }
+  node.setAttribute('content', value);
+}
+
+function injectPerformanceAndSecurity(document, prefix, bundles) {
+  document.documentElement.setAttribute('data-prerendered', 'true');
+  addHead(document, `\n<meta http-equiv="Content-Security-Policy" content="${CSP}">\n<meta name="referrer" content="strict-origin-when-cross-origin">`);
+  ensureMeta(document, 'property', 'og:image:width', '1200');
+  ensureMeta(document, 'property', 'og:image:height', '630');
+  ensureMeta(document, 'property', 'og:image:type', 'image/jpeg');
+  addHead(document, [
+    `\n<link rel="preload" as="image" type="image/avif" href="${prefix}assets/img/photo-640.avif" imagesrcset="${photoSet(prefix, 'avif')}" imagesizes="320px" fetchpriority="high">`,
+    `<link rel="preload" as="font" type="font/woff2" href="${prefix}assets/fonts/eb-garamond/eb-garamond-latin-400-normal.woff2" crossorigin>`,
+    `<link rel="preload" as="font" type="font/woff2" href="${prefix}assets/fonts/cormorant-garamond/cormorant-garamond-latin-600-normal.woff2" crossorigin>`,
+    `<link rel="stylesheet" href="${prefix}${bundles.css}">`
+  ].join('\n'));
+  document.body.insertAdjacentHTML('beforeend', `\n<script src="${prefix}${bundles.js}" defer></script>\n`);
+  document.querySelectorAll('picture[data-photo]').forEach((node) => {
+    node.innerHTML = pictureMarkup(prefix, node.getAttribute('data-photo'));
+    node.removeAttribute('data-photo');
+  });
+}
+
+function buildSitemap(siteContent) {
+  const base = siteContent.SITE_CONFIG.siteUrl;
+  const lastmod = BUILD_DATE.toISOString().slice(0, 10);
+  const alternates = [['x-default', `${base}/`], ['en', `${base}/`], ['es', `${base}/es/`], ['it', `${base}/it/`]]
+    .map(([l, h]) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${h}" />`).join('\n');
+  const urls = [['', '1.0'], ['es/', '0.9'], ['it/', '0.9']].map(([p, prio]) => `  <url>
+    <loc>${base}/${p}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>${prio}</priority>
+${alternates}
+  </url>`).join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${urls}
+</urlset>
+`;
+}
+
 
 function updateAssetPaths(document, lang) {
   const prefix = relativePrefix(lang);
@@ -393,7 +506,7 @@ function sanitizeTemplate(document) {
   ].forEach((id) => setHtml(document, id, ''));
 }
 
-function populateDocument(document, siteContent, lang) {
+function populateDocument(document, siteContent, lang, bundles) {
   const content = siteContent.I18N[lang];
   const currentDate = BUILD_DATE.toLocaleDateString(content.locale, { month: 'short', year: 'numeric' });
   const currentYear = String(BUILD_DATE.getFullYear());
@@ -401,7 +514,6 @@ function populateDocument(document, siteContent, lang) {
   const prefix = relativePrefix(lang);
 
   sanitizeTemplate(document);
-  injectGoogleAnalytics(document, siteContent);
 
   document.documentElement.lang = lang;
   document.title = content.meta.title;
@@ -510,12 +622,27 @@ function populateDocument(document, siteContent, lang) {
   setHtml(document, 'footer-copyright', `&copy; <span id="current-year">${currentYear}</span> ${content.staticText.footerCopyright}`);
 
   updateAssetPaths(document, lang);
+  injectPerformanceAndSecurity(document, prefix, bundles);
 }
 
-function buildPage(siteContent, lang) {
+function buildPage(siteContent, lang, bundles) {
   const template = fs.readFileSync(templatePath, 'utf8');
-  const dom = new JSDOM(template);
-  populateDocument(dom.window.document, siteContent, lang);
+  const pageUrl = `${siteContent.SITE_CONFIG.siteUrl}${lang === 'en' ? '/' : `/${lang}/`}`;
+  const dom = new JSDOM(template, { url: pageUrl, runScripts: 'outside-only' });
+  populateDocument(dom.window.document, siteContent, lang, bundles);
+
+  // Single source of truth for page content: run the SAME renderer the browser used to run
+  // (assets/js/site-render.js) at build time, so pre-rendered HTML is identical to what visitors
+  // always saw, and the browser no longer has to re-render on load.
+  ['site-content', 'site-utils', 'site-icons', 'site-dom', 'site-render'].forEach((name) => {
+    dom.window.eval(fs.readFileSync(path.join(rootDir, 'assets/js', `${name}.js`), 'utf8'));
+  });
+  dom.window.__SITE_RENDER.setCurrentLanguage(lang);
+  dom.window.__SITE_RENDER.renderAll();
+
+  // Convert legacy <i class="fas ..."> icons to inline SVG now, so the browser never has to.
+  dom.window.__SITE_ICONS.upgradeLegacyIcons();
+  splitKineticName(dom.window.document);
   return dom.serialize();
 }
 
@@ -525,6 +652,8 @@ function writePage(filePath, html) {
 }
 
 const siteContent = loadSiteContent();
-writePage(path.join(rootDir, 'index.html'), buildPage(siteContent, 'en'));
-writePage(path.join(rootDir, 'es', 'index.html'), buildPage(siteContent, 'es'));
-writePage(path.join(rootDir, 'it', 'index.html'), buildPage(siteContent, 'it'));
+const bundles = buildBundles();
+writePage(path.join(rootDir, 'index.html'), buildPage(siteContent, 'en', bundles));
+writePage(path.join(rootDir, 'es', 'index.html'), buildPage(siteContent, 'es', bundles));
+writePage(path.join(rootDir, 'it', 'index.html'), buildPage(siteContent, 'it', bundles));
+fs.writeFileSync(path.join(rootDir, 'sitemap.xml'), buildSitemap(siteContent));

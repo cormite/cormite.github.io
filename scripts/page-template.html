@@ -31,17 +31,12 @@
 <meta name="twitter:image" content="https://www.cormite.com/photo.jpg">
 
     <script id="structured-data" type="application/ld+json">[{"@context":"https://schema.org","@type":"WebSite","@id":"https://www.cormite.com/#website","name":"Carlos Fernández San Millán","url":"https://www.cormite.com/","inLanguage":"en-US","description":"Carlos Fernández San Millán - Head of ICT & Acting CIO. Technology Executive specializing in Digital Transformation, Research Computing, Cybersecurity, and Board Advisory."},{"@context":"https://schema.org","@type":"ProfilePage","@id":"https://www.cormite.com/#profile","url":"https://www.cormite.com/","name":"Carlos Fernández San Millán | Head of ICT & Acting CIO","isPartOf":{"@id":"https://www.cormite.com/#website"},"about":{"@id":"https://www.cormite.com/#person"},"mainEntity":{"@id":"https://www.cormite.com/#person"},"primaryImageOfPage":"https://www.cormite.com/photo.jpg","inLanguage":"en-US","dateModified":"2026-04-07T08:04:40.546Z","description":"Carlos Fernández San Millán - Head of ICT & Acting CIO. Technology Executive specializing in Digital Transformation, Research Computing, Cybersecurity, and Board Advisory."},{"@context":"https://schema.org","@type":"Person","@id":"https://www.cormite.com/#person","name":"Carlos Fernández San Millán","url":"https://www.cormite.com/","image":"https://www.cormite.com/photo.jpg","jobTitle":"Head of ICT & Acting CIO | Board Advisor","description":"Carlos Fernández San Millán - Head of ICT & Acting CIO. Technology Executive specializing in Digital Transformation, Research Computing, Cybersecurity, and Board Advisory.","email":"mailto:carlos.fernandez.san.millan@gmail.com","address":{"@type":"PostalAddress","addressLocality":"Milan, Italy"},"knowsLanguage":["en-US","es-ES","it-IT"],"sameAs":["https://linkedin.com/in/carlosfernandezsanmillan","https://github.com/Cormite","https://www.cormite.com"],"mainEntityOfPage":{"@id":"https://www.cormite.com/#profile"}}]</script>
-
-    <!-- Preload critical resources -->
-    <link rel="preload" href="photo.webp" as="image" type="image/webp">
-    
-    <link rel="stylesheet" href="assets/css/tailwind.css?v=20260407tailwindfirefox2">
-    <link rel="stylesheet" href="assets/css/styles.css?v=20261104overflow1">
 </head>
 <body class="font-sans antialiased text-slate-800 bg-light-bg">
     <a id="skip-link" href="#main-content" class="skip-link">Skip to main content</a>
 
     <!-- Navigation -->
+    <header>
     <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 bg-transparent" aria-label="Primary">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
@@ -75,6 +70,7 @@
             </div>
         
     </nav>
+    </header>
 
 <main id="main-content" tabindex="-1">
     <!-- Hero Section -->
@@ -105,7 +101,7 @@
                     San Millán
                 </h1>
                 
-                <h2 id="hero-title" class="display-font text-2xl md:text-3xl text-accent font-semibold mb-6">Head of ICT &amp; Acting CIO | Board Advisor</h2>
+                <p id="hero-title" class="display-font text-2xl md:text-3xl text-accent font-semibold mb-6">Head of ICT &amp; Acting CIO | Board Advisor</p>
                 
                 <p id="hero-summary" class="text-lg text-white/80 mb-8 max-w-xl leading-relaxed">Technology Executive with 15+ years leading enterprise IT, digital transformation, and research computing in mission-driven international organizations.</p>
                 
@@ -135,17 +131,14 @@
             
             <!-- Photo with Non-Overlapping Badges -->
             <div class="relative flex justify-center lg:justify-end" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
-                <div class="relative">
+                <div class="relative photo-stage">
                     <!-- Decorative Ring -->
                     <div class="absolute inset-0 rounded-full border-4 border-accent/30 animate-pulse-slow"></div>
                     <div class="absolute -inset-4 rounded-full border-2 border-accent/20 animate-spin" style="animation-duration: 20s;"></div>
                     
                     <!-- Photo Container -->
                     <div class="photo-ring relative w-80 h-80 rounded-full overflow-hidden border-4 border-accent shadow-2xl">
-                        <picture>
-                            <source srcset="photo.webp" type="image/webp">
-                            <img src="photo.jpg" alt="Carlos Fernández San Millán" fetchpriority="high" class="w-full h-full object-cover">
-                        </picture>
+                        <picture data-photo="hero"></picture>
                     </div>
                     
                     <!-- Badge Grid System - Positioned Around Photo -->
@@ -167,13 +160,10 @@
     <section id="about" aria-labelledby="about-heading" class="py-24 bg-light-bg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid lg:grid-cols-2 gap-16 items-center">
-                <!-- FIXED: Replaced missing about-us.png with photo.jpg -->
+                
                 <div data-aos="fade-right">
                     <div class="relative">
-                        <picture>
-                            <source srcset="photo.webp" type="image/webp">
-                            <img src="photo.jpg" alt="About Carlos" loading="lazy" decoding="async" class="rounded-2xl shadow-2xl w-full object-cover h-[500px]">
-                        </picture>
+                        <picture data-photo="about"></picture>
                         <div class="absolute -bottom-6 -right-6 bg-primary text-white p-6 rounded-2xl shadow-xl">
                             <div id="about-years-value" class="text-4xl font-bold text-accent">15+</div>
                             <div id="about-years-label" class="text-sm text-white/80">Years Experience</div>
@@ -327,14 +317,7 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
-    <script src="assets/js/site-content.js?v=20260407seo1" defer=""></script>
-    <script src="assets/js/site-utils.js?v=20260407seo1" defer=""></script>
-    <script src="assets/js/site-icons.js?v=20260407seo1" defer=""></script>
-    <script src="assets/js/site-dom.js?v=20260407seo1" defer=""></script>
-    <script src="assets/js/site-render.js?v=20260407seo1" defer=""></script>
-    <script src="assets/js/site-interactions.js?v=20260407seo1" defer=""></script>
-    <script src="assets/js/main.js?v=20260407seo1" defer=""></script>
+    <!-- Scripts: one hashed bundle is injected by scripts/build-static-pages.mjs -->
 
 
 </body></html>

@@ -55,6 +55,11 @@
     }
   }
 
+  function inInitialViewport(node) {
+    const rect = node.getBoundingClientRect();
+    return rect.top < global.innerHeight && rect.bottom > 0;
+  }
+
   function setupRevealAnimations() {
     const nodes = Array.from(document.querySelectorAll('[data-aos]'));
     if (!nodes.length) return;
@@ -65,13 +70,17 @@
     }
 
     const revealImmediately = getProtocol() === 'file:' || prefersReducedMotion() || typeof IntersectionObserver === 'undefined';
+    const pending = [];
     nodes.forEach((node) => {
       const delay = Number(node.getAttribute('data-aos-delay') || '0');
       node.style.transitionDelay = `${delay}ms`;
-      applyRevealState(node, revealImmediately);
+      // Content already on screen is never hidden (no flash); the hero animates via CSS.
+      const visibleNow = revealImmediately || node.classList.contains('is-visible') || inInitialViewport(node);
+      applyRevealState(node, visibleNow);
+      if (!visibleNow) pending.push(node);
     });
 
-    if (revealImmediately) return;
+    if (!pending.length) return;
 
     revealObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -81,7 +90,7 @@
       });
     }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
-    nodes.forEach((node) => revealObserver.observe(node));
+    pending.forEach((node) => revealObserver.observe(node));
   }
 
   function setupNavbarScroll() {
@@ -256,6 +265,10 @@ ${message}`);
         const target = document.querySelector(targetSelector);
         if (!target) return;
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Keep URL and keyboard focus in sync so skip links and in-page nav work for keyboard/screen-reader users.
+        if (global.history && global.history.pushState) global.history.pushState(null, '', targetSelector);
+        if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+        target.focus({ preventScroll: true });
       });
     });
   }
@@ -268,6 +281,7 @@ ${message}`);
     setupContactForm();
     setupAnalyticsTracking();
     setupSmoothScroll();
+    if (global.__SITE_EFFECTS) global.__SITE_EFFECTS.enhanceEffects();
   }
 
   global.__SITE_INTERACTIONS = Object.freeze({
