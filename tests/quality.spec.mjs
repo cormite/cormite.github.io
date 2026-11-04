@@ -93,9 +93,15 @@ test.describe('markup correctness', () => {
     test(`axe reports zero violations of any impact on ${path}`, async ({ page }) => {
       await page.addInitScript(() => localStorage.setItem('cormite-consent-v1', 'denied'));
       await page.goto(path);
-      await page.waitForTimeout(2200);
-      await page.evaluate(() => document.querySelectorAll('[data-aos]').forEach((n) => n.classList.add('is-visible')));
-      await page.waitForTimeout(900);
+      await page.waitForTimeout(800);
+      // Deterministic: switch transitions off and show everything, instead of sleeping and hoping the animation ended.
+      await page.evaluate(() => {
+        const s = new CSSStyleSheet();
+        s.replaceSync('html{scroll-behavior:auto!important}*,*::before,*::after{animation:none!important;transition:none!important}.reveal{opacity:1!important;transform:none!important}');
+        document.adoptedStyleSheets = [...document.adoptedStyleSheets, s];
+        document.querySelectorAll('[data-aos]').forEach((n) => n.classList.add('is-visible'));
+      });
+      await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
       const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice']).analyze();
       const summary = results.violations.map((v) => `${v.id} [${v.impact}] x${v.nodes.length}: ${v.nodes.slice(0, 2).map((n) => n.html.slice(0, 70)).join(' | ')}`);
       expect(summary).toEqual([]);
@@ -178,5 +184,82 @@ test.describe('analytics link classification', () => {
       };
     });
     expect(out).toEqual({ linkedin: 'linkedin', linkedinBare: 'linkedin', github: 'github', website: 'website', evilPath: 'external', evilHost: 'external', evilSub: 'external', evilQuery: 'external', garbage: 'external' });
+  });
+});
+
+test.describe('mobile regressions reported after the first release', () => {
+  test('choosing analytics consent never scrolls the page', async ({ page }) => {
+    for (const label of [/accept|aceptar|accetta/i, /decline|rechazar|rifiuta/i]) {
+      await page.evaluate(() => localStorage.clear()).catch(() => {});
+      await page.goto('/');
+      await page.waitForTimeout(800);
+      await expect(page.locator('#consent-banner')).toBeVisible();
+      expect(await page.evaluate(() => window.scrollY)).toBe(0);
+      await page.locator('#consent-banner button', { hasText: label }).click();
+      await page.waitForTimeout(700);
+      expect(await page.evaluate(() => window.scrollY), `scrollY after ${label}`).toBeLessThan(5);
+      await page.evaluate(() => localStorage.clear());
+    }
+  });
+
+  test('reopening privacy settings from the footer moves focus to it without leaving the footer', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('cormite-consent-v1', 'denied'));
+    await page.goto('/');
+    await page.locator('#privacy-settings-btn').scrollIntoViewIfNeeded();
+    await page.locator('#privacy-settings-btn').click();
+    await expect(page.locator('#consent-banner')).toBeVisible();
+    await page.locator('#consent-banner button', { hasText: /decline|rechazar|rifiuta/i }).click();
+    await expect(page.locator('#privacy-settings-btn')).toBeFocused();
+    await expect(page.locator('#privacy-settings-btn')).toBeInViewport();
+  });
+
+  for (const path of PAGES) {
+    test(`experience: each position's title is immediately followed by its own description on ${path}`, async ({ page }) => {
+      await page.addInitScript(() => localStorage.setItem('cormite-consent-v1', 'denied'));
+      await page.goto(path);
+      // Reading order in the page source (what screen readers, mobile layout and crawlers follow).
+      const source = await page.evaluate(() => [...document.querySelectorAll('#experience-timeline > li')].map((li) => {
+        const pos = (el) => { let n = 0; for (const x of li.querySelectorAll('*')) { n += 1; if (x === el) return n; } return -1; };
+        return { h3: pos(li.querySelector('h3')), card: pos(li.querySelector('.hover-card')) };
+      }));
+      expect(source.length).toBeGreaterThanOrEqual(6);
+      source.forEach((s, i) => expect(s.h3, `item ${i}: title must precede description in the source`).toBeLessThan(s.card));
+    });
+  }
+
+  test('experience on mobile shows title then description for every position, in order', async ({ page, viewport }) => {
+    test.skip(viewport.width >= 1024, 'mobile layout');
+    await page.addInitScript(() => localStorage.setItem('cormite-consent-v1', 'denied'));
+    await page.goto('/');
+    await page.evaluate(() => document.querySelectorAll('[data-aos]').forEach((n) => n.classList.add('is-visible')));
+    await page.waitForTimeout(900);
+    const seq = await page.evaluate(() => {
+      const out = [];
+      for (const li of document.querySelectorAll('#experience-timeline > li')) {
+        const h = li.querySelector('h3').getBoundingClientRect().top;
+        const c = li.querySelector('.hover-card').getBoundingClientRect().top;
+        out.push({ y: h + scrollY, kind: 'T' }, { y: c + scrollY, kind: 'D' });
+      }
+      return out.sort((a, b) => a.y - b.y).map((x) => x.kind).join('');
+    });
+    expect(seq).toBe('TD'.repeat(seq.length / 2));
+  });
+
+  test('experience on desktop keeps the alternating left/right layout', async ({ page, viewport }) => {
+    test.skip(viewport.width < 1024, 'desktop layout');
+    await page.addInitScript(() => localStorage.setItem('cormite-consent-v1', 'denied'));
+    await page.goto('/');
+    await page.evaluate(() => document.querySelectorAll('[data-aos]').forEach((n) => n.classList.add('is-visible')));
+    await page.waitForTimeout(900);
+    const sides = await page.evaluate(() => [...document.querySelectorAll('#experience-timeline > li')].map((li) => {
+      const mid = innerWidth / 2;
+      const h = li.querySelector('h3').getBoundingClientRect();
+      const c = li.querySelector('.hover-card').getBoundingClientRect();
+      return { title: h.left + h.width / 2 < mid ? 'L' : 'R', card: c.left + c.width / 2 < mid ? 'L' : 'R' };
+    }));
+    sides.forEach((s, i) => {
+      expect(s.title, `item ${i} title side`).toBe(i % 2 === 0 ? 'L' : 'R');
+      expect(s.card, `item ${i} description side`).toBe(i % 2 === 0 ? 'R' : 'L');
+    });
   });
 });

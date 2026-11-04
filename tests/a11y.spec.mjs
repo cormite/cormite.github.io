@@ -10,10 +10,14 @@ for (const path of PAGES) {
         await page.addInitScript(() => localStorage.setItem('cormite-consent-v1', 'denied'));
       }
       await page.goto(path);
-      // Let entrance animations settle so contrast is measured on final colours.
-      await page.waitForTimeout(2200);
-      await page.evaluate(() => document.querySelectorAll('[data-aos]').forEach((n) => n.classList.add('is-visible')));
-      await page.waitForTimeout(1000);
+      // Deterministic: switch transitions off and show everything, instead of sleeping and hoping the animation ended.
+      await page.evaluate(() => {
+        const s = new CSSStyleSheet();
+        s.replaceSync('html{scroll-behavior:auto!important}*,*::before,*::after{animation:none!important;transition:none!important}.reveal{opacity:1!important;transform:none!important}');
+        document.adoptedStyleSheets = [...document.adoptedStyleSheets, s];
+        document.querySelectorAll('[data-aos]').forEach((n) => n.classList.add('is-visible'));
+      });
+      await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
       const results = await new AxeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'])
         .analyze();
