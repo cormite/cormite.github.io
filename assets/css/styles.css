@@ -152,6 +152,11 @@ textarea:focus-visible {
    Motion
    ========================================================================== */
 
+/* Pre-reveal fade-left/right elements are translated sideways; clip so they never cause horizontal scroll on mobile. */
+main {
+  overflow-x: clip;
+}
+
 [data-aos] {
   opacity: 0;
   transition: opacity var(--transition-reveal), transform var(--transition-reveal);

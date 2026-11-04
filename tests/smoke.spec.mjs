@@ -51,9 +51,7 @@ for (const { path, lang } of PAGES) {
       expect(noAlt).toBe(0);
     });
 
-    test('no horizontal overflow', async ({ page, viewport }) => {
-      // KNOWN BUG (assessment F21): ~12px overflow on mobile from hero badges. Remove this line once fixed.
-      test.fail(viewport.width < 768, 'known mobile overflow, fix in design phase');
+    test('no horizontal overflow (before and after reveal)', async ({ page }) => {
       await page.goto(path);
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       expect(overflow).toBeLessThanOrEqual(1);
