@@ -16,7 +16,8 @@
   function bootstrap() {
     try {
       setCurrentLanguage(detectLanguage());
-      renderAll();
+      // Pages are fully pre-rendered at build time; only re-render for legacy/unrendered pages.
+      if (document.documentElement.getAttribute('data-prerendered') !== 'true') renderAll();
       enhanceUi();
     } catch (error) {
       console.error('Site bootstrap failed:', error);

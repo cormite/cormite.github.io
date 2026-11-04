@@ -9,7 +9,8 @@ const SITE_CONFIG = Object.freeze({
   siteUrl: 'https://www.cormite.com',
   siteName: 'Carlos Fernández San Millán',
   author: 'Carlos Fernández San Millán',
-  defaultImage: 'https://www.cormite.com/photo.jpg',
+  defaultImage: 'https://www.cormite.com/assets/og/og-card.jpg',
+  portraitImage: 'https://www.cormite.com/photo.jpg',
   googleAnalyticsId: 'G-6TC2GBF93J'
 });
 const CV_FILES = Object.freeze({
@@ -103,8 +104,9 @@ const I18N = Object.freeze({
       footerCopyright: 'Carlos Fernández San Millán. All rights reserved.',
       ui: Object.freeze({
         skipLink: 'Skip to main content',
+        consentLabel: 'Privacy preferences', consentText: 'I use Google Analytics 4 to understand how this site is used, only if you agree. No advertising, no profiling, no data sold. You can change your mind at any time.', consentAccept: 'Accept analytics', consentDecline: 'Decline', consentSettings: 'Privacy settings',
         primaryNavLabel: 'Primary',
-        homeLinkLabel: 'Carlos Fernandez San Millan home',
+        homeLinkLabel: 'CF. Carlos Fernández San Millán, home',
         openMenuLabel: 'Open navigation menu',
         mobileNavLabel: 'Mobile navigation',
         closeMenuLabel: 'Close navigation menu',
@@ -213,8 +215,9 @@ const I18N = Object.freeze({
       footerCopyright: 'Carlos Fernández San Millán. Todos los derechos reservados.',
       ui: Object.freeze({
         skipLink: 'Ir al contenido principal',
+        consentLabel: 'Preferencias de privacidad', consentText: 'Uso Google Analytics 4 para entender cómo se utiliza este sitio, solo si lo aceptas. Sin publicidad, sin perfilado y sin venta de datos. Puedes cambiar de opinión en cualquier momento.', consentAccept: 'Aceptar analítica', consentDecline: 'Rechazar', consentSettings: 'Ajustes de privacidad',
         primaryNavLabel: 'Principal',
-        homeLinkLabel: 'Inicio de Carlos Fernández San Millán',
+        homeLinkLabel: 'CF. Inicio de Carlos Fernández San Millán',
         openMenuLabel: 'Abrir menú de navegación',
         mobileNavLabel: 'Navegación móvil',
         closeMenuLabel: 'Cerrar menú de navegación',
@@ -323,8 +326,9 @@ const I18N = Object.freeze({
       footerCopyright: 'Carlos Fernández San Millán. Tutti i diritti riservati.',
       ui: Object.freeze({
         skipLink: 'Vai al contenuto principale',
+        consentLabel: 'Preferenze sulla privacy', consentText: 'Uso Google Analytics 4 per capire come viene utilizzato il sito, solo se acconsenti. Nessuna pubblicità, nessuna profilazione, nessuna vendita di dati. Puoi cambiare idea in qualsiasi momento.', consentAccept: 'Accetta analytics', consentDecline: 'Rifiuta', consentSettings: 'Impostazioni privacy',
         primaryNavLabel: 'Principale',
-        homeLinkLabel: 'Home di Carlos Fernández San Millán',
+        homeLinkLabel: 'CF. Home di Carlos Fernández San Millán',
         openMenuLabel: 'Apri menu di navigazione',
         mobileNavLabel: 'Navigazione mobile',
         closeMenuLabel: 'Chiudi menu di navigazione',

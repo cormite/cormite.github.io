@@ -1,3 +1,7 @@
 node_modules/
 project_architecture/
 .DS_Store
+test-results/
+playwright-report/
+_site/
+_staging/

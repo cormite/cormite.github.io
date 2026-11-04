@@ -1,6 +1,10 @@
 module.exports = {
   content: [
     "./index.html",
+    "./es/index.html",
+    "./it/index.html",
+    "./scripts/page-template.html",
+    "./scripts/build-static-pages.mjs",
     "./assets/js/**/*.js"
   ],
   theme: {

@@ -176,7 +176,7 @@ function buildStructuredData(content) {
       isPartOf: { '@id': websiteId },
       about: { '@id': personId },
       mainEntity: { '@id': personId },
-      primaryImageOfPage: SITE_CONFIG.defaultImage,
+      primaryImageOfPage: SITE_CONFIG.portraitImage,
       inLanguage: content.locale,
       dateModified: nowIso,
       description: content.meta.description
@@ -189,7 +189,7 @@ function buildStructuredData(content) {
       givenName: 'Carlos',
       familyName: 'Fernández San Millán',
       url: languageUrl,
-      image: SITE_CONFIG.defaultImage,
+      image: SITE_CONFIG.portraitImage,
       jobTitle: content.profile.title,
       description: content.meta.description,
       email: `mailto:${content.profile.contactEmail}`,

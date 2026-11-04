@@ -39,6 +39,8 @@
    ========================================================================== */
 
 :root {
+  /* Brighter gold for text on dark/blue surfaces: 4.4:1 on blue, 7.1:1 on navy (WCAG AA). The darker --color-accent is kept for light surfaces. */
+  --color-accent-on-dark: #D4A017;
   --color-primary: #0B1B3D;
   --color-secondary: #1E3A8A;
   --color-accent: #8A6508;
@@ -152,31 +154,42 @@ textarea:focus-visible {
    Motion
    ========================================================================== */
 
-[data-aos] {
-  opacity: 0;
+/* Pre-reveal fade-left/right elements are translated sideways; clip so they never cause horizontal scroll on mobile. */
+main {
+  overflow-x: clip;
+}
+
+/* Content is visible by default (no-JS safe). JS adds .reveal only to elements below the fold. */
+.reveal {
   transition: opacity var(--transition-reveal), transform var(--transition-reveal);
   will-change: opacity, transform;
 }
 
-[data-aos].is-visible {
-  opacity: 1;
-  transform: none;
+.reveal:not(.is-visible) {
+  opacity: 0;
 }
 
-[data-aos="fade-up"] {
-  transform: translate3d(0, 26px, 0);
+.reveal-fade-up:not(.is-visible) { transform: translate3d(0, 26px, 0); }
+.reveal-fade-down:not(.is-visible) { transform: translate3d(0, -26px, 0); }
+.reveal-fade-left:not(.is-visible) { transform: translate3d(26px, 0, 0); }
+.reveal-fade-right:not(.is-visible) { transform: translate3d(-26px, 0, 0); }
+
+/* Hero entrance is pure CSS so it plays on first paint, before any script runs. */
+@keyframes hero-in {
+  from { opacity: 0; transform: translate3d(0, 24px, 0); }
+  to { opacity: 1; transform: none; }
 }
 
-[data-aos="fade-down"] {
-  transform: translate3d(0, -26px, 0);
+#home [data-aos="fade-right"] {
+  animation: hero-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.15s both;
 }
 
-[data-aos="fade-left"] {
-  transform: translate3d(26px, 0, 0);
+#home [data-aos="fade-left"] {
+  animation: hero-in 1s cubic-bezier(0.2, 0.7, 0.2, 1) 0.45s both;
 }
 
-[data-aos="fade-right"] {
-  transform: translate3d(-26px, 0, 0);
+html {
+  scroll-padding-top: 5rem;
 }
 
 @keyframes rotate {
@@ -407,9 +420,268 @@ textarea:focus-visible {
     box-shadow: inherit;
   }
 
-  [data-aos] {
+  .reveal,
+  .reveal:not(.is-visible),
+  #home [data-aos] {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
+    animation: none !important;
   }
+
+  .kn-ch,
+  .hero-canvas,
+  .hero-spotlight {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  .hero-canvas {
+    opacity: 0.6 !important;
+  }
+
+  #scroll-progress {
+    transition: none;
+  }
+}
+
+
+/* ==========================================================================
+   Hero scene (depth, kinetic name, spotlight)
+   ========================================================================== */
+
+.hero-canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  animation: fade-in 1.6s ease 0.4s forwards;
+}
+
+.hero-spotlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(520px circle at var(--mx, 70%) var(--my, 40%), rgba(212, 160, 23, 0.10), transparent 60%);
+}
+
+@keyframes fade-in {
+  to { opacity: 1; }
+}
+
+.photo-stage {
+  transition: transform 0.25s ease-out;
+  transform-style: preserve-3d;
+}
+
+/* Kinetic name: letters rise out of a mask, staggered. Markup is generated at build time. */
+.kn-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+
+.kn-ch {
+  display: inline-block;
+  transform: translate3d(0, 115%, 0) rotate(5deg);
+  animation: kn-rise 0.85s cubic-bezier(0.2, 0.8, 0.2, 1) calc(0.25s + var(--i) * 45ms) forwards;
+}
+
+@keyframes kn-rise {
+  to { transform: none; }
+}
+
+.gradient-text .kn-ch,
+.kn-gradient .kn-ch {
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.count-up {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   Scroll-linked elements
+   ========================================================================== */
+
+#scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 60;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: linear-gradient(90deg, var(--color-accent), #D4A017);
+  pointer-events: none;
+}
+
+.timeline-line {
+  overflow: hidden;
+  background: var(--color-border-soft);
+}
+
+.timeline-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, var(--color-accent), var(--color-secondary));
+  transform: scaleY(var(--tl, 0));
+  transform-origin: top;
+}
+
+#experience-timeline > article {
+  transition: opacity var(--transition-reveal), transform var(--transition-reveal), filter 0.4s ease;
+}
+
+#experience-timeline > article.is-current {
+  filter: drop-shadow(0 12px 28px rgba(11, 27, 61, 0.12));
+}
+
+/* ==========================================================================
+   Privacy / consent
+   ========================================================================== */
+
+.consent-banner {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 70;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem 1.25rem;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--color-white);
+  background: rgba(11, 27, 61, 0.96);
+  border: 1px solid var(--color-white-20);
+  border-radius: 1rem;
+  box-shadow: 0 20px 50px rgba(11, 27, 61, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: hero-in 0.6s ease both;
+}
+
+.consent-banner p {
+  flex: 1 1 18rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.consent-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.consent-btn {
+  padding: 0.6rem 1.1rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: 1px solid var(--color-white-30);
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.consent-btn:hover {
+  transform: translateY(-1px);
+}
+
+.consent-btn-primary {
+  background: #FFFFFF;
+  color: var(--color-primary);
+}
+
+.consent-btn-secondary {
+  background: transparent;
+  color: var(--color-white);
+}
+
+.privacy-settings-btn {
+  display: block;
+  margin: 0.75rem auto 0;
+  background: none;
+  border: 0;
+  padding: 0.25rem 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.privacy-settings-btn:hover {
+  color: #FFFFFF;
+}
+
+/* ==========================================================================
+   Small screens: badges flow under the photo instead of floating off-screen
+   ========================================================================== */
+
+@media (max-width: 1023px) {
+  .hero-badge-list {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    width: calc(100vw - 2rem);
+    max-width: 30rem;
+    margin-top: 1.5rem;
+  }
+
+  .hero-badge-list .hero-badge {
+    position: static;
+    transform: none;
+    animation: none;
+    padding: 0.35rem 0.8rem;
+  }
+}
+
+@media print {
+  .reveal,
+  .reveal:not(.is-visible) {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .consent-banner,
+  #scroll-progress,
+  .hero-canvas,
+  .hero-spotlight {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   Accessible gold on dark surfaces (contrast fix)
+   ========================================================================== */
+
+#home .text-accent,
+.on-dark .text-accent,
+#achievements .text-accent,
+#navbar .text-accent,
+#mobile-menu .text-accent,
+footer .text-accent,
+#navbar .hover\:text-accent:hover,
+#mobile-menu .hover\:text-accent:hover {
+  color: var(--color-accent-on-dark);
+}
+
+#home .gradient-text,
+#home .gradient-text .kn-ch {
+  background-image: linear-gradient(135deg, #D4A017 0%, #E8C14A 100%);
 }
