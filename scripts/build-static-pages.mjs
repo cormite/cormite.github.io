@@ -596,6 +596,7 @@ function populateDocument(document, siteContent, lang, bundles) {
 
   sanitizeTemplate(document);
 
+  const socialImage = (siteContent.SITE_CONFIG.socialImages && siteContent.SITE_CONFIG.socialImages[lang]) || siteContent.SITE_CONFIG.defaultImage;
   document.documentElement.lang = lang;
   document.title = content.meta.title;
   setMeta(document, 'meta[name="description"]', content.meta.description);
@@ -605,13 +606,13 @@ function populateDocument(document, siteContent, lang, bundles) {
   setMeta(document, 'meta[property="og:title"]', content.meta.title);
   setMeta(document, 'meta[property="og:description"]', content.meta.description);
   setMeta(document, 'meta[property="og:url"]', canonical);
-  setMeta(document, 'meta[property="og:image"]', siteContent.SITE_CONFIG.defaultImage);
+  setMeta(document, 'meta[property="og:image"]', socialImage);
   setMeta(document, 'meta[property="og:site_name"]', siteContent.SITE_CONFIG.siteName);
   setMeta(document, 'meta[property="og:locale"]', content.locale.replace('-', '_'));
   setMeta(document, 'meta[property="og:image:alt"]', content.meta.title);
   setMeta(document, 'meta[name="twitter:title"]', content.meta.title);
   setMeta(document, 'meta[name="twitter:description"]', content.meta.description);
-  setMeta(document, 'meta[name="twitter:image"]', siteContent.SITE_CONFIG.defaultImage);
+  setMeta(document, 'meta[name="twitter:image"]', socialImage);
   setMeta(document, 'meta[name="twitter:image:alt"]', content.meta.title);
 
   const canonicalNode = document.querySelector('link[rel="canonical"]');

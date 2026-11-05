@@ -216,7 +216,7 @@ test.describe('performance and assets', () => {
   test('social card meta points to an existing 1200x630 image', async ({ page, request }) => {
     await page.goto('/');
     const og = await page.locator('meta[property="og:image"]').getAttribute('content');
-    expect(og).toMatch(/og-card\.jpg$/);
+    expect(og).toMatch(/og-card(-es|-it)?\.jpg$/);
     await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', '1200');
     await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', '630');
     const res = await request.get(new URL(og).pathname);
