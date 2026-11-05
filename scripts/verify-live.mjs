@@ -1,5 +1,5 @@
 // Post-deploy check: the live site must send the security headers and must not publish internal files.
-//   node scripts/verify-live.mjs https://www.cormite.com
+//   node scripts/verify-live.mjs https://<your-domain>
 // Exits non-zero (and the deploy workflow fails) if anything is missing.
 import { REQUIRED_RESPONSE_HEADERS } from './security-headers.mjs';
 

@@ -684,4 +684,6 @@ writePage(path.join(rootDir, 'index.html'), buildPage(siteContent, 'en', bundles
 writePage(path.join(rootDir, 'es', 'index.html'), buildPage(siteContent, 'es', bundles));
 writePage(path.join(rootDir, 'it', 'index.html'), buildPage(siteContent, 'it', bundles));
 fs.writeFileSync(path.join(rootDir, 'sitemap.xml'), buildSitemap(siteContent));
+fs.writeFileSync(path.join(rootDir, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${siteContent.SITE_CONFIG.siteUrl}/sitemap.xml\n`);
+fs.writeFileSync(path.join(rootDir, 'CNAME'), siteContent.SITE_CONFIG.siteHost); // used only by the GitHub Pages rollback layout
 fs.writeFileSync(path.join(rootDir, '404.html'), build404(siteContent, bundles));

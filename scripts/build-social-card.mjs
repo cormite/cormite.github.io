@@ -3,9 +3,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import vm from 'node:vm';
 import { chromium } from 'playwright';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const sandbox = {};
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(path.join(root, 'assets/js/site-content.js'), 'utf8'), sandbox, { filename: 'site-content.js' });
+const siteHost = sandbox.__SITE_CONTENT.SITE_CONFIG.siteHost;
 const font = (p) => `data:font/woff2;base64,${fs.readFileSync(path.join(root, p)).toString('base64')}`;
 const photo = fs.readFileSync(path.join(root, 'assets/img/photo-881.jpg')).toString('base64');
 
@@ -31,7 +36,7 @@ h1 b{color:#C9971A;font-weight:600}
 <h1>Carlos<br><b>Fernández</b><br>San Millán</h1>
 <div class="role">Head of ICT &amp; Acting CIO | Board Advisor</div></div>
 <div class="ring"></div><div class="photo"><img src="data:image/jpeg;base64,${photo}"></div>
-<div class="url">www.cormite.com</div></body></html>`;
+<div class="url">${siteHost}</div></body></html>`;
 
 const browser = await chromium.launch({ channel: process.env.PW_CHANNEL || undefined });
 const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });

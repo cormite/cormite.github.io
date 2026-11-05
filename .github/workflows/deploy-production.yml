@@ -59,7 +59,7 @@ jobs:
       id-token: write
     environment:
       name: production
-      url: https://www.cormite.com/
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
       - name: Assemble site (allowlist + reference check)

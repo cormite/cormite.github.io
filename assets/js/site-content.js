@@ -5,12 +5,16 @@
 const LANGS = Object.freeze(['en', 'es', 'it']);
 const DEFAULT_LANG = 'en';
 const LANG_STORAGE_KEY = 'site_lang';
+// THE ONE PLACE THE SITE'S DOMAIN IS DEFINED. Everything else (canonical/hreflang/Open Graph, JSON-LD, sitemap,
+// robots.txt, CNAME, the social card, link classification and the tests) derives from this value.
+const SITE_ORIGIN = 'https://www.cormite.com';
 const SITE_CONFIG = Object.freeze({
-  siteUrl: 'https://www.cormite.com',
+  siteUrl: SITE_ORIGIN,
+  siteHost: SITE_ORIGIN.replace(/^https?:\/\//, ''), // origin only: no path, no trailing slash
   siteName: 'Carlos Fernández San Millán',
   author: 'Carlos Fernández San Millán',
-  defaultImage: 'https://www.cormite.com/assets/og/og-card.jpg',
-  portraitImage: 'https://www.cormite.com/photo.jpg',
+  defaultImage: `${SITE_ORIGIN}/assets/og/og-card.jpg`,
+  portraitImage: `${SITE_ORIGIN}/photo.jpg`,
   googleAnalyticsId: 'G-6TC2GBF93J'
 });
 const CV_FILES = Object.freeze({
@@ -31,7 +35,7 @@ const NAV_ITEMS = Object.freeze([
 const SOCIAL_LINKS = Object.freeze([
   Object.freeze({ href: 'https://linkedin.com/in/carlosfernandezsanmillan', iconClass: 'fab fa-linkedin-in text-xl', key: 'linkedin' }),
   Object.freeze({ href: 'https://github.com/Cormite', iconClass: 'fab fa-github text-xl', key: 'github' }),
-  Object.freeze({ href: 'https://www.cormite.com', iconClass: 'fas fa-globe text-xl', key: 'website' })
+  Object.freeze({ href: SITE_ORIGIN, iconClass: 'fas fa-globe text-xl', key: 'website' })
 ]);
 
 const I18N = Object.freeze({

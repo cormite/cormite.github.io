@@ -36,9 +36,10 @@
     }
     // Exact host or a true subdomain: never a substring of the path, query or an unrelated host.
     const isDomain = (domain) => host === domain || host.endsWith(`.${domain}`);
+    const siteDomain = String((global.__SITE_CONTENT && global.__SITE_CONTENT.SITE_CONFIG && global.__SITE_CONTENT.SITE_CONFIG.siteHost) || '').replace(/^www\./, '');
     if (isDomain('linkedin.com')) return 'linkedin';
     if (isDomain('github.com')) return 'github';
-    if (isDomain('cormite.com')) return 'website';
+    if (isDomain(siteDomain)) return 'website';
     return 'external';
   }
 
