@@ -876,5 +876,7 @@ footer .text-accent,
   }
 
   #navbar { view-transition-name: site-nav; }
-  #home picture { view-transition-name: hero-portrait; }
+  /* Name the circular frame, not the <picture> inside it: a snapshot of the picture is painted outside the frame's
+     rounded clip, which flashed the portrait as a square. */
+  #home .photo-ring { view-transition-name: hero-portrait; }
 }
