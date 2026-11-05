@@ -45,7 +45,9 @@ export function productionHeaders() {
     block('/assets/icons/*', { 'Cache-Control': 'public, max-age=604800' }),
     block('/assets/og/*', { 'Cache-Control': 'public, max-age=86400' }),
     block('/*.pdf', { 'Cache-Control': 'public, max-age=86400' }),
-    block('/favicon.ico', { 'Cache-Control': 'public, max-age=86400' })
+    block('/favicon.ico', { 'Cache-Control': 'public, max-age=86400' }),
+    block('/llms.txt', { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=3600' }),
+    block('/.well-known/security.txt', { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=3600' })
   ].join('\n');
 }
 

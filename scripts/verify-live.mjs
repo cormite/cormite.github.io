@@ -47,6 +47,22 @@ for (const p of ['/es/', '/it/', '/favicon.ico', '/site.webmanifest', '/sitemap.
   check(r.status === 200, `${p} returned ${r.status}, expected 200`);
 }
 
+// Machine-readable files: published, plain text, and security.txt still valid (RFC 9116: Contact + a future Expires).
+for (const p of ['/llms.txt', '/.well-known/security.txt']) {
+  const r = await get(p);
+  check(r.status === 200, `${p} returned ${r.status}, expected 200`);
+  check(/^text\/plain/i.test(r.headers.get('content-type') || ''), `${p} content-type is "${r.headers.get('content-type')}", expected text/plain`);
+}
+{
+  const r = await get('/.well-known/security.txt');
+  if (r.status === 200) {
+    const text = await r.text();
+    check(/^Contact: mailto:security@/m.test(text), 'security.txt has no Contact: mailto:security@...');
+    const expires = (text.match(/^Expires: (.+)$/m) || [])[1];
+    check(Boolean(expires) && new Date(expires) > new Date(), `security.txt Expires is missing or in the past (${expires})`);
+  }
+}
+
 if (problems.length) {
   console.error(`LIVE VERIFICATION FAILED for ${base}:\n - ` + problems.join('\n - '));
   process.exit(1);

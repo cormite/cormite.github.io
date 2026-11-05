@@ -282,6 +282,25 @@ ${message}`);
     });
   }
 
+  // "Now" line: live Milan time next to the location chip. Client-side only (Intl, no network, no geolocation).
+  function setupLocalTime() {
+    const node = byId('hero-time');
+    if (!node || typeof Intl === 'undefined' || !Intl.DateTimeFormat) return;
+    let formatter;
+    try {
+      formatter = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Rome', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+    } catch (error) {
+      return;
+    }
+    const paint = () => { node.textContent = `\u00b7 ${formatter.format(new Date())}`; };
+    const schedule = () => {
+      global.setTimeout(() => { paint(); schedule(); }, 60000 - (Date.now() % 60000) + 50);
+    };
+    paint();
+    schedule();
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) paint(); });
+  }
+
   function enhanceUi() {
     upgradeLegacyIcons();
     setupRevealAnimations();
@@ -290,12 +309,15 @@ ${message}`);
     setupContactForm();
     setupAnalyticsTracking();
     setupSmoothScroll();
+    setupLocalTime();
+    if (global.__SITE_PALETTE) global.__SITE_PALETTE.init();
     if (global.__SITE_EFFECTS) global.__SITE_EFFECTS.enhanceEffects();
   }
 
   global.__SITE_INTERACTIONS = Object.freeze({
     enhanceUi,
     inferSocialPlatform,
+    trackEvent,
     refreshAnimatedUi: setupRevealAnimations
   });
 }(globalThis));

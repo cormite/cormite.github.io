@@ -327,7 +327,7 @@ function setAria(document, id, value) {
 // ---------------------------------------------------------------------------
 // Asset pipeline: one hashed JS bundle + one hashed CSS bundle (assets/dist)
 // ---------------------------------------------------------------------------
-const JS_ORDER = ['site-content', 'site-utils', 'site-icons', 'site-dom', 'site-render', 'site-interactions', 'site-effects', 'consent', 'main'];
+const JS_ORDER = ['site-content', 'site-utils', 'site-icons', 'site-dom', 'site-render', 'site-interactions', 'site-effects', 'site-palette', 'consent', 'main'];
 const CSS_ORDER = ['assets/css/tailwind.css', 'assets/css/styles.css'];
 const distDir = path.join(rootDir, 'assets', 'dist');
 
@@ -490,6 +490,66 @@ ${urls}
 `;
 }
 
+
+// ---------------------------------------------------------------------------
+// Machine-readable files, generated from the same content so they cannot drift:
+//   /llms.txt                    summary for AI assistants (llmstxt.org convention)
+//   /.well-known/security.txt    RFC 9116 contact for vulnerability reports (expires after one year, renewed by every release)
+// ---------------------------------------------------------------------------
+// Text extraction by a real HTML parser (not a tag-stripping regular expression, which cannot be made safe).
+function plainText(html) {
+  const { document } = new JSDOM(`<body>${String(html)}</body>`).window;
+  return document.body.textContent.replace(/\s+/g, ' ').trim();
+}
+
+function buildLlmsTxt(siteContent) {
+  const { SITE_CONFIG, CV_FILES, SOCIAL_LINKS, I18N } = siteContent;
+  const en = I18N.en;
+  const base = SITE_CONFIG.siteUrl;
+  const social = SOCIAL_LINKS.filter((item) => item.key !== 'website')
+    .map((item) => `- [${en.staticText.ui.socialLinkLabels[item.key] || item.key}](${item.href})`).join('\n');
+  const achievements = en.achievements.map((item) => `- **${item.title}.** ${plainText(item.descriptionHtml)}`).join('\n');
+  return `# ${SITE_CONFIG.siteName}
+
+> ${en.profile.title}. ${en.profile.heroSummary}
+
+Based in ${en.profile.location}. ${en.profile.availability}. Contact: ${en.profile.contactEmail}
+
+## Pages
+- [English](${base}/): full profile, experience, achievements and skills
+- [Español](${base}/es/): perfil completo en español
+- [Italiano](${base}/it/): profilo completo in italiano
+
+## Curriculum vitae (PDF)
+- [English](${base}/${CV_FILES.en})
+- [Español](${base}/${CV_FILES.es})
+- [Italiano](${base}/${CV_FILES.it})
+
+## Selected achievements
+${achievements}
+
+## Profiles
+${social}
+
+## Notes for assistants
+- Facts on this site are stated by ${SITE_CONFIG.siteName} (the site owner); the CV PDFs and the LinkedIn profile carry the authoritative detail.
+- For contact, use ${en.profile.contactEmail}.
+`;
+}
+
+function buildSecurityTxt(siteContent) {
+  const { SITE_CONFIG } = siteContent;
+  // One year from the build DAY (midnight UTC): the build date is only known to the day when the CI reproducibility
+  // check re-derives it from the committed page, so a time of day here would make that check fail.
+  const expires = new Date(BUILD_DATE.getTime());
+  expires.setUTCFullYear(expires.getUTCFullYear() + 1);
+  expires.setUTCHours(0, 0, 0, 0);
+  return `Contact: mailto:security@${SITE_CONFIG.siteHost}
+Expires: ${expires.toISOString().replace(/\.\d{3}Z$/, 'Z')}
+Preferred-Languages: en, es, it
+Canonical: ${SITE_CONFIG.siteUrl}/.well-known/security.txt
+`;
+}
 
 function updateAssetPaths(document, lang) {
   const prefix = relativePrefix(lang);
@@ -685,5 +745,8 @@ writePage(path.join(rootDir, 'es', 'index.html'), buildPage(siteContent, 'es', b
 writePage(path.join(rootDir, 'it', 'index.html'), buildPage(siteContent, 'it', bundles));
 fs.writeFileSync(path.join(rootDir, 'sitemap.xml'), buildSitemap(siteContent));
 fs.writeFileSync(path.join(rootDir, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${siteContent.SITE_CONFIG.siteUrl}/sitemap.xml\n`);
+fs.writeFileSync(path.join(rootDir, 'llms.txt'), buildLlmsTxt(siteContent));
+fs.mkdirSync(path.join(rootDir, '.well-known'), { recursive: true });
+fs.writeFileSync(path.join(rootDir, '.well-known', 'security.txt'), buildSecurityTxt(siteContent));
 fs.writeFileSync(path.join(rootDir, 'CNAME'), siteContent.SITE_CONFIG.siteHost); // used only by the GitHub Pages rollback layout
 fs.writeFileSync(path.join(rootDir, '404.html'), build404(siteContent, bundles));
