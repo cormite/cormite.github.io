@@ -857,3 +857,24 @@ footer .text-accent,
 }
 
 .palette-hint { border-top: 1px solid rgba(255, 255, 255, 0.14); }
+
+/* ==========================================================================
+   Page transitions (cross-document View Transitions, progressive enhancement)
+   Switching language or arriving from another page cross-fades instead of flashing white. The navigation bar and the
+   hero portrait keep their place. Browsers without support, and visitors who prefer reduced motion, get a normal load.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.25s;
+    animation-timing-function: ease;
+  }
+
+  #navbar { view-transition-name: site-nav; }
+  #home picture { view-transition-name: hero-portrait; }
+}
