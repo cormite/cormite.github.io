@@ -407,6 +407,7 @@ function applyDocumentMetadata(content) {
     setAttr('navbar', 'aria-label', ui.primaryNavLabel);
     setAttr('brand-home-link', 'aria-label', ui.homeLinkLabel);
     setAttr('mobile-menu-btn', 'aria-label', ui.openMenuLabel);
+    setAttr('palette-btn', 'aria-label', ui.paletteButtonLabel);
     setAttr('mobile-menu', 'aria-label', ui.mobileNavLabel);
     setAttr('close-menu', 'aria-label', ui.closeMenuLabel);
     setAttr('hero-stat-list', 'aria-label', ui.heroStatsLabel);

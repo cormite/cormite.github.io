@@ -23,7 +23,7 @@ const ALLOW = [
   'photo.jpg', 'favicon.ico', 'robots.txt',
   'carlos-fernandez-san-millan-en.pdf', 'carlos-fernandez-san-millan-es.pdf', 'carlos-fernandez-san-millan-it.pdf'
 ];
-if (!staging) ALLOW.push('sitemap.xml');
+if (!staging) ALLOW.push('sitemap.xml', 'llms.txt', '.well-known');
 if (!staging && !cloudflare) ALLOW.push('CNAME'); // GitHub Pages custom-domain file; Cloudflare manages the domain itself
 
 fs.rmSync(out, { recursive: true, force: true });
@@ -51,6 +51,8 @@ if (staging) {
 }
 
 if (cloudflare) fs.writeFileSync(path.join(out, '_headers'), productionHeaders());
+// GitHub Pages (rollback target) runs Jekyll unless told otherwise, and Jekyll drops dot-folders such as .well-known.
+if (!staging && !cloudflare) fs.writeFileSync(path.join(out, '.nojekyll'), '');
 
 // Verify every local reference in the pages resolves to a file in the output.
 const missing = [];

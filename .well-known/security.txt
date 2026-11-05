@@ -1,0 +1,4 @@
+Contact: mailto:security@carlosfernandezsanmillan.com
+Expires: 2027-11-05T15:03:35Z
+Preferred-Languages: en, es, it
+Canonical: https://carlosfernandezsanmillan.com/.well-known/security.txt
