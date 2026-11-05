@@ -366,7 +366,7 @@ function pictureMarkup(prefix, kind) {
   const alt = hero ? 'Carlos Fernández San Millán' : 'About Carlos';
   const imgAttrs = hero
     ? 'fetchpriority="high" decoding="async" class="w-full h-full object-cover"'
-    : 'loading="lazy" decoding="async" class="rounded-2xl shadow-2xl w-full object-cover h-[500px]"';
+    : 'loading="lazy" decoding="async" class="rounded-2xl shadow-2xl w-full object-cover object-top h-[500px]"';
   return `<source type="image/avif" srcset="${photoSet(prefix, 'avif')}" sizes="${sizes}">`
     + `<source type="image/webp" srcset="${photoSet(prefix, 'webp')}" sizes="${sizes}">`
     + `<img src="${prefix}assets/img/photo-640.jpg" srcset="${photoSet(prefix, 'jpg')}" sizes="${sizes}" width="${PHOTO_SIZE.width}" height="${PHOTO_SIZE.height}" alt="${alt}" ${imgAttrs}>`;
