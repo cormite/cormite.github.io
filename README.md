@@ -1,11 +1,11 @@
-# cormite.com
+# carlosfernandezsanmillan.com
 
-Personal website of Carlos Fernández San Millán: <https://www.cormite.com>.
+Personal website of Carlos Fernández San Millán: <https://carlosfernandezsanmillan.com>.
 Static site (EN / ES / IT), hosted on Cloudflare Pages (real security headers, DNSSEC), built to look and feel executive and to be fast, private and accessible.
 
 | | |
 |---|---|
-| **Production** | `master` → <https://www.cormite.com> (published only by the manual **Deploy production** workflow; Cloudflare Pages; GitHub Pages remains the 2-minute rollback target, see [docs/RELEASE.md](docs/RELEASE.md)) |
+| **Production** | `master` → <https://carlosfernandezsanmillan.com> (published only by the manual **Deploy production** workflow; Cloudflare Pages; GitHub Pages remains the 2-minute rollback target, see [docs/RELEASE.md](docs/RELEASE.md)) |
 | **Staging (private)** | `test` → Cloudflare Pages, password protected |
 | **Stack** | Tailwind 3 (pinned on purpose), vanilla JS, esbuild, jsdom build-time rendering, Playwright + axe tests |
 

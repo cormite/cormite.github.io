@@ -3,7 +3,7 @@
 This repository is a static personal website (no server code, no user accounts, no stored visitor data).
 
 ## Reporting a vulnerability
-Please report suspected security issues **privately** to the contact address published on <https://www.cormite.com>
+Please report suspected security issues **privately** to the contact address published on <https://carlosfernandezsanmillan.com>
 (Contact section) with the subject `Security report`, or use GitHub's "Report a vulnerability" button on the
 repository's Security tab if it is enabled. Please do not open a public issue for security problems.
 

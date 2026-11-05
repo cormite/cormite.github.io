@@ -157,3 +157,23 @@ PW_CHANNEL=chrome npm run build:social     # 1200x630 link-preview card -> asset
 - `tests/a11y.spec.mjs` runs axe (WCAG 2.1 A/AA + best practice) on all three pages, with the consent banner open and closed, desktop and mobile. Serious/critical violations fail CI.
 - All motion (constellation canvas, spotlight, tilt, kinetic name, counters, reveal) is disabled or settled under `prefers-reduced-motion` and data-saver. Without JavaScript everything stays visible.
 - axe cannot measure text over gradients; gold-on-dark contrast was verified by calculation and fixed with `--color-accent-on-dark`.
+
+## Primary domain: carlosfernandezsanmillan.com (2026-11-05)
+
+The professional identity moved to **https://carlosfernandezsanmillan.com** (bare apex). The domain is a single setting, `SITE_ORIGIN` in `assets/js/site-content.js`; CNAME, robots.txt, sitemap, canonical/hreflang/Open Graph, JSON-LD and the social card all follow it.
+
+Cloudflare state (zone `carlosfernandezsanmillan.com`, same account):
+- Pages project `cormite-production` serves both `carlosfernandezsanmillan.com` and `www.` (custom domains).
+- Redirect Rule "www to apex": `www` -> apex, 301, path and query preserved.
+- DNSSEC on (DS at DonDominio, digest verified against the published KSK, validated by 1.1.1.1/8.8.8.8/9.9.9.9).
+- Email Routing, receive-only: `hello@` (public), `carlos@`, `security@` forward to the owner's private mailbox; catch-all off. SPF `include:_spf.mx.cloudflare.net -all`, DMARC `p=reject; sp=reject; adkim=s; aspf=s`. Verified end to end from an outside account.
+- Corporate senders may hold mail to a newly registered domain for a while (observed from one corporate account); not a configuration fault.
+
+Cutover order (the owner runs every step; nothing here is automatic):
+1. Merge `test` -> `master` (publishes nothing).
+2. Set repository variable `PRODUCTION_URL` = `https://carlosfernandezsanmillan.com` BEFORE deploying, so `verify-live` checks the new host.
+3. Run `Deploy production` (DEPLOY + reviewer approval).
+4. Only after the new domain is live and verified: on the `cormite.com` zone, change the "Apex to www" Redirect Rule so `cormite.com` and `www.cormite.com` 301 to `https://carlosfernandezsanmillan.com` + path + query, and detach `www.cormite.com` from the Pages project (or keep it; the rule runs first).
+5. Search Console: add `carlosfernandezsanmillan.com` as a Domain property, then use Change of Address from the old property.
+
+Rollback: re-point the `cormite.com` redirect back and revert `SITE_ORIGIN` through the normal gated flow; GitHub Pages remains the 2-minute rollback for the site itself.
