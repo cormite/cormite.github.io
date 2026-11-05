@@ -62,9 +62,11 @@
                     </div>
                 </div>
             </div>
-        
-        
-        <!-- Mobile Menu -->
+    </nav>
+    </header>
+
+    <!-- Mobile menu: deliberately OUTSIDE the nav. The nav gets backdrop-filter when scrolled, and a filter makes
+         position:fixed descendants size to the nav bar instead of the screen (the drawer collapsed to an 80px strip). -->
         <div id="mobile-menu" role="dialog" aria-modal="true" aria-hidden="true" class="mobile-menu fixed top-0 right-0 h-full w-64 bg-primary shadow-2xl md:hidden z-50" aria-label="Mobile navigation">
             <div class="p-6">
                 <button id="close-menu" type="button" class="absolute top-4 right-4 text-white hover:text-accent" aria-label="Close navigation menu">
@@ -72,9 +74,7 @@
                 </button>
                 <div id="nav-links-mobile" class="mt-12 space-y-4"><a href="/#home" class="block text-white hover:text-accent py-2 text-xl font-semibold">Home</a><a href="/#about" class="block text-white hover:text-accent py-2 text-xl font-semibold">About</a><a href="/#experience" class="block text-white hover:text-accent py-2 text-xl font-semibold">Experience</a><a href="/#achievements" class="block text-white hover:text-accent py-2 text-xl font-semibold">Achievements</a><a href="/#skills" class="block text-white hover:text-accent py-2 text-xl font-semibold">Skills</a><a href="/#contact" class="block text-white hover:text-accent py-2 text-xl font-semibold">Contact</a><div class="pt-6 mt-6 border-t border-white/10 flex gap-2" aria-label="Language switcher"><a href="/" class="lang-btn px-3 py-1 rounded-full text-xs font-semibold transition-colors border bg-accent text-white border-accent" data-lang="en" aria-current="true">EN</a><a href="/es/" class="lang-btn px-3 py-1 rounded-full text-xs font-semibold transition-colors border bg-transparent text-white/80 border-white/20 hover:text-white hover:border-accent" data-lang="es">ES</a><a href="/it/" class="lang-btn px-3 py-1 rounded-full text-xs font-semibold transition-colors border bg-transparent text-white/80 border-white/20 hover:text-white hover:border-accent" data-lang="it">IT</a></div></div></div>
             </div>
-        
-    </nav>
-    </header>
+
 
 <main id="main-content" tabindex="-1">
     <!-- Hero Section -->
