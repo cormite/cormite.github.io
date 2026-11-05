@@ -1,4 +1,4 @@
-// Renders the 1200x630 social/link-preview card with the site's own fonts.
+// Renders the 1200x630 social/link-preview cards (one per language) with the site's own fonts.
 // Run manually when branding changes: PW_CHANNEL=chrome npm run build:social
 import fs from 'node:fs';
 import path from 'node:path';
@@ -10,11 +10,17 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sandbox = {};
 vm.createContext(sandbox);
 vm.runInContext(fs.readFileSync(path.join(root, 'assets/js/site-content.js'), 'utf8'), sandbox, { filename: 'site-content.js' });
-const siteHost = sandbox.__SITE_CONTENT.SITE_CONFIG.siteHost;
+const { SITE_CONFIG, I18N, LANGS } = sandbox.__SITE_CONTENT;
+const siteHost = SITE_CONFIG.siteHost;
+const fileFor = (lang) => (lang === 'en' ? 'og-card.jpg' : `og-card-${lang}.jpg`);
 const font = (p) => `data:font/woff2;base64,${fs.readFileSync(path.join(root, p)).toString('base64')}`;
 const photo = fs.readFileSync(path.join(root, 'assets/img/photo-881.jpg')).toString('base64');
 
-const html = `<!doctype html><html><head><meta charset="utf-8"><style>
+const cardHtml = (lang) => {
+  const { profile } = I18N[lang];
+  // Longer role titles (ES/IT) get a slightly smaller size so they stay on one line beside the portrait.
+  const roleSize = profile.title.length > 46 ? 26 : 31;
+  return `<!doctype html><html><head><meta charset="utf-8"><style>
 @font-face{font-family:'Cormorant Garamond';src:url('${font('assets/fonts/cormorant-garamond/cormorant-garamond-latin-600-normal.woff2')}');font-weight:600}
 @font-face{font-family:'EB Garamond';src:url('${font('assets/fonts/eb-garamond/eb-garamond-latin-400-normal.woff2')}');font-weight:400}
 *{margin:0;box-sizing:border-box}
@@ -29,19 +35,22 @@ body{width:1200px;height:630px;overflow:hidden;position:relative;font-family:'EB
 .pill{display:inline-block;padding:8px 18px;border:1px solid rgba(255,255,255,.25);border-radius:999px;background:rgba(255,255,255,.08);font-size:22px;margin-bottom:28px}
 h1{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:86px;line-height:1.02;letter-spacing:.01em}
 h1 b{color:#C9971A;font-weight:600}
-.role{margin-top:24px;font-size:31px;color:#C9971A;line-height:1.25;white-space:nowrap}
+.role{margin-top:24px;font-size:${roleSize}px;color:#C9971A;line-height:1.25;white-space:nowrap}
 .url{position:absolute;left:84px;bottom:48px;font-size:26px;color:rgba(255,255,255,.75);letter-spacing:.04em}
 </style></head><body><div class="grid"></div><div class="glow"></div>
-<div class="txt"><span class="pill">Technology Executive · Milan</span>
+<div class="txt"><span class="pill">${profile.socialPill}</span>
 <h1>Carlos<br><b>Fernández</b><br>San Millán</h1>
-<div class="role">Head of ICT &amp; Acting CIO | Board Advisor</div></div>
+<div class="role">${profile.title.replace(/&/g, '&amp;')}</div></div>
 <div class="ring"></div><div class="photo"><img src="data:image/jpeg;base64,${photo}"></div>
 <div class="url">${siteHost}</div></body></html>`;
+};
 
 const browser = await chromium.launch({ channel: process.env.PW_CHANNEL || undefined });
 const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });
-await page.setContent(html, { waitUntil: 'load' });
-await page.evaluate(() => document.fonts.ready);
-await page.screenshot({ path: path.join(root, 'assets/og/og-card.jpg'), type: 'jpeg', quality: 88 });
+for (const lang of LANGS) {
+  await page.setContent(cardHtml(lang), { waitUntil: 'load' });
+  await page.evaluate(() => document.fonts.ready);
+  await page.screenshot({ path: path.join(root, 'assets/og', fileFor(lang)), type: 'jpeg', quality: 88 });
+  console.log(`Social card written to assets/og/${fileFor(lang)}`);
+}
 await browser.close();
-console.log('Social card written to assets/og/og-card.jpg');

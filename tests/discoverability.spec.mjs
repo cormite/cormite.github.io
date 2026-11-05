@@ -99,3 +99,36 @@ test.describe('publishing', () => {
     expect(script).toContain('Expires');
   });
 });
+
+test.describe('social cards', () => {
+  // Reads the JPEG start-of-frame marker: no image library needed.
+  const jpegSize = (file) => {
+    const b = fs.readFileSync(file);
+    let i = 2;
+    while (i < b.length) {
+      if (b[i] !== 0xff) { i += 1; continue; }
+      const marker = b[i + 1];
+      if (marker >= 0xc0 && marker <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marker)) return { height: b.readUInt16BE(i + 5), width: b.readUInt16BE(i + 7) };
+      i += 2 + b.readUInt16BE(i + 2);
+    }
+    throw new Error(`no size in ${file}`);
+  };
+  const PAGES = [['index.html', 'en', 'og-card.jpg'], ['es/index.html', 'es', 'og-card-es.jpg'], ['it/index.html', 'it', 'og-card-it.jpg']];
+
+  for (const [page, lang, file] of PAGES) {
+    test(`${lang} page shares its own 1200x630 card (og and twitter agree)`, () => {
+      const html = read(page);
+      const og = html.match(/<meta property="og:image" content="([^"]+)"/)[1];
+      const tw = html.match(/<meta name="twitter:image" content="([^"]+)"/)[1];
+      expect(og).toBe(`${SITE_CONFIG.siteUrl}/assets/og/${file}`);
+      expect(tw).toBe(og);
+      expect(jpegSize(path.join(root, 'assets/og', file))).toEqual({ width: 1200, height: 630 });
+      expect(SITE_CONFIG.socialImages[lang]).toBe(og);
+    });
+  }
+
+  test('the three cards are different images', () => {
+    const sizes = PAGES.map(([, , file]) => fs.statSync(path.join(root, 'assets/og', file)).size);
+    expect(new Set(sizes).size).toBe(3);
+  });
+});
