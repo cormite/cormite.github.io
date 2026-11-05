@@ -211,3 +211,22 @@ Deterministic limits for the first visit of each language page (consent denied),
 | Images | 25 KB | 15.7 KB |
 
 Also enforced: one stylesheet, no render-blocking script, hero image `fetchpriority=high` and not lazy, content-hashed bundle names, and no request to any other host before analytics consent. Timing metrics (LCP, CLS) are not asserted here because they depend on the machine; CLS has its own test in `tests/quality.spec.mjs`. A limit may be raised only on purpose, in a commit that says why.
+
+## CI speed: parallel test groups (`.github/workflows/ci.yml`, `deploy-production.yml`)
+
+The suite needs about 400 s of single-core work, and a GitHub runner runs two tests at a time, so one job took 3.5-4 minutes. It now runs as parallel jobs:
+
+| Job | What | Notes |
+|---|---|---|
+| `static` | reproducible build, deploy layouts, dependency audit | no browser, about 20 s |
+| `tests (contrast-desktop)`, `tests (contrast-mobile)` | the pixel-measured contrast checks, one project each | the slowest file, split by project |
+| `tests (quality)`, `tests (ui)`, `tests (media)` | quality / palette + a11y / portrait, transitions, performance, mobile menu | hand-balanced groups |
+| `tests (rest)` | every spec file not named in a group (smoke, headers, domain, ...) | automatic: a new spec file can never be skipped |
+| `verify` | passes only when `static` and every test group passed | **keep this job name: the branch-protection rule requires a check called `verify`** |
+
+- Groups live in `GROUPS` in `playwright.config.mjs` (selected by the `TEST_GROUP` environment variable; without it, a local `npm test` runs everything). Groups were balanced by measured time (20-34 s each on a 2-worker run).
+- Files that do not depend on the viewport (headers, domain, discoverability, uptime, staging gate, explicit-size tests) run once in the `once` project instead of once per viewport: 262 tests instead of 298 with the same coverage. Tests inside a file run in parallel (`fullyParallel`).
+- Shared setup (Node, npm cache, Playwright Chromium cached by version, OS libraries) is the composite action `.github/actions/prepare`.
+- `tests/ci-config.spec.mjs` guards the wiring: a job named `verify` that needs `static` and `tests`, every matrix group exists in the config, the `rest` group runs, and no spec file is in two groups.
+- Adding a slow spec file: it lands in `rest` automatically; if `rest` becomes the slowest job, move the file into a named group in `GROUPS` and add that group to the matrix in both workflows.
+- Deploy production runs the same verification on `master` before anything is published; because the groups run side by side that gate is also about twice as fast.

@@ -13,17 +13,18 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# Three kinds of job run side by side, and a final job named `verify` (the name the branch-protection rule requires)
+# turns their results into one pass/fail:
+#   static - build reproducibility, deploy layouts, dependency audit (no browser, about 20 s)
+#   tests  - the Playwright suite split into balanced groups (see GROUPS in playwright.config.mjs), one job each
+#   verify - fails unless every job above succeeded
 jobs:
-  verify:
+  static:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
+      - uses: ./.github/actions/prepare
       - name: Build is reproducible (committed output matches source)
         run: |
           D=$(grep -o '"dateModified":"[^"]*"' index.html | head -1 | cut -d'"' -f4)
@@ -35,15 +36,50 @@ jobs:
         run: |
           node scripts/assemble-site.mjs --staging --out /tmp/site-staging
           node scripts/assemble-site.mjs --out /tmp/site-production
-      - run: npx playwright install --with-deps chromium
-      - run: npm test
+      - name: Dependency audit (fails on high severity)
+        run: npm audit --audit-level=high
+
+  tests:
+    name: tests (${{ matrix.name }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: contrast-desktop, group: contrast, args: '--project=desktop' }
+          - { name: contrast-mobile, group: contrast, args: '--project=mobile' }
+          - { name: quality, group: quality, args: '' }
+          - { name: ui, group: ui, args: '' }
+          - { name: media, group: media, args: '' }
+          - { name: rest, group: rest, args: '' }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/prepare
+        with:
+          browser: 'true'
+      - name: Playwright tests (${{ matrix.name }})
+        env:
+          TEST_GROUP: ${{ matrix.group }}
+        run: npx playwright test ${{ matrix.args }}
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.name }}
           path: |
             playwright-report/
             test-results/
           retention-days: 7
-      - name: Dependency audit (fails on high severity)
-        run: npm audit --audit-level=high
+
+  verify:
+    needs: [static, tests]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Every static check and every test group must have succeeded
+        run: |
+          echo "static: ${{ needs.static.result }}"
+          echo "tests:  ${{ needs.tests.result }}"
+          [ "${{ needs.static.result }}" = "success" ] && [ "${{ needs.tests.result }}" = "success" ] \
+            || { echo "::error::verification failed (see the static and tests jobs above)"; exit 1; }

@@ -1,0 +1,36 @@
+name: Prepare
+description: Node 22 with cached npm dependencies and, optionally, Playwright Chromium (browser cached, OS packages always installed)
+inputs:
+  browser:
+    description: 'Install Playwright Chromium and its OS dependencies ("true" or "false")'
+    default: 'false'
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v7
+      with:
+        node-version: 22
+        cache: npm
+    - run: npm ci
+      shell: bash
+    - name: Playwright version
+      if: inputs.browser == 'true'
+      id: playwright
+      shell: bash
+      run: echo "version=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
+    - name: Cache Playwright Chromium
+      if: inputs.browser == 'true'
+      id: browsers
+      uses: actions/cache@v6
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+    # The browser download is cached; the OS libraries it needs live outside that folder, so they are installed every run.
+    - name: Install Chromium with OS dependencies
+      if: inputs.browser == 'true' && steps.browsers.outputs.cache-hit != 'true'
+      shell: bash
+      run: npx playwright install --with-deps chromium
+    - name: Install OS dependencies only (browser came from cache)
+      if: inputs.browser == 'true' && steps.browsers.outputs.cache-hit == 'true'
+      shell: bash
+      run: npx playwright install-deps chromium

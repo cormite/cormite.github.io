@@ -35,19 +35,62 @@ jobs:
           [ "${{ github.ref }}" = "refs/heads/master" ] || { echo "Production deploys only from master"; exit 1; }
           case "$PRODUCTION_TARGET" in github-pages|cloudflare) echo "Target: $PRODUCTION_TARGET";; *) echo "PRODUCTION_TARGET must be github-pages or cloudflare"; exit 1;; esac
 
-  verify:
+  # Same verification as CI, run again on master before anything is published: static checks and the test groups run
+  # side by side; `verify` passes only when all of them passed.
+  static:
+    needs: guard
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/prepare
+      - name: Build is reproducible (committed output matches source)
+        run: |
+          D=$(grep -o '"dateModified":"[^"]*"' index.html | head -1 | cut -d'"' -f4)
+          SOURCE_DATE="$D" npm run build
+          git add -A
+          git diff --cached --exit-code --ignore-matching-lines='id="structured-data"' -- . ':!package-lock.json' \
+            || { echo "::error::Committed build output is stale. Run 'npm run build' and commit the result."; exit 1; }
+      - name: Dependency audit (fails on high severity)
+        run: npm audit --audit-level=high
+
+  tests:
+    name: tests (${{ matrix.name }})
     needs: guard
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: contrast-desktop, group: contrast, args: '--project=desktop' }
+          - { name: contrast-mobile, group: contrast, args: '--project=mobile' }
+          - { name: quality, group: quality, args: '' }
+          - { name: ui, group: ui, args: '' }
+          - { name: media, group: media, args: '' }
+          - { name: rest, group: rest, args: '' }
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: ./.github/actions/prepare
         with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - run: npm test
+          browser: 'true'
+      - name: Playwright tests (${{ matrix.name }})
+        env:
+          TEST_GROUP: ${{ matrix.group }}
+        run: npx playwright test ${{ matrix.args }}
+
+  verify:
+    needs: [static, tests]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Every static check and every test group must have succeeded
+        run: |
+          echo "static: ${{ needs.static.result }}"
+          echo "tests:  ${{ needs.tests.result }}"
+          [ "${{ needs.static.result }}" = "success" ] && [ "${{ needs.tests.result }}" = "success" ] \
+            || { echo "::error::verification failed, nothing is deployed"; exit 1; }
 
   deploy-github-pages:
     if: ${{ (vars.PRODUCTION_TARGET || 'github-pages') == 'github-pages' }}
