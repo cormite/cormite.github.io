@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.cormite.com/sitemap.xml
+Sitemap: https://carlosfernandezsanmillan.com/sitemap.xml

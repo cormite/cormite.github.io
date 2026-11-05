@@ -79,7 +79,7 @@ runner image is pinned to `ubuntu-24.04` so builds do not change under us.
 
 `scripts/assemble-site.mjs` is shared by staging and production: it copies an explicit allowlist of files (never the whole repo), and fails if any file referenced by the pages is missing.
 
-## Production on Cloudflare Pages (real security headers) - optional cutover
+## Production on Cloudflare Pages (real security headers) - LIVE since 2026-11-05
 GitHub Pages cannot send HTTP response headers, so the live site has no HSTS, clickjacking protection, Referrer/Permissions
 policy or CSP *header* (the CSP `<meta>` still applies). Cloudflare Pages can, and it also allows one-year immutable caching
 for the content-hashed bundles. The same `Deploy production` workflow (DEPLOY + reviewer approval) publishes to either target,
@@ -97,6 +97,25 @@ What ships: `scripts/security-headers.mjs` generates `_headers` (`assemble-site.
 4. GitHub -> Settings -> Secrets and variables -> Actions -> Variables: `PRODUCTION_TARGET` = `cloudflare`,
    `PRODUCTION_URL` = `https://cormite-production.pages.dev` (temporary, until step 6).
 
+**State and lessons from the cutover (2026-11-05):**
+- Production is `cormite-production` on Cloudflare Pages, domain `www.cormite.com`; variables `PRODUCTION_TARGET=cloudflare`, `PRODUCTION_URL=https://www.cormite.com`.
+- `wrangler pages deploy` bundles `./functions` from its working directory. The workflow therefore deploys from inside `_site`; from the repo root it shipped the staging password gate (503 everywhere). `tests/headers.spec.mjs` guards this.
+- Cloudflare's zone-level HSTS setting (SSL/TLS -> Edge Certificates) overrides the origin header. It is set to 12 months, include-subdomains off, preload off (a leftover `max-age=0` disabled HSTS). It also applies to the other proxied subdomains of the zone.
+- The apex A/AAAA records still point at GitHub Pages IPs (proxied); they are never reached because the apex redirect rule answers first. Leave them.
+- Verify at any time: `node scripts/verify-live.mjs https://www.cormite.com`.
+
+**Cloudflare zone configuration (audited and set 2026-11-05, free plan):**
+- DNS (6 records): proxied `AAAA @ 100::` (placeholder so the apex redirect runs), proxied `www` CNAME -> `cormite-production.pages.dev`,
+  SPF `v=spf1 -all`, DMARC `v=DMARC1; p=reject; sp=reject; adkim=s; aspf=s`, null MX `0 .`, Google Search Console verification TXT.
+  The domain deliberately sends and receives no mail. If mail is ever needed, replace SPF/DMARC/MX first.
+- Apex: Redirect Rule "Apex to www" (`http.host eq "cormite.com"` -> `concat("https://www.cormite.com", http.request.uri.path)`, 301, preserve query string).
+  No Page Rules remain.
+- SSL/TLS: Full (strict), Always Use HTTPS on, minimum TLS 1.2, TLS 1.3 on, HSTS 12 months (no subdomains, no preload), Automatic HTTPS Rewrites on.
+- Speed: HTTP/2 and HTTP/3 on, Early Hints on. Deliberately OFF: Rocket Loader, Auto Minify, Cloudflare Fonts, Speed Brain, Real User Monitoring
+  and "Enable all available settings" (they inject scripts or rewrite assets and conflict with the strict CSP and consent model). Bot Fight Mode and CAA records were left off on purpose.
+- DNSSEC: on. DS (key tag 2371, algorithm 13, digest type 2) is registered at the registrar (DonDominio). If Cloudflare ever re-keys, update the DS there.
+- Registrar: DonDominio; domain expires 2027-04-13 (check auto-renew).
+
 **Rehearsal (no visitor impact):** run Deploy production. It publishes to `cormite-production.pages.dev`, verifies headers there, and
 the real site is untouched. Open that URL and check it.
 
@@ -104,7 +123,7 @@ the real site is untouched. Open that URL and check it.
 5. Cloudflare -> DNS -> delete the `www` CNAME (-> `cormite.github.io`).
 6. Cloudflare -> Workers & Pages -> `cormite-production` -> Custom domains -> add `www.cormite.com` (Cloudflare creates the record and the certificate).
 7. Set the variable `PRODUCTION_URL` = `https://www.cormite.com`, re-run Deploy production, confirm it verifies on the real domain.
-8. GitHub -> Settings -> Pages: remove the custom domain (the site is no longer served from there).
+8. GitHub -> Settings -> Pages: **keep** the custom domain. DNS no longer points at GitHub, but while it is set `https://cormite.github.io/` answers `301 -> https://www.cormite.com/` (removing it would expose a stale duplicate copy of the site) and the 2-minute rollback stays ready.
 The apex redirect rule (`cormite.com` -> `www`) is unchanged.
 
 **Rollback (about 2 minutes):** Cloudflare DNS: point `www` CNAME back to `cormite.github.io` and re-add the GitHub Pages custom domain;
@@ -138,3 +157,23 @@ PW_CHANNEL=chrome npm run build:social     # 1200x630 link-preview card -> asset
 - `tests/a11y.spec.mjs` runs axe (WCAG 2.1 A/AA + best practice) on all three pages, with the consent banner open and closed, desktop and mobile. Serious/critical violations fail CI.
 - All motion (constellation canvas, spotlight, tilt, kinetic name, counters, reveal) is disabled or settled under `prefers-reduced-motion` and data-saver. Without JavaScript everything stays visible.
 - axe cannot measure text over gradients; gold-on-dark contrast was verified by calculation and fixed with `--color-accent-on-dark`.
+
+## Primary domain: carlosfernandezsanmillan.com (2026-11-05)
+
+The professional identity moved to **https://carlosfernandezsanmillan.com** (bare apex). The domain is a single setting, `SITE_ORIGIN` in `assets/js/site-content.js`; CNAME, robots.txt, sitemap, canonical/hreflang/Open Graph, JSON-LD and the social card all follow it.
+
+Cloudflare state (zone `carlosfernandezsanmillan.com`, same account):
+- Pages project `cormite-production` serves both `carlosfernandezsanmillan.com` and `www.` (custom domains).
+- Redirect Rule "www to apex": `www` -> apex, 301, path and query preserved.
+- DNSSEC on (DS at DonDominio, digest verified against the published KSK, validated by 1.1.1.1/8.8.8.8/9.9.9.9).
+- Email Routing, receive-only: `hello@` (public), `carlos@`, `security@` forward to the owner's private mailbox; catch-all off. SPF `include:_spf.mx.cloudflare.net -all`, DMARC `p=reject; sp=reject; adkim=s; aspf=s`. Verified end to end from an outside account.
+- Corporate senders may hold mail to a newly registered domain for a while (observed from one corporate account); not a configuration fault.
+
+Cutover order (the owner runs every step; nothing here is automatic):
+1. Merge `test` -> `master` (publishes nothing).
+2. Set repository variable `PRODUCTION_URL` = `https://carlosfernandezsanmillan.com` BEFORE deploying, so `verify-live` checks the new host.
+3. Run `Deploy production` (DEPLOY + reviewer approval).
+4. Only after the new domain is live and verified: on the `cormite.com` zone, change the "Apex to www" Redirect Rule so `cormite.com` and `www.cormite.com` 301 to `https://carlosfernandezsanmillan.com` + path + query, and detach `www.cormite.com` from the Pages project (or keep it; the rule runs first).
+5. Search Console: add `carlosfernandezsanmillan.com` as a Domain property, then use Change of Address from the old property.
+
+Rollback: re-point the `cormite.com` redirect back and revert `SITE_ORIGIN` through the normal gated flow; GitHub Pages remains the 2-minute rollback for the site itself.

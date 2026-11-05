@@ -172,11 +172,12 @@ test.describe('analytics link classification', () => {
     await page.goto('/');
     const out = await page.evaluate(() => {
       const f = window.__SITE_INTERACTIONS.inferSocialPlatform;
+      const own = window.__SITE_CONTENT.SITE_CONFIG.siteUrl;
       return {
         linkedin: f('https://www.linkedin.com/in/someone'),
         linkedinBare: f('https://linkedin.com/in/someone'),
         github: f('https://github.com/Cormite'),
-        website: f('https://www.cormite.com/es/'),
+        website: f(`${own}/es/`),
         evilPath: f('https://evil.example/linkedin.com'),
         evilHost: f('https://notlinkedin.com/in/x'),
         evilSub: f('https://linkedin.com.evil.example/'),

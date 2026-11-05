@@ -5,12 +5,16 @@
 const LANGS = Object.freeze(['en', 'es', 'it']);
 const DEFAULT_LANG = 'en';
 const LANG_STORAGE_KEY = 'site_lang';
+// THE ONE PLACE THE SITE'S DOMAIN IS DEFINED. Everything else (canonical/hreflang/Open Graph, JSON-LD, sitemap,
+// robots.txt, CNAME, the social card, link classification and the tests) derives from this value.
+const SITE_ORIGIN = 'https://carlosfernandezsanmillan.com';
 const SITE_CONFIG = Object.freeze({
-  siteUrl: 'https://www.cormite.com',
+  siteUrl: SITE_ORIGIN,
+  siteHost: SITE_ORIGIN.replace(/^https?:\/\//, ''), // origin only: no path, no trailing slash
   siteName: 'Carlos Fernández San Millán',
   author: 'Carlos Fernández San Millán',
-  defaultImage: 'https://www.cormite.com/assets/og/og-card.jpg',
-  portraitImage: 'https://www.cormite.com/photo.jpg',
+  defaultImage: `${SITE_ORIGIN}/assets/og/og-card.jpg`,
+  portraitImage: `${SITE_ORIGIN}/photo.jpg`,
   googleAnalyticsId: 'G-6TC2GBF93J'
 });
 const CV_FILES = Object.freeze({
@@ -31,7 +35,7 @@ const NAV_ITEMS = Object.freeze([
 const SOCIAL_LINKS = Object.freeze([
   Object.freeze({ href: 'https://linkedin.com/in/carlosfernandezsanmillan', iconClass: 'fab fa-linkedin-in text-xl', key: 'linkedin' }),
   Object.freeze({ href: 'https://github.com/Cormite', iconClass: 'fab fa-github text-xl', key: 'github' }),
-  Object.freeze({ href: 'https://www.cormite.com', iconClass: 'fas fa-globe text-xl', key: 'website' })
+  Object.freeze({ href: SITE_ORIGIN, iconClass: 'fas fa-globe text-xl', key: 'website' })
 ]);
 
 const I18N = Object.freeze({
@@ -55,7 +59,7 @@ const I18N = Object.freeze({
       aboutSummary2: 'Proven track record of aligning technology strategy with institutional objectives, delivering measurable business outcomes, and building high-performing teams. Expertise spans IT governance, digital transformation, HPC/data center operations, cybersecurity frameworks, and research technology enablement.',
       footerRole: 'Technology Executive & Digital Transformation Leader',
       footerOpportunity: 'Open to on-prem and/or remote, Executive roles in Tech/Research Companies/Institutes',
-      contactEmail: 'carlos.fernandez.san.millan@gmail.com',
+      contactEmail: 'hello@carlosfernandezsanmillan.com',
       badges: Object.freeze({
         actingCio: 'Acting CIO',
         headOfIt: 'Head of IT',
@@ -166,7 +170,7 @@ const I18N = Object.freeze({
       aboutSummary2: 'Trayectoria demostrada alineando la estrategia tecnológica con objetivos institucionales, entregando resultados medibles y construyendo equipos de alto rendimiento. Experiencia en gobierno TI, transformación digital, operaciones de HPC/data center y marcos de ciberseguridad.',
       footerRole: 'Ejecutivo Tecnológico y Líder de Transformación Digital',
       footerOpportunity: 'Disponible para roles ejecutivos presenciales y/o remotos en empresas e institutos de tecnología e investigación',
-      contactEmail: 'carlos.fernandez.san.millan@gmail.com',
+      contactEmail: 'hello@carlosfernandezsanmillan.com',
       badges: Object.freeze({
         actingCio: 'CIO en funciones',
         headOfIt: 'Responsable de TI',
@@ -277,7 +281,7 @@ const I18N = Object.freeze({
       aboutSummary2: 'Track record consolidato nell\'allineare la strategia tecnologica agli obiettivi istituzionali, generando risultati misurabili e costruendo team ad alte prestazioni. Competenze su governance IT, trasformazione digitale, operations HPC/data center e cybersecurity.',
       footerRole: 'Technology Executive & Digital Transformation Leader',
       footerOpportunity: 'Disponibile per ruoli executive on-site e/o remote in aziende e istituti tech/research',
-      contactEmail: 'carlos.fernandez.san.millan@gmail.com',
+      contactEmail: 'hello@carlosfernandezsanmillan.com',
       badges: Object.freeze({
         actingCio: 'CIO ad interim',
         headOfIt: 'Responsabile IT',
