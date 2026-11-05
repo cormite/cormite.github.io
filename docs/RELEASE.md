@@ -195,3 +195,19 @@ the site and its security headers (`verify-live`), `www` and the legacy `cormite
 - **Free and card-free:** no external service. Scheduled workflows run from `master`, so it starts after the first merge.
 - **Gotcha:** GitHub pauses scheduled workflows in a repository with no activity for 60 days; any push re-enables them (the page is released often enough, and a paused schedule shows a banner on the Actions page).
 - The same script is runnable by hand: `node scripts/uptime-check.mjs`.
+
+## Performance budget (`tests/performance.spec.mjs`, part of `npm test` and therefore of CI)
+
+Deterministic limits for the first visit of each language page (consent denied), measured as a CDN sends it (gzip for text, raw for fonts and images). Current: 9 requests, about 152 KB.
+
+| Limit | Value | Today |
+|---|---|---|
+| Requests | 12 | 9 |
+| Total | 200 KB | 152 KB |
+| HTML | 18 KB | 13.5 KB |
+| JavaScript | 30 KB | 23.5 KB |
+| CSS | 11 KB | 7.7 KB |
+| Fonts | 110 KB (4 files) | 91 KB (4 files) |
+| Images | 25 KB | 15.7 KB |
+
+Also enforced: one stylesheet, no render-blocking script, hero image `fetchpriority=high` and not lazy, content-hashed bundle names, and no request to any other host before analytics consent. Timing metrics (LCP, CLS) are not asserted here because they depend on the machine; CLS has its own test in `tests/quality.spec.mjs`. A limit may be raised only on purpose, in a commit that says why.
