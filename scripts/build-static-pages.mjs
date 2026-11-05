@@ -496,8 +496,10 @@ ${urls}
 //   /llms.txt                    summary for AI assistants (llmstxt.org convention)
 //   /.well-known/security.txt    RFC 9116 contact for vulnerability reports (expires after one year, renewed by every release)
 // ---------------------------------------------------------------------------
+// Text extraction by a real HTML parser (not a tag-stripping regular expression, which cannot be made safe).
 function plainText(html) {
-  return String(html).replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  const { document } = new JSDOM(`<body>${String(html)}</body>`).window;
+  return document.body.textContent.replace(/\s+/g, ' ').trim();
 }
 
 function buildLlmsTxt(siteContent) {
@@ -537,8 +539,11 @@ ${social}
 
 function buildSecurityTxt(siteContent) {
   const { SITE_CONFIG } = siteContent;
+  // One year from the build DAY (midnight UTC): the build date is only known to the day when the CI reproducibility
+  // check re-derives it from the committed page, so a time of day here would make that check fail.
   const expires = new Date(BUILD_DATE.getTime());
   expires.setUTCFullYear(expires.getUTCFullYear() + 1);
+  expires.setUTCHours(0, 0, 0, 0);
   return `Contact: mailto:security@${SITE_CONFIG.siteHost}
 Expires: ${expires.toISOString().replace(/\.\d{3}Z$/, 'Z')}
 Preferred-Languages: en, es, it

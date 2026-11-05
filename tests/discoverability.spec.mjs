@@ -27,7 +27,8 @@ test.describe('security.txt (RFC 9116)', () => {
 
   test('Expires is a valid UTC timestamp, in the future, and not within 30 days of expiry', () => {
     const expires = field('Expires');
-    expect(expires).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
+    // Midnight UTC on purpose: CI re-derives the build date from the committed page, which only pins the day.
+    expect(expires).toMatch(/^\d{4}-\d{2}-\d{2}T00:00:00Z$/);
     const left = new Date(expires).getTime() - Date.now();
     // Every release rebuilds the file with a fresh one-year expiry (docs/RELEASE.md). This fails when nobody has
     // released for about eleven months, which is the reminder to renew it.
