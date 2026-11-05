@@ -104,6 +104,18 @@ What ships: `scripts/security-headers.mjs` generates `_headers` (`assemble-site.
 - The apex A/AAAA records still point at GitHub Pages IPs (proxied); they are never reached because the apex redirect rule answers first. Leave them.
 - Verify at any time: `node scripts/verify-live.mjs https://www.cormite.com`.
 
+**Cloudflare zone configuration (audited and set 2026-11-05, free plan):**
+- DNS (6 records): proxied `AAAA @ 100::` (placeholder so the apex redirect runs), proxied `www` CNAME -> `cormite-production.pages.dev`,
+  SPF `v=spf1 -all`, DMARC `v=DMARC1; p=reject; sp=reject; adkim=s; aspf=s`, null MX `0 .`, Google Search Console verification TXT.
+  The domain deliberately sends and receives no mail. If mail is ever needed, replace SPF/DMARC/MX first.
+- Apex: Redirect Rule "Apex to www" (`http.host eq "cormite.com"` -> `concat("https://www.cormite.com", http.request.uri.path)`, 301, preserve query string).
+  No Page Rules remain.
+- SSL/TLS: Full (strict), Always Use HTTPS on, minimum TLS 1.2, TLS 1.3 on, HSTS 12 months (no subdomains, no preload), Automatic HTTPS Rewrites on.
+- Speed: HTTP/2 and HTTP/3 on, Early Hints on. Deliberately OFF: Rocket Loader, Auto Minify, Cloudflare Fonts, Speed Brain, Real User Monitoring
+  and "Enable all available settings" (they inject scripts or rewrite assets and conflict with the strict CSP and consent model). Bot Fight Mode and CAA records were left off on purpose.
+- DNSSEC: on. DS (key tag 2371, algorithm 13, digest type 2) is registered at the registrar (DonDominio). If Cloudflare ever re-keys, update the DS there.
+- Registrar: DonDominio; domain expires 2027-04-13 (check auto-renew).
+
 **Rehearsal (no visitor impact):** run Deploy production. It publishes to `cormite-production.pages.dev`, verifies headers there, and
 the real site is untouched. Open that URL and check it.
 
