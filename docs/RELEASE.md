@@ -79,7 +79,7 @@ runner image is pinned to `ubuntu-24.04` so builds do not change under us.
 
 `scripts/assemble-site.mjs` is shared by staging and production: it copies an explicit allowlist of files (never the whole repo), and fails if any file referenced by the pages is missing.
 
-## Production on Cloudflare Pages (real security headers) - optional cutover
+## Production on Cloudflare Pages (real security headers) - LIVE since 2026-11-05
 GitHub Pages cannot send HTTP response headers, so the live site has no HSTS, clickjacking protection, Referrer/Permissions
 policy or CSP *header* (the CSP `<meta>` still applies). Cloudflare Pages can, and it also allows one-year immutable caching
 for the content-hashed bundles. The same `Deploy production` workflow (DEPLOY + reviewer approval) publishes to either target,
@@ -97,6 +97,13 @@ What ships: `scripts/security-headers.mjs` generates `_headers` (`assemble-site.
 4. GitHub -> Settings -> Secrets and variables -> Actions -> Variables: `PRODUCTION_TARGET` = `cloudflare`,
    `PRODUCTION_URL` = `https://cormite-production.pages.dev` (temporary, until step 6).
 
+**State and lessons from the cutover (2026-11-05):**
+- Production is `cormite-production` on Cloudflare Pages, domain `www.cormite.com`; variables `PRODUCTION_TARGET=cloudflare`, `PRODUCTION_URL=https://www.cormite.com`.
+- `wrangler pages deploy` bundles `./functions` from its working directory. The workflow therefore deploys from inside `_site`; from the repo root it shipped the staging password gate (503 everywhere). `tests/headers.spec.mjs` guards this.
+- Cloudflare's zone-level HSTS setting (SSL/TLS -> Edge Certificates) overrides the origin header. It is set to 12 months, include-subdomains off, preload off (a leftover `max-age=0` disabled HSTS). It also applies to the other proxied subdomains of the zone.
+- The apex A/AAAA records still point at GitHub Pages IPs (proxied); they are never reached because the apex redirect rule answers first. Leave them.
+- Verify at any time: `node scripts/verify-live.mjs https://www.cormite.com`.
+
 **Rehearsal (no visitor impact):** run Deploy production. It publishes to `cormite-production.pages.dev`, verifies headers there, and
 the real site is untouched. Open that URL and check it.
 
@@ -104,7 +111,7 @@ the real site is untouched. Open that URL and check it.
 5. Cloudflare -> DNS -> delete the `www` CNAME (-> `cormite.github.io`).
 6. Cloudflare -> Workers & Pages -> `cormite-production` -> Custom domains -> add `www.cormite.com` (Cloudflare creates the record and the certificate).
 7. Set the variable `PRODUCTION_URL` = `https://www.cormite.com`, re-run Deploy production, confirm it verifies on the real domain.
-8. GitHub -> Settings -> Pages: remove the custom domain (the site is no longer served from there).
+8. GitHub -> Settings -> Pages: **keep** the custom domain. DNS no longer points at GitHub, but while it is set `https://cormite.github.io/` answers `301 -> https://www.cormite.com/` (removing it would expose a stale duplicate copy of the site) and the 2-minute rollback stays ready.
 The apex redirect rule (`cormite.com` -> `www`) is unchanged.
 
 **Rollback (about 2 minutes):** Cloudflare DNS: point `www` CNAME back to `cormite.github.io` and re-add the GitHub Pages custom domain;
