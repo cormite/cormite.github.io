@@ -861,22 +861,31 @@ footer .text-accent,
 /* ==========================================================================
    Page transitions (cross-document View Transitions, progressive enhancement)
    Switching language or arriving from another page cross-fades instead of flashing white. The navigation bar and the
-   hero portrait keep their place. Browsers without support, and visitors who prefer reduced motion, get a normal load.
+   hero portrait keep their place. Browsers without support get a normal page load, and visitors who prefer reduced
+   motion get an instant swap (the animations are switched off below).
+   The opt-in is deliberately top level: nested inside a prefers-reduced-motion media query, Chromium sometimes
+   evaluated it too late on the new page and cancelled the transition ("ViewTransition opt-in disabled").
    ========================================================================== */
 
-@media (prefers-reduced-motion: no-preference) {
-  @view-transition {
-    navigation: auto;
-  }
+@view-transition {
+  navigation: auto;
+}
 
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation-duration: 0.25s;
-    animation-timing-function: ease;
-  }
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.25s;
+  animation-timing-function: ease;
+}
 
-  #navbar { view-transition-name: site-nav; }
-  /* Name the circular frame, not the <picture> inside it: a snapshot of the picture is painted outside the frame's
-     rounded clip, which flashed the portrait as a square. */
-  #home .photo-ring { view-transition-name: hero-portrait; }
+#navbar { view-transition-name: site-nav; }
+/* Name the circular frame, not the <picture> inside it: a snapshot of the picture is painted outside the frame's
+   rounded clip, which flashed the portrait as a square. */
+#home .photo-ring { view-transition-name: hero-portrait; }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
 }
