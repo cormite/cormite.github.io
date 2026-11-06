@@ -29,6 +29,12 @@ const CV_FILES = Object.freeze({
   it: 'carlos-fernandez-san-millan-it.pdf'
 });
 
+const VCARD_FILES = Object.freeze({
+  en: 'carlos-fernandez-san-millan-en.vcf',
+  es: 'carlos-fernandez-san-millan-es.vcf',
+  it: 'carlos-fernandez-san-millan-it.vcf'
+});
+
 const NAV_ITEMS = Object.freeze([
   Object.freeze({ href: '#home', key: 'home' }),
   Object.freeze({ href: '#about', key: 'about' }),
@@ -134,6 +140,10 @@ const I18N = Object.freeze({
         paletteDownloadCv: 'Download CV',
         paletteEmail: 'Send an email',
         paletteSwitchTo: 'Switch language to',
+        paletteGroupSite: 'This site', contactCardLabel: 'Contact card', contactCardAction: 'Save to contacts', paletteSaveContact: 'Save contact card', colophonOpen: 'How this page performed', colophonTitle: 'How this page performed', colophonIntro: 'Measured by your browser during this visit. Nothing is estimated and nothing is sent anywhere.',
+        colophonWeight: 'Data transferred', colophonRequests: 'Requests', colophonTtfb: 'Time to first byte', colophonFcp: 'First paint', colophonLcp: 'Largest paint', colophonCls: 'Layout shift',
+        colophonProtocol: 'Protocol', colophonSource: 'Served from', colophonBuild: 'Build', colophonBudget: 'Budget', colophonCache: 'Browser cache', colophonNetwork: 'Network',
+        colophonPrerendered: 'Prerendered, shown instantly', colophonFromCache: 'Browser cache (0 bytes)', colophonClose: 'Close', colophonNote: 'The test suite fails the build if a visit exceeds 200 KB or 12 requests, so these numbers cannot quietly drift.',
         socialLinksLabel: 'Social links',
         aboutFeaturesLabel: 'Core profile highlights',
         contactMethodsLabel: 'Primary contact methods',
@@ -257,6 +267,10 @@ const I18N = Object.freeze({
         paletteDownloadCv: 'Descargar CV',
         paletteEmail: 'Enviar un correo',
         paletteSwitchTo: 'Cambiar idioma a',
+        paletteGroupSite: 'Este sitio', contactCardLabel: 'Tarjeta de contacto', contactCardAction: 'Guardar en contactos', paletteSaveContact: 'Guardar tarjeta de contacto', colophonOpen: 'Cómo se ha comportado esta página', colophonTitle: 'Cómo se ha comportado esta página', colophonIntro: 'Medido por tu navegador durante esta visita. Nada se estima y nada se envía a ningún sitio.',
+        colophonWeight: 'Datos transferidos', colophonRequests: 'Peticiones', colophonTtfb: 'Tiempo hasta el primer byte', colophonFcp: 'Primer pintado', colophonLcp: 'Mayor pintado', colophonCls: 'Desplazamiento de diseño',
+        colophonProtocol: 'Protocolo', colophonSource: 'Servida desde', colophonBuild: 'Versión', colophonBudget: 'Presupuesto', colophonCache: 'Caché del navegador', colophonNetwork: 'Red',
+        colophonPrerendered: 'Pre-renderizada, mostrada al instante', colophonFromCache: 'Caché del navegador (0 bytes)', colophonClose: 'Cerrar', colophonNote: 'Las pruebas automáticas hacen fallar la compilación si una visita supera 200 KB o 12 peticiones, así que estas cifras no pueden empeorar sin que nadie lo note.',
         socialLinksLabel: 'Enlaces sociales',
         aboutFeaturesLabel: 'Aspectos clave del perfil',
         contactMethodsLabel: 'Métodos principales de contacto',
@@ -380,6 +394,10 @@ const I18N = Object.freeze({
         paletteDownloadCv: 'Scarica il CV',
         paletteEmail: 'Invia una email',
         paletteSwitchTo: 'Cambia lingua in',
+        paletteGroupSite: 'Questo sito', contactCardLabel: 'Biglietto da visita', contactCardAction: 'Salva nei contatti', paletteSaveContact: 'Salva biglietto da visita', colophonOpen: 'Come è andata questa pagina', colophonTitle: 'Come è andata questa pagina', colophonIntro: 'Misurato dal tuo browser durante questa visita. Nulla è stimato e nulla viene inviato altrove.',
+        colophonWeight: 'Dati trasferiti', colophonRequests: 'Richieste', colophonTtfb: 'Tempo al primo byte', colophonFcp: 'Primo rendering', colophonLcp: 'Rendering maggiore', colophonCls: 'Spostamento del layout',
+        colophonProtocol: 'Protocollo', colophonSource: 'Servita da', colophonBuild: 'Versione', colophonBudget: 'Budget', colophonCache: 'Cache del browser', colophonNetwork: 'Rete',
+        colophonPrerendered: 'Pre-renderizzata, mostrata subito', colophonFromCache: 'Cache del browser (0 byte)', colophonClose: 'Chiudi', colophonNote: 'I test automatici fanno fallire la build se una visita supera 200 KB o 12 richieste, quindi questi numeri non possono peggiorare senza che nessuno se ne accorga.',
         socialLinksLabel: 'Link social',
         aboutFeaturesLabel: 'Punti chiave del profilo',
         contactMethodsLabel: 'Principali metodi di contatto',
@@ -423,6 +441,7 @@ global.__SITE_CONTENT = Object.freeze({
   LANG_STORAGE_KEY,
   SITE_CONFIG,
   CV_FILES,
+  VCARD_FILES,
   NAV_ITEMS,
   SOCIAL_LINKS,
   I18N

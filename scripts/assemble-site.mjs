@@ -24,10 +24,11 @@ if (out === root || root.startsWith(out + path.sep) || out === path.parse(out).r
 }
 
 const ALLOW = [
-  'index.html', '404.html', 'es', 'it',
+  'index.html', '404.html', 'es', 'it', 'trust',
   'assets/dist', 'assets/fonts', 'assets/img', 'assets/og', 'assets/icons', 'site.webmanifest',
-  'photo.jpg', 'favicon.ico', 'robots.txt',
-  'carlos-fernandez-san-millan-en.pdf', 'carlos-fernandez-san-millan-es.pdf', 'carlos-fernandez-san-millan-it.pdf'
+  'photo.jpg', 'favicon.ico', 'robots.txt', 'assets/speculation-rules.json',
+  'carlos-fernandez-san-millan-en.pdf', 'carlos-fernandez-san-millan-es.pdf', 'carlos-fernandez-san-millan-it.pdf',
+  'carlos-fernandez-san-millan-en.vcf', 'carlos-fernandez-san-millan-es.vcf', 'carlos-fernandez-san-millan-it.vcf'
 ];
 if (!staging) ALLOW.push('sitemap.xml', 'llms.txt', '.well-known');
 if (!staging && !cloudflare) ALLOW.push('CNAME'); // GitHub Pages custom-domain file; Cloudflare manages the domain itself
@@ -56,18 +57,29 @@ if (staging) {
   fs.writeFileSync(path.join(out, 'BUILD.txt'), `Staging build ${process.env.GITHUB_SHA || process.env.CF_PAGES_COMMIT_SHA || 'local'} ${new Date().toISOString()}\n`);
 }
 
-if (cloudflare) fs.writeFileSync(path.join(out, '_headers'), productionHeaders());
+// Render-critical files of the built home page (stylesheet, script, preloaded fonts), for the Early Hints Link header.
+function criticalPreloads() {
+  const html = fs.readFileSync(path.join(out, 'index.html'), 'utf8');
+  const hrefs = (re) => [...html.matchAll(re)].map((m) => '/' + m[1].replace(/^\//, ''));
+  return [
+    ...hrefs(/<link rel="stylesheet" href="([^"]+)"/g).map((href) => ({ href, as: 'style' })),
+    ...hrefs(/<script src="([^"]+)" defer/g).map((href) => ({ href, as: 'script' })),
+    ...hrefs(/<link rel="preload" as="font" type="font\/woff2" href="([^"]+)"/g).map((href) => ({ href, as: 'font', type: 'font/woff2', crossorigin: true }))
+  ];
+}
+if (cloudflare) fs.writeFileSync(path.join(out, '_headers'), productionHeaders(criticalPreloads()));
 // GitHub Pages (rollback target) runs Jekyll unless told otherwise, and Jekyll drops dot-folders such as .well-known.
 if (!staging && !cloudflare) fs.writeFileSync(path.join(out, '.nojekyll'), '');
 
 // Verify every local reference in the pages resolves to a file in the output.
 const missing = [];
-for (const page of ['index.html', 'es/index.html', 'it/index.html', '404.html']) {
+for (const page of ['index.html', 'es/index.html', 'it/index.html', '404.html', 'trust/index.html', 'es/trust/index.html', 'it/trust/index.html']) {
   const html = fs.readFileSync(path.join(out, page), 'utf8');
   const dir = path.dirname(path.join(out, page));
   const refs = [...html.matchAll(/(?:src|href|srcset|imagesrcset)="([^"]+)"/g)].flatMap((m) => m[1].split(',').map((s) => s.trim().split(/\s+/)[0]));
   for (const ref of refs) {
     if (!ref || /^(https?:|mailto:|data:|#|\/\/)/.test(ref)) continue;
+    if (staging && ref.startsWith('/.well-known/')) continue; // staging deliberately does not publish the machine-readable files
     const clean = ref.split('#')[0].split('?')[0];
     if (!clean) continue;
     const target = clean.startsWith('/') ? path.join(out, clean) : path.join(dir, clean);

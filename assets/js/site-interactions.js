@@ -282,6 +282,25 @@ ${message}`);
     });
   }
 
+  // Contact card (.vcf): one tap to save name, title, email and links into the phone's contacts. The file is generated at
+  // build time from the same content as the page, per language.
+  function setupContactCard() {
+    const list = document.getElementById('contact-method-list');
+    const content = global.__SITE_CONTENT || {};
+    const render = global.__SITE_RENDER || {};
+    if (!list || !content.VCARD_FILES || !render.getCurrentLanguage || document.getElementById('contact-card-link')) return;
+    const lang = render.getCurrentLanguage();
+    const ui = (content.I18N[lang] || content.I18N[content.DEFAULT_LANG]).staticText.ui;
+    const item = document.createElement('li');
+    item.className = 'contact-method-item flex items-center group';
+    item.innerHTML = '<div class="contact-method-icon"><i class="fas fa-address-card text-xl text-primary group-hover:text-white transition-colors" aria-hidden="true"></i></div><div><p class="text-sm text-soft-text"></p><a id="contact-card-link" class="text-primary font-semibold hover:text-accent transition-colors" download></a></div>';
+    item.querySelector('p').textContent = ui.contactCardLabel;
+    const link = item.querySelector('a');
+    link.textContent = ui.contactCardAction;
+    link.href = content.VCARD_FILES[lang] || content.VCARD_FILES[content.DEFAULT_LANG];
+    list.appendChild(item);
+  }
+
   // "Now" line: live Milan time next to the location chip. Client-side only (Intl, no network, no geolocation).
   function setupLocalTime() {
     const node = byId('hero-time');
@@ -302,6 +321,7 @@ ${message}`);
   }
 
   function enhanceUi() {
+    setupContactCard(); // before the icon upgrade, so its icon is upgraded like the others
     upgradeLegacyIcons();
     setupRevealAnimations();
     setupNavbarScroll();
@@ -310,6 +330,7 @@ ${message}`);
     setupAnalyticsTracking();
     setupSmoothScroll();
     setupLocalTime();
+    if (global.__SITE_COLOPHON) global.__SITE_COLOPHON.init();
     if (global.__SITE_PALETTE) global.__SITE_PALETTE.init();
     if (global.__SITE_EFFECTS) global.__SITE_EFFECTS.enhanceEffects();
   }

@@ -35,16 +35,33 @@ const BASELINE = {
 const block = (pattern, headers) => [pattern, ...Object.entries(headers).map(([k, v]) => `  ${k}: ${v}`), ''].join('\n');
 
 // Cloudflare Pages `_headers` file for PRODUCTION.
-export function productionHeaders() {
+// `preloads` lists the render-critical files of the built pages ({ href, as, type?, crossorigin? }); Cloudflare turns
+// the Link header into a 103 Early Hints response, so the browser starts fetching them while the server is still
+// preparing the page. `/speculation-rules.json` lets Chromium prerender the next page on hover (other browsers ignore it).
+export const SPECULATION_RULES_PATH = '/assets/speculation-rules.json';
+
+export function linkHeader(preloads) {
+  return preloads.map(({ href, as, type, crossorigin }) =>
+    `<${href}>; rel=preload; as=${as}${type ? `; type=${type}` : ''}${crossorigin ? '; crossorigin' : ''}`).join(', ');
+}
+
+export function productionHeaders(preloads = []) {
   const longCache = 'public, max-age=31536000, immutable'; // content-hashed files never change
+  const page = { 'Speculation-Rules': `"${SPECULATION_RULES_PATH}"`, ...(preloads.length ? { Link: linkHeader(preloads) } : {}) };
   return [
     block('/*', { ...BASELINE, 'Content-Security-Policy': CSP_HEADER }),
+    block('/', page),
+    block('/es/', page),
+    block('/it/', page),
+    ...['/trust/', '/es/trust/', '/it/trust/'].map((p) => block(p, { 'Speculation-Rules': page['Speculation-Rules'], ...(preloads.length ? { Link: linkHeader(preloads.filter((r) => r.as !== 'script')) } : {}) })),
+    block(SPECULATION_RULES_PATH, { 'Content-Type': 'application/speculationrules+json', 'Cache-Control': 'public, max-age=3600' }),
     block('/assets/dist/*', { 'Cache-Control': longCache }),
     block('/assets/fonts/*', { 'Cache-Control': 'public, max-age=2592000' }),
     block('/assets/img/*', { 'Cache-Control': 'public, max-age=604800' }),
     block('/assets/icons/*', { 'Cache-Control': 'public, max-age=604800' }),
     block('/assets/og/*', { 'Cache-Control': 'public, max-age=86400' }),
     block('/*.pdf', { 'Cache-Control': 'public, max-age=86400' }),
+    block('/*.vcf', { 'Content-Type': 'text/vcard; charset=utf-8', 'Cache-Control': 'public, max-age=86400' }),
     block('/favicon.ico', { 'Cache-Control': 'public, max-age=86400' }),
     block('/llms.txt', { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=3600' }),
     block('/.well-known/security.txt', { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=3600' })

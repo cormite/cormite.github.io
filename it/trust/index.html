@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="it"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data: https://*.google-analytics.com https://*.googletagmanager.com; font-src 'self'; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>Fiducia e sicurezza | Carlos Fernández San Millán</title>
+<meta name="description" content="Come questo sito protegge chi lo visita, come arrivano le modifiche e come viene monitorato. Scritto perché tu possa verificarlo.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="theme-color" content="#0B1B3D">
+<link rel="canonical" href="https://carlosfernandezsanmillan.com/it/trust/">
+<link rel="alternate" hreflang="x-default" href="https://carlosfernandezsanmillan.com/trust/">
+<link rel="alternate" hreflang="en" href="https://carlosfernandezsanmillan.com/trust/">
+<link rel="alternate" hreflang="es" href="https://carlosfernandezsanmillan.com/es/trust/">
+<link rel="alternate" hreflang="it" href="https://carlosfernandezsanmillan.com/it/trust/">
+<meta property="og:title" content="Fiducia e sicurezza | Carlos Fernández San Millán"><meta property="og:description" content="Come questo sito protegge chi lo visita, come arrivano le modifiche e come viene monitorato. Scritto perché tu possa verificarlo.">
+<meta property="og:type" content="website"><meta property="og:url" content="https://carlosfernandezsanmillan.com/it/trust/"><meta property="og:image" content="https://carlosfernandezsanmillan.com/assets/og/og-card-it.jpg">
+<meta property="og:site_name" content="Carlos Fernández San Millán">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://carlosfernandezsanmillan.com/assets/og/og-card-it.jpg">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/dist/site.fdf24a3869.css">
+</head>
+<body class="doc-body">
+<a class="skip-link" href="#main-content">Vai al contenuto principale</a>
+<header class="doc-header"><a class="doc-brand display-font" href="/it/" aria-label="CF. Carlos Fernández San Millán">CF<span>.</span></a><nav class="doc-langs" aria-label="English / Español / Italiano"><a href="/trust/" lang="en">EN</a><a href="/es/trust/" lang="es">ES</a><a href="/it/trust/" lang="it" aria-current="page">IT</a></nav></header>
+<main id="main-content" class="doc-main" tabindex="-1">
+<h1 class="display-font">Fiducia e sicurezza</h1>
+<p class="doc-intro">Questo sito è piccolo di proposito. Quello che fa e come viene gestito è scritto qui, perché tu possa verificarlo invece di fidarti della mia parola.</p>
+<section class="doc-section" aria-labelledby="doc-s0"><h2 id="doc-s0">Privacy</h2>
+<p>Non viene inviato nulla a nessuno finché non scegli tu. Google Analytics 4 si carica solo se accetti, in Consent Mode con ogni tipo di archiviazione negato per impostazione predefinita e con le funzioni di pubblicità e profilazione disattivate. Puoi cambiare idea in qualsiasi momento dal pulsante privacy nel piè di pagina.</p>
+<p>Il sito non imposta cookie propri. La tua scelta (e la tua lingua) restano nel tuo browser, sul tuo dispositivo.</p></section>
+<section class="doc-section" aria-labelledby="doc-s1"><h2 id="doc-s1">Protezione nel tuo browser</h2>
+<p>Ogni pagina viene servita con una Content Security Policy rigorosa. Vieta script inline ed eval, limita tutto a questo sito (più i server di analytics di Google, solo dopo il consenso), impedisce l’inserimento in altre pagine e trasforma le richieste non sicure in sicure. HTTPS è obbligatorio per un anno (HSTS), la Permissions Policy disattiva fotocamera, microfono, posizione e altri sensori e una opener policy isola la pagina dalle altre finestre.</p>
+<p>Puoi vedere tutto negli strumenti per sviluppatori del tuo browser, nella scheda Rete.</p></section>
+<section class="doc-section" aria-labelledby="doc-s2"><h2 id="doc-s2">Dominio ed e-mail</h2>
+<p>DNSSEC è attivo sul dominio. Gli indirizzi e-mail di questo dominio ricevono e inoltrano soltanto: SPF e DMARC sono impostati per rifiutare qualsiasi messaggio inviato a nome del dominio che non sia autorizzato.</p>
+<p>Le segnalazioni di sicurezza vanno a <a href="mailto:security@carlosfernandezsanmillan.com">security@carlosfernandezsanmillan.com</a>. Il file di contatto leggibile dalle macchine (RFC 9116) si trova in <a href="/.well-known/security.txt">/.well-known/security.txt</a> e viene rinnovato a ogni pubblicazione.</p></section>
+<section class="doc-section" aria-labelledby="doc-s3"><h2 id="doc-s3">Come una modifica va in produzione</h2>
+<p>Ogni modifica passa da una suite di test automatici che copre accessibilità, contrasto dei colori, intestazioni di sicurezza, peso della pagina e pagine generate, più un controllo delle dipendenze che fallisce davanti a problemi di gravità alta e una scansione del codice alla ricerca di vulnerabilità. Un controllo fallisce se i file pubblicati differiscono da ciò che produce il codice sorgente.</p>
+<p>Una modifica viene pubblicata prima su una copia di prova protetta da password. La pubblicazione in produzione è un passaggio manuale separato che richiede una conferma scritta e l’approvazione di un revisore, e la versione precedente resta disponibile come ripiego.</p></section>
+<section class="doc-section" aria-labelledby="doc-s4"><h2 id="doc-s4">La velocità è un requisito</h2>
+<p>Una prima visita ha un budget di 200 KB e 12 richieste, verificato dai test: una modifica che lo supera non viene pubblicata. «Come è andata questa pagina», nel piè di pagina della home, mostra quanto è costata la tua visita, misurato dal tuo browser.</p></section>
+<section class="doc-section" aria-labelledby="doc-s5"><h2 id="doc-s5">Monitoraggio</h2>
+<p>Ogni 30 minuti un controllo automatico verifica che il sito risponda, che le intestazioni di sicurezza siano presenti, che gli indirizzi vecchi e con www reindirizzino correttamente, che il certificato sia valido per almeno altre due settimane, che l’instradamento della posta funzioni e che il file di contatto per la sicurezza non sia scaduto. In caso di guasto parte un avviso.</p></section>
+<section class="doc-section" aria-labelledby="doc-s6"><h2 id="doc-s6">Open source</h2>
+<p>L’intero sito, test e processo di pubblicazione inclusi, è pubblico.</p>
+<p><a href="https://github.com/cormite/cormite.github.io" rel="noopener noreferrer">github.com/cormite/cormite.github.io</a></p></section>
+<section class="doc-section doc-callout" aria-labelledby="doc-report"><h2 id="doc-report">Segnalare un problema</h2><p>Hai trovato qualcosa che non va? Scrivi a <a href="mailto:security@carlosfernandezsanmillan.com">security@carlosfernandezsanmillan.com</a>. Lo legge una persona.</p></section>
+<p class="doc-back"><a href="/it/">&larr; Torna alla home page</a></p>
+</main>
+<footer class="doc-footer"><p>Ultima compilazione: 6 novembre 2026</p></footer>
+</body></html>

@@ -71,12 +71,19 @@
     const cvLink = byId('hero-download-button');
     if (cvLink) out.push({ group: ui.paletteGroupLinks, label: ui.paletteDownloadCv, keywords: 'cv pdf resume curriculum', run: () => cvLink.click() });
 
+    const cardLink = byId('contact-card-link');
+    if (cardLink) out.push({ group: ui.paletteGroupLinks, label: ui.paletteSaveContact, keywords: 'vcard vcf contact contacts card contacto tarjeta contatti biglietto', run: () => cardLink.click() });
+
     out.push({
       group: ui.paletteGroupLinks,
       label: `${ui.paletteEmail}: ${content_.profile.contactEmail}`,
       keywords: 'email mail correo contact contacto',
       run: () => { global.location.href = `mailto:${content_.profile.contactEmail}`; }
     });
+
+    if (global.__SITE_COLOPHON) {
+      out.push({ group: ui.paletteGroupSite, label: ui.colophonOpen, keywords: 'performance speed engineering weight requests latency build', run: () => global.__SITE_COLOPHON.open() });
+    }
 
     SOCIAL_LINKS.forEach((link) => {
       if (link.key === 'website') return;

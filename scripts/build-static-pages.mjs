@@ -6,6 +6,7 @@ import crypto from 'node:crypto';
 import { JSDOM } from 'jsdom';
 import { transformSync } from 'esbuild';
 import { CSP } from './security-headers.mjs';
+import { TRUST, REPOSITORY_URL } from './trust-content.mjs';
 
 // Deterministic builds: set SOURCE_DATE (ISO 8601) to pin the generated date.
 const BUILD_DATE = process.env.SOURCE_DATE ? new Date(process.env.SOURCE_DATE) : new Date();
@@ -327,7 +328,7 @@ function setAria(document, id, value) {
 // ---------------------------------------------------------------------------
 // Asset pipeline: one hashed JS bundle + one hashed CSS bundle (assets/dist)
 // ---------------------------------------------------------------------------
-const JS_ORDER = ['site-content', 'site-utils', 'site-icons', 'site-dom', 'site-render', 'site-interactions', 'site-effects', 'site-palette', 'consent', 'main'];
+const JS_ORDER = ['site-content', 'site-utils', 'site-icons', 'site-dom', 'site-render', 'site-interactions', 'site-effects', 'site-colophon', 'site-palette', 'consent', 'main'];
 const CSS_ORDER = ['assets/css/tailwind.css', 'assets/css/styles.css'];
 const distDir = path.join(rootDir, 'assets', 'dist');
 
@@ -469,11 +470,79 @@ function build404(siteContent, bundles) {
 `;
 }
 
+// ---------------------------------------------------------------------------
+// "Trust and security" page: one static page per language, no JavaScript, same stylesheet as the site.
+// ---------------------------------------------------------------------------
+const htmlEscape = (value) => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+function trustUrl(siteContent, lang) { return `${siteContent.SITE_CONFIG.siteUrl}/${TRUST[lang].path}`; }
+
+function buildTrustPage(siteContent, lang, bundles) {
+  const { SITE_CONFIG, I18N } = siteContent;
+  const security = `security@${SITE_CONFIG.siteHost}`;
+  const text = JSON.parse(JSON.stringify(TRUST[lang]).replace(/\{security\}/g, security));
+  const content = I18N[lang];
+  const homeHref = lang === 'en' ? '/' : `/${lang}/`;
+  const url = trustUrl(siteContent, lang);
+  const image = (SITE_CONFIG.socialImages && SITE_CONFIG.socialImages[lang]) || SITE_CONFIG.defaultImage;
+  const names = { en: 'English', es: 'Español', it: 'Italiano' };
+  const alternates = ['x-default', ...Object.keys(TRUST)].map((code) => `<link rel="alternate" hreflang="${code}" href="${trustUrl(siteContent, code === 'x-default' ? 'en' : code)}">`).join('\n');
+  const langNav = Object.keys(TRUST).map((code) => `<a href="/${TRUST[code].path}" lang="${code}"${code === lang ? ' aria-current="page"' : ''}>${code.toUpperCase()}</a>`).join('');
+  const title = `${text.title} | ${SITE_CONFIG.siteName}`;
+  const sections = text.sections.map((section, index) => {
+    const paragraphs = section.p.map((p) => `<p>${htmlEscape(p).replace(/\/\.well-known\/security\.txt/, '<a href="/.well-known/security.txt">/.well-known/security.txt</a>').replace(/(security@[a-z0-9-]+(?:\.[a-z0-9-]+)+)/, '<a href="mailto:$1">$1</a>')}</p>`).join('\n');
+    const extra = index === text.sections.length - 1 ? `\n<p><a href="${REPOSITORY_URL}" rel="noopener noreferrer">${REPOSITORY_URL.replace('https://', '')}</a></p>` : '';
+    return `<section class="doc-section" aria-labelledby="doc-s${index}"><h2 id="doc-s${index}">${htmlEscape(section.h)}</h2>\n${paragraphs}${extra}</section>`;
+  }).join('\n');
+  const built = BUILD_DATE.toLocaleDateString(content.locale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  return `<!DOCTYPE html>
+<html lang="${lang}"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="${CSP}">
+<title>${htmlEscape(title)}</title>
+<meta name="description" content="${htmlEscape(text.description)}">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="theme-color" content="#0B1B3D">
+<link rel="canonical" href="${url}">
+${alternates}
+<meta property="og:title" content="${htmlEscape(title)}"><meta property="og:description" content="${htmlEscape(text.description)}">
+<meta property="og:type" content="website"><meta property="og:url" content="${url}"><meta property="og:image" content="${image}">
+<meta property="og:site_name" content="${htmlEscape(SITE_CONFIG.siteName)}">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${image}">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="stylesheet" href="/${bundles.css}">
+</head>
+<body class="doc-body">
+<a class="skip-link" href="#main-content">${htmlEscape((content.staticText.ui && content.staticText.ui.skipLink) || 'Skip to main content')}</a>
+<header class="doc-header"><a class="doc-brand display-font" href="${homeHref}" aria-label="CF. ${htmlEscape(SITE_CONFIG.siteName)}">CF<span>.</span></a><nav class="doc-langs" aria-label="${htmlEscape(Object.values(names).join(' / '))}">${langNav}</nav></header>
+<main id="main-content" class="doc-main" tabindex="-1">
+<h1 class="display-font">${htmlEscape(text.title)}</h1>
+<p class="doc-intro">${htmlEscape(text.intro)}</p>
+${sections}
+<section class="doc-section doc-callout" aria-labelledby="doc-report"><h2 id="doc-report">${htmlEscape(text.reportTitle)}</h2><p>${htmlEscape(text.reportText).replace(/(security@[a-z0-9-]+(?:\.[a-z0-9-]+)+)/, '<a href="mailto:$1">$1</a>')}</p></section>
+<p class="doc-back"><a href="${homeHref}">&larr; ${htmlEscape(text.home)}</a></p>
+</main>
+<footer class="doc-footer"><p>${htmlEscape(text.updated)}: ${built}</p></footer>
+</body></html>
+`;
+}
+
 function buildSitemap(siteContent) {
   const base = siteContent.SITE_CONFIG.siteUrl;
   const lastmod = BUILD_DATE.toISOString().slice(0, 10);
   const alternates = [['x-default', `${base}/`], ['en', `${base}/`], ['es', `${base}/es/`], ['it', `${base}/it/`]]
     .map(([l, h]) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${h}" />`).join('\n');
+  const trustAlternates = ['x-default', 'en', 'es', 'it']
+    .map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${trustUrl(siteContent, l === 'x-default' ? 'en' : l)}" />`).join('\n');
+  const trustUrls = Object.keys(TRUST).map((l) => `  <url>
+    <loc>${trustUrl(siteContent, l)}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+${trustAlternates}
+  </url>`).join('\n');
   const urls = [['', '1.0'], ['es/', '0.9'], ['it/', '0.9']].map(([p, prio]) => `  <url>
     <loc>${base}/${p}</loc>
     <lastmod>${lastmod}</lastmod>
@@ -485,6 +554,7 @@ ${alternates}
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${urls}
+${trustUrls}
 </urlset>
 `;
 }
@@ -519,6 +589,10 @@ Based in ${en.profile.location}. ${en.profile.availability}. Contact: ${en.profi
 - [Español](${base}/es/): perfil completo en español
 - [Italiano](${base}/it/): profilo completo in italiano
 
+## Trust and security
+- [How the site protects visitors, ships changes and is monitored](${base}/${TRUST.en.path})
+- Source code and tests: ${REPOSITORY_URL}
+
 ## Curriculum vitae (PDF)
 - [English](${base}/${CV_FILES.en})
 - [Español](${base}/${CV_FILES.es})
@@ -534,6 +608,28 @@ ${social}
 - Facts on this site are stated by ${SITE_CONFIG.siteName} (the site owner); the CV PDFs and the LinkedIn profile carry the authoritative detail.
 - For contact, use ${en.profile.contactEmail}.
 `;
+}
+
+// vCard 3.0 (the version every phone and mail client reads), one per language, from the same content as the page.
+function buildVcard(siteContent, lang) {
+  const { SITE_CONFIG, SOCIAL_LINKS, I18N } = siteContent;
+  const profile = I18N[lang].profile;
+  const esc = (value) => String(value).replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/;/g, '\\;').replace(/,/g, '\\,');
+  const page = lang === 'en' ? `${SITE_CONFIG.siteUrl}/` : `${SITE_CONFIG.siteUrl}/${lang}/`;
+  const social = SOCIAL_LINKS.filter((item) => item.key !== 'website')
+    .map((item) => `X-SOCIALPROFILE;TYPE=${item.key}:${item.href}`);
+  const lines = [
+    'BEGIN:VCARD', 'VERSION:3.0',
+    `N:${esc('Fernández San Millán')};Carlos;;;`,
+    `FN:${esc(SITE_CONFIG.siteName)}`,
+    `TITLE:${esc(profile.title)}`,
+    `EMAIL;TYPE=INTERNET,WORK:${profile.contactEmail}`,
+    `URL:${page}`,
+    ...social,
+    `REV:${BUILD_DATE.toISOString().slice(0, 10).replace(/-/g, '')}T000000Z`,
+    'END:VCARD'
+  ];
+  return lines.join('\r\n') + '\r\n';
 }
 
 function buildSecurityTxt(siteContent) {
@@ -679,6 +775,15 @@ function populateDocument(document, siteContent, lang, bundles) {
   setHtml(document, 'footer-references', `${iconMarkup('fa-info-circle', 'mr-2')}${content.staticText.footerReferences}`);
   setHtml(document, 'footer-opportunity', `${iconMarkup('fa-user-tie', 'mr-2')}${content.profile.footerOpportunity}`);
   setText(document, 'footer-updated-label', content.staticText.footerUpdated);
+  {
+    // Link to the trust page, in the footer, in the page language (a real link, so it works without JavaScript).
+    const anchor = document.createElement('a');
+    anchor.id = 'trust-link';
+    anchor.className = 'privacy-settings-btn';
+    anchor.href = `/${TRUST[lang].path}`;
+    anchor.textContent = TRUST[lang].linkLabel;
+    document.getElementById('footer-updated-line').insertAdjacentElement('afterend', anchor);
+  }
   setText(document, 'current-date', currentDate);
   setHtml(document, 'footer-copyright', `&copy; <span id="current-year">${currentYear}</span> ${content.staticText.footerCopyright}`);
 
@@ -729,7 +834,13 @@ writePage(path.join(rootDir, 'it', 'index.html'), buildPage(siteContent, 'it', b
 fs.writeFileSync(path.join(rootDir, 'sitemap.xml'), buildSitemap(siteContent));
 fs.writeFileSync(path.join(rootDir, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${siteContent.SITE_CONFIG.siteUrl}/sitemap.xml\n`);
 fs.writeFileSync(path.join(rootDir, 'llms.txt'), buildLlmsTxt(siteContent));
+for (const lang of Object.keys(siteContent.VCARD_FILES)) fs.writeFileSync(path.join(rootDir, siteContent.VCARD_FILES[lang]), buildVcard(siteContent, lang));
 fs.mkdirSync(path.join(rootDir, '.well-known'), { recursive: true });
 fs.writeFileSync(path.join(rootDir, '.well-known', 'security.txt'), buildSecurityTxt(siteContent));
 fs.writeFileSync(path.join(rootDir, 'CNAME'), siteContent.SITE_CONFIG.siteHost); // used only by the GitHub Pages rollback layout
 fs.writeFileSync(path.join(rootDir, '404.html'), build404(siteContent, bundles));
+for (const lang of Object.keys(TRUST)) {
+  const dir = path.join(rootDir, TRUST[lang].path);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, 'index.html'), buildTrustPage(siteContent, lang, bundles));
+}
