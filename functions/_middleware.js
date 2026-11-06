@@ -44,7 +44,9 @@ export async function onRequest(context) {
   const [scheme, encoded] = header.split(' ');
   if (scheme === 'Basic' && encoded) {
     let decoded = '';
-    try { decoded = atob(encoded); } catch { /* malformed header: fall through to challenge */ }
+    // Basic credentials are bytes: decode them as UTF-8 (atob alone yields Latin-1 characters, so any password with an
+    // accent or symbol outside ASCII could never match).
+    try { decoded = new TextDecoder('utf-8', { fatal: true }).decode(Uint8Array.from(atob(encoded), (c) => c.charCodeAt(0))); } catch { /* malformed header: fall through to challenge */ }
     const password = decoded.slice(decoded.indexOf(':') + 1);
     if (decoded.includes(':') && await safeEqual(password, env.STAGING_PASSWORD)) {
       const response = await next();

@@ -83,7 +83,8 @@
       if (running && !still) raf = global.requestAnimationFrame(frame);
     }
 
-    function start() { if (running || still) return; running = true; raf = global.requestAnimationFrame(frame); }
+    let inView = true; // updated by the IntersectionObserver below
+    function start() { if (running || still || !inView) return; running = true; raf = global.requestAnimationFrame(frame); }
     function stop() { running = false; global.cancelAnimationFrame(raf); }
 
     resize();
@@ -93,8 +94,9 @@
     let resizeTimer = 0;
     global.addEventListener('resize', () => { global.clearTimeout(resizeTimer); resizeTimer = global.setTimeout(resize, 150); }, { passive: true });
     if ('IntersectionObserver' in global) {
-      new IntersectionObserver((entries) => { entries[0].isIntersecting && !doc.hidden ? start() : stop(); }, { threshold: 0 }).observe(hero);
+      new IntersectionObserver((entries) => { inView = entries[0].isIntersecting; inView && !doc.hidden ? start() : stop(); }, { threshold: 0 }).observe(hero);
     } else { start(); }
+    // Coming back to the tab must not restart the animation when the hero is scrolled out of view (start() checks inView).
     doc.addEventListener('visibilitychange', () => { doc.hidden ? stop() : start(); });
 
     if (finePointer()) {

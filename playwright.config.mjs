@@ -11,7 +11,7 @@ const baseURL = process.env.BASE_URL || `http://localhost:${TEST_PORT}`;
 // in the "once" project instead of twice. Everything else runs in both the desktop and the mobile project.
 const RUN_ONCE = [
   /headers\.spec/, /domain\.spec/, /discoverability\.spec/, /uptime\.spec/, /staging-gate\.spec/,
-  /portrait\.spec/, /portrait-transition\.spec/, /mobile-menu\.spec/, /ci-config\.spec/
+  /portrait\.spec/, /portrait-transition\.spec/, /mobile-menu\.spec/, /ci-config\.spec/, /scripts-safety\.spec/
 ];
 
 // CI runs the suite as parallel jobs, one per TEST_GROUP (see .github/workflows/ci.yml). Groups are balanced by measured

@@ -15,9 +15,16 @@ const types = {
 };
 
 http.createServer((req, res) => {
-  const urlPath = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+  let urlPath;
+  try {
+    urlPath = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+  } catch {
+    res.writeHead(400).end('Bad request'); // a malformed %-escape must not crash the server
+    return;
+  }
   let file = path.join(root, path.normalize(urlPath));
-  if (!file.startsWith(root)) { res.writeHead(403).end('Forbidden'); return; }
+  // Compare with the separator: a sibling folder such as "<root>-backup" also starts with the root path.
+  if (file !== root && !file.startsWith(root + path.sep)) { res.writeHead(403).end('Forbidden'); return; }
   if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
   if (!fs.existsSync(file)) {
     // Behave like GitHub Pages: serve 404.html with a 404 status.
@@ -28,4 +35,5 @@ http.createServer((req, res) => {
   }
   res.writeHead(200, { 'Content-Type': types[path.extname(file)] || 'application/octet-stream' });
   fs.createReadStream(file).pipe(res);
-}).listen(port, () => console.log(`Serving ${root} at http://localhost:${port}`));
+// Loopback only: this server exposes the whole repository folder (including .git), so it must not answer the network.
+}).listen(port, '127.0.0.1', () => console.log(`Serving ${root} at http://127.0.0.1:${port}`));
