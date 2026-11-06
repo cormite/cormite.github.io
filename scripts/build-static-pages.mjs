@@ -327,7 +327,7 @@ function setAria(document, id, value) {
 // ---------------------------------------------------------------------------
 // Asset pipeline: one hashed JS bundle + one hashed CSS bundle (assets/dist)
 // ---------------------------------------------------------------------------
-const JS_ORDER = ['site-content', 'site-utils', 'site-icons', 'site-dom', 'site-render', 'site-interactions', 'site-effects', 'site-palette', 'consent', 'main'];
+const JS_ORDER = ['site-content', 'site-utils', 'site-icons', 'site-dom', 'site-render', 'site-interactions', 'site-effects', 'site-colophon', 'site-palette', 'consent', 'main'];
 const CSS_ORDER = ['assets/css/tailwind.css', 'assets/css/styles.css'];
 const distDir = path.join(rootDir, 'assets', 'dist');
 

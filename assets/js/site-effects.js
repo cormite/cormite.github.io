@@ -201,11 +201,14 @@
     const timeline = doc.getElementById('experience-timeline');
     const line = doc.querySelector('.timeline-line');
     let ticking = false;
+    // Where the browser can link an animation to scroll position itself (see styles.css), it moves the bar on the
+    // compositor and this script does not touch it.
+    const barByCss = Boolean(global.CSS && global.CSS.supports && global.CSS.supports('animation-timeline: scroll()'));
 
     function update() {
       ticking = false;
       const max = doc.documentElement.scrollHeight - global.innerHeight;
-      bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, global.scrollY / max) : 0).toFixed(4) + ')';
+      if (!barByCss) bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, global.scrollY / max) : 0).toFixed(4) + ')';
       if (timeline && line) {
         const r = timeline.getBoundingClientRect();
         const mid = global.innerHeight * 0.55;

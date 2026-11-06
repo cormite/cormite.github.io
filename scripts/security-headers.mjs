@@ -35,10 +35,25 @@ const BASELINE = {
 const block = (pattern, headers) => [pattern, ...Object.entries(headers).map(([k, v]) => `  ${k}: ${v}`), ''].join('\n');
 
 // Cloudflare Pages `_headers` file for PRODUCTION.
-export function productionHeaders() {
+// `preloads` lists the render-critical files of the built pages ({ href, as, type?, crossorigin? }); Cloudflare turns
+// the Link header into a 103 Early Hints response, so the browser starts fetching them while the server is still
+// preparing the page. `/speculation-rules.json` lets Chromium prerender the next page on hover (other browsers ignore it).
+export const SPECULATION_RULES_PATH = '/assets/speculation-rules.json';
+
+export function linkHeader(preloads) {
+  return preloads.map(({ href, as, type, crossorigin }) =>
+    `<${href}>; rel=preload; as=${as}${type ? `; type=${type}` : ''}${crossorigin ? '; crossorigin' : ''}`).join(', ');
+}
+
+export function productionHeaders(preloads = []) {
   const longCache = 'public, max-age=31536000, immutable'; // content-hashed files never change
+  const page = { 'Speculation-Rules': `"${SPECULATION_RULES_PATH}"`, ...(preloads.length ? { Link: linkHeader(preloads) } : {}) };
   return [
     block('/*', { ...BASELINE, 'Content-Security-Policy': CSP_HEADER }),
+    block('/', page),
+    block('/es/', page),
+    block('/it/', page),
+    block(SPECULATION_RULES_PATH, { 'Content-Type': 'application/speculationrules+json', 'Cache-Control': 'public, max-age=3600' }),
     block('/assets/dist/*', { 'Cache-Control': longCache }),
     block('/assets/fonts/*', { 'Cache-Control': 'public, max-age=2592000' }),
     block('/assets/img/*', { 'Cache-Control': 'public, max-age=604800' }),

@@ -26,7 +26,7 @@ if (out === root || root.startsWith(out + path.sep) || out === path.parse(out).r
 const ALLOW = [
   'index.html', '404.html', 'es', 'it',
   'assets/dist', 'assets/fonts', 'assets/img', 'assets/og', 'assets/icons', 'site.webmanifest',
-  'photo.jpg', 'favicon.ico', 'robots.txt',
+  'photo.jpg', 'favicon.ico', 'robots.txt', 'assets/speculation-rules.json',
   'carlos-fernandez-san-millan-en.pdf', 'carlos-fernandez-san-millan-es.pdf', 'carlos-fernandez-san-millan-it.pdf'
 ];
 if (!staging) ALLOW.push('sitemap.xml', 'llms.txt', '.well-known');
@@ -56,7 +56,17 @@ if (staging) {
   fs.writeFileSync(path.join(out, 'BUILD.txt'), `Staging build ${process.env.GITHUB_SHA || process.env.CF_PAGES_COMMIT_SHA || 'local'} ${new Date().toISOString()}\n`);
 }
 
-if (cloudflare) fs.writeFileSync(path.join(out, '_headers'), productionHeaders());
+// Render-critical files of the built home page (stylesheet, script, preloaded fonts), for the Early Hints Link header.
+function criticalPreloads() {
+  const html = fs.readFileSync(path.join(out, 'index.html'), 'utf8');
+  const hrefs = (re) => [...html.matchAll(re)].map((m) => '/' + m[1].replace(/^\//, ''));
+  return [
+    ...hrefs(/<link rel="stylesheet" href="([^"]+)"/g).map((href) => ({ href, as: 'style' })),
+    ...hrefs(/<script src="([^"]+)" defer/g).map((href) => ({ href, as: 'script' })),
+    ...hrefs(/<link rel="preload" as="font" type="font\/woff2" href="([^"]+)"/g).map((href) => ({ href, as: 'font', type: 'font/woff2', crossorigin: true }))
+  ];
+}
+if (cloudflare) fs.writeFileSync(path.join(out, '_headers'), productionHeaders(criticalPreloads()));
 // GitHub Pages (rollback target) runs Jekyll unless told otherwise, and Jekyll drops dot-folders such as .well-known.
 if (!staging && !cloudflare) fs.writeFileSync(path.join(out, '.nojekyll'), '');
 

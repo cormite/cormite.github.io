@@ -310,6 +310,7 @@ ${message}`);
     setupAnalyticsTracking();
     setupSmoothScroll();
     setupLocalTime();
+    if (global.__SITE_COLOPHON) global.__SITE_COLOPHON.init();
     if (global.__SITE_PALETTE) global.__SITE_PALETTE.init();
     if (global.__SITE_EFFECTS) global.__SITE_EFFECTS.enhanceEffects();
   }

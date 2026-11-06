@@ -78,6 +78,10 @@
       run: () => { global.location.href = `mailto:${content_.profile.contactEmail}`; }
     });
 
+    if (global.__SITE_COLOPHON) {
+      out.push({ group: ui.paletteGroupSite, label: ui.colophonOpen, keywords: 'performance speed engineering weight requests latency build', run: () => global.__SITE_COLOPHON.open() });
+    }
+
     SOCIAL_LINKS.forEach((link) => {
       if (link.key === 'website') return;
       const label = ui.socialLinkLabels[link.key] || link.key;

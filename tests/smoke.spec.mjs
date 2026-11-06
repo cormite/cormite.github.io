@@ -278,7 +278,12 @@ test.describe('motion layer', () => {
     test.skip(viewport.width < 768, 'desktop layout');
     await page.goto('/');
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await expect.poll(() => page.locator('#scroll-progress').evaluate((e) => e.style.transform)).toContain('scaleX(1');
+    // Works for both drivers: the browser's scroll timeline (CSS) and the script fallback; both end in a computed scaleX.
+    const scale = () => page.locator('#scroll-progress').evaluate((e) => parseFloat((getComputedStyle(e).transform.match(/matrix\(([^,]+)/) || [0, '0'])[1]));
+    await expect.poll(scale).toBeGreaterThan(0.99);
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight / 2));
+    await expect.poll(scale).toBeLessThan(0.9);
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.evaluate(() => document.getElementById('experience-timeline').scrollIntoView({ block: 'center' }));
     await expect.poll(() => page.locator('.timeline-line').evaluate((e) => parseFloat(getComputedStyle(e).getPropertyValue('--tl') || '0'))).toBeGreaterThan(0.05);
   });

@@ -129,5 +129,9 @@
     else if (choice !== 'denied') openBanner();
   }
 
-  if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', init); else init();
+  // A page the browser prerenders in the background (speculation rules) must not count as a visit, or ask for consent,
+  // before the visitor actually arrives on it: wait for activation.
+  function start() { if (doc.prerendering) doc.addEventListener('prerenderingchange', init, { once: true }); else init(); }
+
+  if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', start); else start();
 }(globalThis));
