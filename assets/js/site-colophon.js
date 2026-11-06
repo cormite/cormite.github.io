@@ -17,6 +17,9 @@
   if (!I18N || !byId || !render.getCurrentLanguage) throw new Error('site-colophon.js requires site-content.js, site-render.js and site-dom.js');
 
   const BUDGET = Object.freeze({ bytes: 200 * 1024, requests: 12 });
+  // Requests that depend on the browser or the host, not on the page: icon, web manifest, speculation rules and the host's own
+  // scripts (/cdn-cgi/). They are listed apart so the budget compares like with like (tests/colophon.spec.mjs keeps this in sync).
+  const EXTRAS = /\/(favicon\.ico|site\.webmanifest|assets\/speculation-rules\.json)$|\/cdn-cgi\//;
   const supports = (type) => Boolean(global.PerformanceObserver && (global.PerformanceObserver.supportedEntryTypes || []).includes(type));
   let dialog = null;
   let body = null;
@@ -41,11 +44,15 @@
     const own = (perf.getEntriesByType('resource') || []).filter((r) => r.name.startsWith(origin));
     const paint = (perf.getEntriesByName('first-contentful-paint') || [])[0];
     const script = (doc.querySelector('script[src*="app."]') || {}).src || '';
-    const wire = nav ? nav.transferSize + own.reduce((sum, r) => sum + r.transferSize, 0) : 0;
+    const extras = own.filter((r) => EXTRAS.test(new URL(r.name).pathname));
+    const page = own.filter((r) => !extras.includes(r));
+    const wire = nav ? nav.transferSize + page.reduce((sum, r) => sum + r.transferSize, 0) : 0;
     const activation = nav && nav.activationStart ? nav.activationStart : 0; // > 0: the page was prerendered and shown instantly
     return {
       bytes: wire,
-      requests: own.length + 1,
+      requests: page.length + 1,
+      extraRequests: extras.length,
+      extraBytes: extras.reduce((sum, r) => sum + r.transferSize, 0),
       cached: Boolean(nav) && nav.transferSize === 0 && nav.decodedBodySize > 0,
       ttfb: nav ? Math.max(0, nav.responseStart - activation) : null,
       fcp: paint ? Math.max(0, paint.startTime - activation) : null,
@@ -66,6 +73,7 @@
     return [
       [ui.colophonWeight, kb],
       [ui.colophonRequests, number(m.requests, 0)],
+      [ui.colophonExtras, m.extraRequests ? `${number(m.extraRequests, 0)} \u00B7 ${number(m.extraBytes / 1024, 1)} KB` : '\u2014'],
       [ui.colophonTtfb, ms(m.ttfb)],
       [ui.colophonFcp, ms(m.fcp)],
       [ui.colophonLcp, ms(m.lcp)],
@@ -148,7 +156,7 @@
     opener = doc.activeElement;
     paint();
     dialog.showModal();
-    dialog.querySelector('.colophon-close').focus();
+    dialog.querySelector('.colophon-close').focus({ preventScroll: true }); // the close button is below the fold on small screens: keep the title in view
   }
 
   function init() {
