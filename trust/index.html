@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data: https://*.google-analytics.com https://*.googletagmanager.com; font-src 'self'; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>Trust and security | Carlos Fernández San Millán</title>
+<meta name="description" content="How this site protects visitors, how changes reach it and how it is monitored. Written so you can check it.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="theme-color" content="#0B1B3D">
+<link rel="canonical" href="https://carlosfernandezsanmillan.com/trust/">
+<link rel="alternate" hreflang="x-default" href="https://carlosfernandezsanmillan.com/trust/">
+<link rel="alternate" hreflang="en" href="https://carlosfernandezsanmillan.com/trust/">
+<link rel="alternate" hreflang="es" href="https://carlosfernandezsanmillan.com/es/trust/">
+<link rel="alternate" hreflang="it" href="https://carlosfernandezsanmillan.com/it/trust/">
+<meta property="og:title" content="Trust and security | Carlos Fernández San Millán"><meta property="og:description" content="How this site protects visitors, how changes reach it and how it is monitored. Written so you can check it.">
+<meta property="og:type" content="website"><meta property="og:url" content="https://carlosfernandezsanmillan.com/trust/"><meta property="og:image" content="https://carlosfernandezsanmillan.com/assets/og/og-card.jpg">
+<meta property="og:site_name" content="Carlos Fernández San Millán">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://carlosfernandezsanmillan.com/assets/og/og-card.jpg">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/dist/site.fdf24a3869.css">
+</head>
+<body class="doc-body">
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<header class="doc-header"><a class="doc-brand display-font" href="/" aria-label="CF. Carlos Fernández San Millán">CF<span>.</span></a><nav class="doc-langs" aria-label="English / Español / Italiano"><a href="/trust/" lang="en" aria-current="page">EN</a><a href="/es/trust/" lang="es">ES</a><a href="/it/trust/" lang="it">IT</a></nav></header>
+<main id="main-content" class="doc-main" tabindex="-1">
+<h1 class="display-font">Trust and security</h1>
+<p class="doc-intro">This site is small on purpose. What it does, and how it is run, is written down here so you can check it rather than take my word for it.</p>
+<section class="doc-section" aria-labelledby="doc-s0"><h2 id="doc-s0">Privacy</h2>
+<p>Nothing is sent to anyone until you choose. Google Analytics 4 loads only if you accept, in Consent Mode with every kind of storage denied by default and with advertising and profiling features switched off. You can change your mind at any time from the privacy button in the footer.</p>
+<p>The site sets no cookies of its own. Your choice (and your language) is kept in your browser, on your device.</p></section>
+<section class="doc-section" aria-labelledby="doc-s1"><h2 id="doc-s1">Protection in your browser</h2>
+<p>Every page is served with a strict Content Security Policy. It forbids inline scripts and eval, limits everything to this site (plus Google’s analytics hosts, used only after consent), blocks framing and upgrades insecure requests. HTTPS is enforced for a year (HSTS), the Permissions Policy switches off camera, microphone, location and other sensors, and an opener policy isolates the page from other windows.</p>
+<p>You can see all of it in your browser’s developer tools, in the Network tab.</p></section>
+<section class="doc-section" aria-labelledby="doc-s2"><h2 id="doc-s2">Domain and email</h2>
+<p>DNSSEC is enabled on the domain. Mail addresses at this domain only receive and forward: SPF and DMARC are set to reject anything sent in the domain’s name that is not authorised.</p>
+<p>Security reports go to <a href="mailto:security@carlosfernandezsanmillan.com">security@carlosfernandezsanmillan.com</a>. The machine-readable contact file (RFC 9116) is at <a href="/.well-known/security.txt">/.well-known/security.txt</a> and is renewed with every release.</p></section>
+<section class="doc-section" aria-labelledby="doc-s3"><h2 id="doc-s3">How a change goes live</h2>
+<p>Every change runs through an automatic test suite covering accessibility, colour contrast, security headers, page weight and the generated pages, plus a dependency audit that fails on high-severity findings and code scanning for vulnerabilities. A check fails if the published files differ from what the source builds.</p>
+<p>A change is first published to a password-protected staging copy. Publishing to production is a separate, manual step that needs a typed confirmation and a reviewer’s approval, and the previous version stays available as a fallback.</p></section>
+<section class="doc-section" aria-labelledby="doc-s4"><h2 id="doc-s4">Speed is a requirement</h2>
+<p>A first visit has a budget of 200 KB and 12 requests, enforced by tests: a change that goes over it does not get published. “How this page performed”, in the footer of the home page, shows what your own visit actually cost, measured by your browser.</p></section>
+<section class="doc-section" aria-labelledby="doc-s5"><h2 id="doc-s5">Monitoring</h2>
+<p>Every 30 minutes an automatic check confirms that the site answers, that its security headers are present, that the old and www addresses redirect correctly, that the certificate is valid for at least two more weeks, that mail routing is in place and that the security contact file has not expired. A failure sends an alert.</p></section>
+<section class="doc-section" aria-labelledby="doc-s6"><h2 id="doc-s6">Open source</h2>
+<p>The whole site, tests and release process included, is public.</p>
+<p><a href="https://github.com/cormite/cormite.github.io" rel="noopener noreferrer">github.com/cormite/cormite.github.io</a></p></section>
+<section class="doc-section doc-callout" aria-labelledby="doc-report"><h2 id="doc-report">Report a problem</h2><p>Found something wrong? Write to <a href="mailto:security@carlosfernandezsanmillan.com">security@carlosfernandezsanmillan.com</a>. A real person reads it.</p></section>
+<p class="doc-back"><a href="/">&larr; Back to the home page</a></p>
+</main>
+<footer class="doc-footer"><p>Last built: November 6, 2026</p></footer>
+</body></html>

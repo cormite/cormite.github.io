@@ -31,4 +31,34 @@
     <xhtml:link rel="alternate" hreflang="es" href="https://carlosfernandezsanmillan.com/es/" />
     <xhtml:link rel="alternate" hreflang="it" href="https://carlosfernandezsanmillan.com/it/" />
   </url>
+  <url>
+    <loc>https://carlosfernandezsanmillan.com/trust/</loc>
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://carlosfernandezsanmillan.com/trust/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://carlosfernandezsanmillan.com/trust/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://carlosfernandezsanmillan.com/es/trust/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://carlosfernandezsanmillan.com/it/trust/" />
+  </url>
+  <url>
+    <loc>https://carlosfernandezsanmillan.com/es/trust/</loc>
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://carlosfernandezsanmillan.com/trust/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://carlosfernandezsanmillan.com/trust/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://carlosfernandezsanmillan.com/es/trust/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://carlosfernandezsanmillan.com/it/trust/" />
+  </url>
+  <url>
+    <loc>https://carlosfernandezsanmillan.com/it/trust/</loc>
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://carlosfernandezsanmillan.com/trust/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://carlosfernandezsanmillan.com/trust/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://carlosfernandezsanmillan.com/es/trust/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://carlosfernandezsanmillan.com/it/trust/" />
+  </url>
 </urlset>

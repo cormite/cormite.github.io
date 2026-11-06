@@ -15,6 +15,7 @@
     'fa-euro-sign': 'M14.9 5.3A5.5 5.5 0 0 0 8.7 8H6v2h2.1c-.04.33-.06.66-.06 1s.02.67.06 1H6v2h2.7a5.5 5.5 0 0 0 6.2 2.7l-.5-1.94A3.5 3.5 0 0 1 10.8 14h4.2v-2h-4.8a4.7 4.7 0 0 1 0-2H15V8h-4.2a3.5 3.5 0 0 1 3.6-.76l.5-1.94Z',
     'fa-users': 'M9 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm7 1a3 3 0 1 1 0-6 3 3 0 0 1 0 6ZM3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1H3Zm13.5 0v-.5a5.5 5.5 0 0 0-2.1-4.33A4.96 4.96 0 0 1 21 20h-4.5Z',
     'fa-envelope': 'M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm0 2v.2l9 6.3 9-6.3V7l-9 6.3L3 7Zm18 10V9.64l-8.43 5.9a1 1 0 0 1-1.14 0L3 9.64V17h18Z',
+    'fa-address-card': 'M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm1 2v10h16V7H4Zm5 1.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4ZM5.5 16c0-1.7 1.6-3 3.5-3s3.5 1.3 3.5 3h-7Zm8-6h5v1.5h-5V10Zm0 3h4v1.5h-4V13Z',
     'fa-download': 'M11 3h2v9.17l3.59-3.58L18 10l-6 6-6-6 1.41-1.41L11 12.17V3Zm-7 15h16v2H4v-2Z',
     'fa-award': 'M12 2a5 5 0 0 1 5 5c0 1.2-.43 2.3-1.14 3.14L18 22l-6-2-6 2 2.14-11.86A4.98 4.98 0 0 1 7 7a5 5 0 0 1 5-5Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z',
     'fa-crown': 'M3 18h18l-1 3H4l-1-3Zm1-10 4.5 4L12 6l3.5 6L20 8l1 8H3l1-8Z',
@@ -35,7 +36,7 @@
   const FILLED_ICON_NAMES = new Set([
     'fa-linkedin-in', 'fa-github', 'fa-globe', 'fa-trophy', 'fa-shield-alt',
     'fa-server', 'fa-chart-line', 'fa-cloud', 'fa-database', 'fa-map-marker-alt',
-    'fa-euro-sign', 'fa-users', 'fa-envelope', 'fa-download', 'fa-award',
+    'fa-euro-sign', 'fa-users', 'fa-envelope', 'fa-address-card', 'fa-download', 'fa-award',
     'fa-crown', 'fa-lock', 'fa-star', 'fa-users-cog', 'fa-paper-plane',
     'fa-info-circle', 'fa-user-tie', 'fa-calendar-alt', 'fa-check-circle'
   ]);

@@ -24,10 +24,11 @@ if (out === root || root.startsWith(out + path.sep) || out === path.parse(out).r
 }
 
 const ALLOW = [
-  'index.html', '404.html', 'es', 'it',
+  'index.html', '404.html', 'es', 'it', 'trust',
   'assets/dist', 'assets/fonts', 'assets/img', 'assets/og', 'assets/icons', 'site.webmanifest',
   'photo.jpg', 'favicon.ico', 'robots.txt', 'assets/speculation-rules.json',
-  'carlos-fernandez-san-millan-en.pdf', 'carlos-fernandez-san-millan-es.pdf', 'carlos-fernandez-san-millan-it.pdf'
+  'carlos-fernandez-san-millan-en.pdf', 'carlos-fernandez-san-millan-es.pdf', 'carlos-fernandez-san-millan-it.pdf',
+  'carlos-fernandez-san-millan-en.vcf', 'carlos-fernandez-san-millan-es.vcf', 'carlos-fernandez-san-millan-it.vcf'
 ];
 if (!staging) ALLOW.push('sitemap.xml', 'llms.txt', '.well-known');
 if (!staging && !cloudflare) ALLOW.push('CNAME'); // GitHub Pages custom-domain file; Cloudflare manages the domain itself
@@ -72,12 +73,13 @@ if (!staging && !cloudflare) fs.writeFileSync(path.join(out, '.nojekyll'), '');
 
 // Verify every local reference in the pages resolves to a file in the output.
 const missing = [];
-for (const page of ['index.html', 'es/index.html', 'it/index.html', '404.html']) {
+for (const page of ['index.html', 'es/index.html', 'it/index.html', '404.html', 'trust/index.html', 'es/trust/index.html', 'it/trust/index.html']) {
   const html = fs.readFileSync(path.join(out, page), 'utf8');
   const dir = path.dirname(path.join(out, page));
   const refs = [...html.matchAll(/(?:src|href|srcset|imagesrcset)="([^"]+)"/g)].flatMap((m) => m[1].split(',').map((s) => s.trim().split(/\s+/)[0]));
   for (const ref of refs) {
     if (!ref || /^(https?:|mailto:|data:|#|\/\/)/.test(ref)) continue;
+    if (staging && ref.startsWith('/.well-known/')) continue; // staging deliberately does not publish the machine-readable files
     const clean = ref.split('#')[0].split('?')[0];
     if (!clean) continue;
     const target = clean.startsWith('/') ? path.join(out, clean) : path.join(dir, clean);

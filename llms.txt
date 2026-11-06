@@ -9,6 +9,10 @@ Based in Milan, Italy. Available for Executive & Advisory Opportunities. Contact
 - [Español](https://carlosfernandezsanmillan.com/es/): perfil completo en español
 - [Italiano](https://carlosfernandezsanmillan.com/it/): profilo completo in italiano
 
+## Trust and security
+- [How the site protects visitors, ships changes and is monitored](https://carlosfernandezsanmillan.com/trust/)
+- Source code and tests: https://github.com/cormite/cormite.github.io
+
 ## Curriculum vitae (PDF)
 - [English](https://carlosfernandezsanmillan.com/carlos-fernandez-san-millan-en.pdf)
 - [Español](https://carlosfernandezsanmillan.com/carlos-fernandez-san-millan-es.pdf)

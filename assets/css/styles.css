@@ -716,6 +716,35 @@ html {
   .hero-spotlight {
     display: none !important;
   }
+
+  /* A printed copy is a clean document: no navigation, no controls, no dark panels, and every external link shows its
+     address (a printed link is otherwise useless). The CV PDF remains the formal printable document. */
+  @page { margin: 16mm; }
+  header, #mobile-menu, #palette-btn, .palette, #contact-form, #form-success, .hero-badge, .hero-time,
+  .privacy-settings-btn, #colophon-btn, .cta-button, .action-button, .fas, .far, .fab, .timeline-line, footer .fa-info-circle {
+    display: none !important;
+  }
+  *, *::before, *::after {
+    background: transparent !important;
+    color: #111 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    backdrop-filter: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+  body { font-size: 11pt; line-height: 1.45; }
+  section { padding: 0.8rem 0 !important; min-height: 0 !important; break-inside: auto; }
+  h1, h2, h3 { break-after: avoid; }
+  li, .hover-card { break-inside: avoid; }
+  #home { min-height: 0 !important; padding: 0.5rem 0 !important; display: block !important; }
+  #home .gradient-text, #home .gradient-text .kn-ch, .kn-ch { -webkit-text-fill-color: #111 !important; background-image: none !important; opacity: 1 !important; transform: none !important; }
+  #home div:has(> .photo-ring), #home .animate-bounce { display: none !important; }
+  [data-aos], .reveal { opacity: 1 !important; transform: none !important; }
+  main p a[href^="http"]::after, main li a[href^="http"]:not(.contact-method-icon *)::after { content: " (" attr(href) ")"; font-size: 0.85em; word-break: break-all; }
+  #social-links-contact, #social-links-hero, [aria-label="Social links"] { display: none !important; }
+  a { text-decoration: underline; }
+  img { max-width: 100%; }
 }
 
 /* ==========================================================================
@@ -961,3 +990,34 @@ footer .text-accent,
 .colophon-meter::-moz-meter-bar { background: var(--color-accent); border-radius: 999px; }
 .colophon-meter:-moz-meter-sub-optimum::-moz-meter-bar { background: #D4A017; }
 .colophon-meter:-moz-meter-sub-sub-optimum::-moz-meter-bar { background: #e5614f; }
+
+
+/* ==========================================================================
+   Document pages (trust and security): static, no script
+   ========================================================================== */
+
+.doc-body { background: var(--color-primary); color: #fff; min-height: 100vh; }
+.doc-header {
+  display: flex; align-items: center; justify-content: space-between;
+  max-width: 48rem; margin: 0 auto; padding: 1.5rem 1.25rem 0;
+}
+.doc-brand { font-size: 1.75rem; font-weight: 700; color: #fff; text-decoration: none; letter-spacing: -0.01em; }
+.doc-brand span { color: var(--color-accent-on-dark); }
+.doc-langs { display: flex; gap: 0.5rem; }
+.doc-langs a {
+  padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; text-decoration: none;
+  color: rgba(255, 255, 255, 0.85); border: 1px solid rgba(255, 255, 255, 0.25);
+}
+.doc-langs a:hover { border-color: var(--color-accent-on-dark); color: #fff; }
+.doc-langs a[aria-current="page"] { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
+.doc-main { max-width: 48rem; margin: 0 auto; padding: 3rem 1.25rem 4rem; outline: none; }
+.doc-main h1 { font-size: clamp(2.25rem, 6vw, 3.25rem); font-weight: 700; line-height: 1.1; margin: 0 0 1rem; }
+.doc-intro { font-size: 1.15rem; line-height: 1.6; color: rgba(255, 255, 255, 0.88); margin: 0 0 2.5rem; }
+.doc-section { border-top: 1px solid rgba(255, 255, 255, 0.14); padding: 1.75rem 0 0.25rem; margin-top: 0.5rem; }
+.doc-section h2 { font-size: 1.4rem; font-weight: 700; color: var(--color-accent-on-dark); margin: 0 0 0.75rem; }
+.doc-section p { line-height: 1.7; color: rgba(255, 255, 255, 0.9); margin: 0 0 1rem; }
+.doc-main a { color: #fff; text-decoration: underline; text-underline-offset: 0.2em; text-decoration-color: var(--color-accent-on-dark); }
+.doc-main a:hover { color: var(--color-accent-on-dark); }
+.doc-callout { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 1rem; padding: 1.5rem; margin-top: 2rem; }
+.doc-back { margin-top: 2.5rem; }
+.doc-footer { max-width: 48rem; margin: 0 auto; padding: 0 1.25rem 3rem; color: rgba(255, 255, 255, 0.75); font-size: 0.85rem; }

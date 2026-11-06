@@ -53,6 +53,7 @@ export function productionHeaders(preloads = []) {
     block('/', page),
     block('/es/', page),
     block('/it/', page),
+    ...['/trust/', '/es/trust/', '/it/trust/'].map((p) => block(p, { 'Speculation-Rules': page['Speculation-Rules'], ...(preloads.length ? { Link: linkHeader(preloads.filter((r) => r.as !== 'script')) } : {}) })),
     block(SPECULATION_RULES_PATH, { 'Content-Type': 'application/speculationrules+json', 'Cache-Control': 'public, max-age=3600' }),
     block('/assets/dist/*', { 'Cache-Control': longCache }),
     block('/assets/fonts/*', { 'Cache-Control': 'public, max-age=2592000' }),
@@ -60,6 +61,7 @@ export function productionHeaders(preloads = []) {
     block('/assets/icons/*', { 'Cache-Control': 'public, max-age=604800' }),
     block('/assets/og/*', { 'Cache-Control': 'public, max-age=86400' }),
     block('/*.pdf', { 'Cache-Control': 'public, max-age=86400' }),
+    block('/*.vcf', { 'Content-Type': 'text/vcard; charset=utf-8', 'Cache-Control': 'public, max-age=86400' }),
     block('/favicon.ico', { 'Cache-Control': 'public, max-age=86400' }),
     block('/llms.txt', { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=3600' }),
     block('/.well-known/security.txt', { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=3600' })

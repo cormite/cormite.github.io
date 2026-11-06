@@ -71,6 +71,9 @@
     const cvLink = byId('hero-download-button');
     if (cvLink) out.push({ group: ui.paletteGroupLinks, label: ui.paletteDownloadCv, keywords: 'cv pdf resume curriculum', run: () => cvLink.click() });
 
+    const cardLink = byId('contact-card-link');
+    if (cardLink) out.push({ group: ui.paletteGroupLinks, label: ui.paletteSaveContact, keywords: 'vcard vcf contact contacts card contacto tarjeta contatti biglietto', run: () => cardLink.click() });
+
     out.push({
       group: ui.paletteGroupLinks,
       label: `${ui.paletteEmail}: ${content_.profile.contactEmail}`,
