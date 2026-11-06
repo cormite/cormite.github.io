@@ -69,3 +69,23 @@ test('axe: the performance panel is accessible while open', async ({ page }) => 
   const blocking = results.violations.filter((v) => ['serious', 'critical'].includes(v.impact));
   expect(blocking.map((v) => `${v.id}: ${v.nodes.slice(0, 3).map((n) => n.target.join(' ')).join(' | ')}`)).toEqual([]);
 });
+
+for (const path of ['/stack/', '/es/stack/', '/it/stack/', '/changelog/']) {
+  test(`axe: no serious/critical violations on ${path}`, async ({ page }) => {
+    await page.goto(path);
+    const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']).analyze();
+    const blocking = results.violations.filter((v) => ['serious', 'critical'].includes(v.impact));
+    expect(blocking.map((v) => `${v.id}: ${v.nodes.slice(0, 3).map((n) => n.target.join(' ')).join(' | ')}`)).toEqual([]);
+  });
+}
+
+test('axe: the keyboard shortcuts dialog is accessible while open', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('cormite-consent-v1', 'denied'));
+  await page.goto('/');
+  await page.keyboard.press('?');
+  await expect(page.locator('dialog.colophon')).toBeVisible();
+  await page.waitForTimeout(300);
+  const results = await new AxeBuilder({ page }).include('dialog.colophon').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+  const blocking = results.violations.filter((v) => ['serious', 'critical'].includes(v.impact));
+  expect(blocking.map((v) => `${v.id}: ${v.nodes.slice(0, 3).map((n) => n.target.join(' ')).join(' | ')}`)).toEqual([]);
+});

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data: https://*.google-analytics.com https://*.googletagmanager.com; font-src 'self'; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>Cómo está construido este sitio | Carlos Fernández San Millán</title>
+<meta name="description" content="Las decisiones detrás de este sitio: qué se eligió, por qué y qué cuesta cada elección.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="theme-color" content="#0B1B3D">
+<link rel="canonical" href="https://carlosfernandezsanmillan.com/es/stack/">
+<link rel="alternate" hreflang="x-default" href="https://carlosfernandezsanmillan.com/stack/">
+<link rel="alternate" hreflang="en" href="https://carlosfernandezsanmillan.com/stack/">
+<link rel="alternate" hreflang="es" href="https://carlosfernandezsanmillan.com/es/stack/">
+<link rel="alternate" hreflang="it" href="https://carlosfernandezsanmillan.com/it/stack/">
+<meta property="og:title" content="Cómo está construido este sitio | Carlos Fernández San Millán"><meta property="og:description" content="Las decisiones detrás de este sitio: qué se eligió, por qué y qué cuesta cada elección.">
+<meta property="og:type" content="website"><meta property="og:url" content="https://carlosfernandezsanmillan.com/es/stack/"><meta property="og:image" content="https://carlosfernandezsanmillan.com/assets/og/og-card-es.jpg">
+<meta property="og:site_name" content="Carlos Fernández San Millán">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://carlosfernandezsanmillan.com/assets/og/og-card-es.jpg">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/dist/site.ea1341afc1.css">
+</head>
+<body class="doc-body">
+<a class="skip-link" href="#main-content">Ir al contenido principal</a>
+<header class="doc-header"><a class="doc-brand display-font" href="/es/" aria-label="CF. Carlos Fernández San Millán">CF<span>.</span></a><nav class="doc-langs" aria-label="English / Español / Italiano"><a href="/stack/" lang="en">EN</a><a href="/es/stack/" lang="es" aria-current="page">ES</a><a href="/it/stack/" lang="it">IT</a></nav></header>
+<main id="main-content" class="doc-main" tabindex="-1">
+<h1 class="display-font">Cómo está construido este sitio</h1>
+<p class="doc-intro">Cada apartado es una decisión: qué necesitaba, qué elegí y qué cuesta esa elección. Los costes importan más que las elecciones.</p>
+<section class="doc-section" aria-labelledby="doc-flow"><h2 id="doc-flow">Qué ocurre cuando abres una página</h2>
+<ol class="doc-flow"><li>Tu navegador pregunta a la ubicación de Cloudflare más cercana. Mientras prepara la respuesta, ya le indica qué archivos debe pedir primero (una pista temprana).</li><li>La página llega como HTML terminado, con las cabeceras de seguridad. Detrás no hay ningún servidor de aplicaciones.</li><li>La hoja de estilo, el script y las fuentes salen del mismo sitio. Sus nombres llevan una huella de su contenido, así que tu navegador puede guardarlos un año.</li><li>En los navegadores que lo permiten, al apoyar el puntero sobre un enlace se prepara en segundo plano la página siguiente, y se abre al instante.</li></ol></section>
+<section class="doc-section" aria-labelledby="doc-s0"><h2 id="doc-s0">Sin framework</h2>
+<p>Una página sobre una sola persona debe abrirse al momento, incluso con mala conexión. Por eso el sitio es HTML sencillo, una hoja de estilo y un script que se mantiene por debajo de 30 KB comprimido, y las páginas se construyen de antemano: el mismo código que dibujaría la página en tu navegador la dibuja al compilar, y tú recibes HTML terminado.</p>
+<p>El coste es un pequeño script de compilación que mantengo yo mismo en lugar de apoyarme en las convenciones de un framework.</p></section>
+<section class="doc-section" aria-labelledby="doc-s1"><h2 id="doc-s1">Archivos estáticos y sin código de servidor</h2>
+<p>Sin base de datos ni servidor de aplicaciones, no hay nada que parchear en el camino de la petición. El formulario de contacto abre tu programa de correo con un borrador preparado en lugar de enviar los datos a un servicio que yo tendría que defender.</p>
+<p>El coste es que el sitio no puede guardar nada por mí, como los mensajes.</p></section>
+<section class="doc-section" aria-labelledby="doc-s2"><h2 id="doc-s2">Cloudflare para producción, con respaldo</h2>
+<p>Cloudflare Pages me permite enviar cabeceras de seguridad reales y conservar durante un año los archivos con huella; el alojamiento estático gratuito con el que empecé no puede fijar cabeceras.</p>
+<p>El coste es un proveedor más y un secreto que proteger. El alojamiento anterior sigue preparado como respaldo, de modo que volver atrás lleva minutos.</p></section>
+<section class="doc-section" aria-labelledby="doc-s3"><h2 id="doc-s3">Una Content Security Policy estricta</h2>
+<p>Los scripts solo pueden venir de este sitio, más la analítica de Google cuando aceptas. Eso descarta clases enteras de ataques.</p>
+<p>El coste es que no se permiten atajos cómodos como los scripts en línea, así que cada comportamiento vive en un archivo que la política puede nombrar.</p></section>
+<section class="doc-section" aria-labelledby="doc-s4"><h2 id="doc-s4">Analítica solo con consentimiento</h2>
+<p>Saber cómo se usa el sitio es útil; seguir a las personas sin preguntar, no. La analítica permanece apagada hasta que aceptas.</p>
+<p>El coste es que mis cifras se quedan cortas, y lo acepto.</p></section>
+<section class="doc-section" aria-labelledby="doc-s5"><h2 id="doc-s5">La velocidad como requisito comprobado</h2>
+<p>Un presupuesto escrito en un documento se olvida; uno incluido en las pruebas detiene la publicación. Una primera visita puede usar 200 KB y 12 peticiones en el navegador de pruebas, y un cambio que lo supere no se publica.</p>
+<p>El coste es que cosas como las imágenes grandes o las fuentes adicionales hay que justificarlas antes de añadirlas.</p></section>
+<section class="doc-section" aria-labelledby="doc-s6"><h2 id="doc-s6">Dos puertas antes de producción</h2>
+<p>Todo cambio se publica primero en una copia protegida con contraseña. Producción exige un paso manual aparte, con una confirmación escrita y la aprobación de un revisor.</p>
+<p>El coste es la rapidez: publicar es más lento que lanzar con cada fusión, y es deliberado.</p></section>
+<section class="doc-section" aria-labelledby="doc-s7"><h2 id="doc-s7">Pruebas de lo que notan los visitantes</h2>
+<p>Las pruebas comprueban accesibilidad, contraste de color, cabeceras de seguridad, los tres idiomas, la página impresa, las transiciones y el presupuesto de rendimiento, en vista de escritorio y de móvil.</p>
+<p>El coste es esperar unos minutos, que se reducen ejecutando los grupos de pruebas en paralelo.</p></section>
+<p class="doc-related"><a href="/es/trust/">Confianza y seguridad</a> &middot; <a href="/changelog/">Registro de ingeniería (en inglés)</a></p>
+<p class="doc-back"><a href="/es/">&larr; Volver a la página de inicio</a></p>
+</main>
+<footer class="doc-footer"><p>Actualizado: 6 de noviembre de 2026</p></footer>
+</body></html>
