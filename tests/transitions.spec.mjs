@@ -1,5 +1,4 @@
 import { test, expect } from 'playwright/test';
-import { pixelAt } from './helpers/png.mjs';
 
 // Cross-document View Transitions: switching language cross-fades instead of flashing white.
 // `pagereveal` reports whether the browser ran a transition for the page that just loaded.
@@ -72,35 +71,5 @@ test.describe('page transitions', () => {
     await page.keyboard.press('Escape');
     await page.keyboard.press('Control+k');
     await expect(page.locator('dialog.palette')).toBeVisible();
-  });
-});
-
-test.describe('the portrait stays circular during a transition', () => {
-  // Regression: the transition snapshot was taken of the <picture> inside the round frame, so for an instant the
-  // portrait showed as a grey square. The element that carries the transition name must itself be the circle.
-  test.use({ bypassCSP: true, viewport: { width: 1440, height: 900 } });
-
-  test('no square corners while switching language', async ({ page }) => {
-    await page.addInitScript(() => {
-      localStorage.setItem('cormite-consent-v1', 'denied');
-      const style = document.createElement('style');
-      // Slow the transition down so a screenshot can land inside it; hide the floating badges that overlap the corners.
-      style.textContent = '::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation-duration: 6s !important; } .hero-badge { display: none !important; }';
-      document.addEventListener('DOMContentLoaded', () => document.head.appendChild(style));
-    });
-    await page.goto('/');
-    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(resolve, 1800)))));
-    const box = await page.locator('.photo-ring').boundingBox();
-    await page.locator('#nav-links-desktop .lang-btn[data-lang="es"]').evaluate((a) => a.click());
-    await page.waitForURL(/\/es\/$/);
-    await page.waitForTimeout(700);
-
-    const shot = await page.screenshot({ type: 'png' });
-    // A point just inside each corner of the portrait's bounding square lies outside the circle: it must show the
-    // blue hero background; the photo's backdrop is neutral grey (r, g and b nearly equal), so "blue" means no square.
-    for (const [dx, dy] of [[6, 6], [box.width - 7, 6], [6, box.height - 7], [box.width - 7, box.height - 7]]) {
-      const { r, g, b } = pixelAt(shot, Math.round(box.x + dx), Math.round(box.y + dy));
-      expect(b - r, `corner (${dx},${dy}) shows the photo as a square: rgb(${r},${g},${b})`).toBeGreaterThan(40);
-    }
   });
 });

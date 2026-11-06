@@ -26,11 +26,19 @@ runs:
         path: ~/.cache/ms-playwright
         key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
     # The browser download is cached; the OS libraries it needs live outside that folder, so they are installed every run.
-    - name: Install Chromium with OS dependencies
-      if: inputs.browser == 'true' && steps.browsers.outputs.cache-hit != 'true'
+    # apt on a fresh runner occasionally stalls for minutes (seen once: 8 min 33 s instead of 20 s), and this step runs in
+    # every parallel test job, so each attempt is capped at 120 s and retried; a healthy run is unaffected.
+    - name: Install Playwright Chromium and OS dependencies (capped, retried)
+      if: inputs.browser == 'true'
       shell: bash
-      run: npx playwright install --with-deps chromium
-    - name: Install OS dependencies only (browser came from cache)
-      if: inputs.browser == 'true' && steps.browsers.outputs.cache-hit == 'true'
-      shell: bash
-      run: npx playwright install-deps chromium
+      env:
+        BROWSER_CACHE_HIT: ${{ steps.browsers.outputs.cache-hit }}
+      run: |
+        if [ "$BROWSER_CACHE_HIT" = "true" ]; then cmd="npx playwright install-deps chromium"; else cmd="npx playwright install --with-deps chromium"; fi
+        for attempt in 1 2 3; do
+          if timeout --kill-after=15 120 $cmd; then exit 0; fi
+          echo "::warning::attempt $attempt of '$cmd' failed or took over 120 s; retrying"
+          sleep 5
+        done
+        echo "::error::could not install Playwright dependencies after 3 attempts"
+        exit 1
