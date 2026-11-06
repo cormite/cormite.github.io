@@ -18,14 +18,6 @@
     callback();
   }
 
-  function getSafeStorage() {
-    try {
-      return global.localStorage;
-    } catch (error) {
-      return null;
-    }
-  }
-
   function getProtocol() {
     return global.location && global.location.protocol ? global.location.protocol : 'file:';
   }
@@ -52,7 +44,6 @@
     byId,
     prefersReducedMotion,
     onReady,
-    getSafeStorage,
     getProtocol,
     setText,
     setHtml,

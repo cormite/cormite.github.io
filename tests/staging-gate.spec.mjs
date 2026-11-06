@@ -44,6 +44,13 @@ test.describe('staging password gate (Pages Function)', () => {
     expect(res.headers.get('cache-control')).toMatch(/no-store/);
   });
 
+  test('passwords with accents and symbols outside ASCII work (credentials are UTF-8 bytes)', async () => {
+    const password = 'Contraseña-ñ-€-日本';
+    const res = await call(basic('u', password), { STAGING_PASSWORD: password });
+    expect(res.status).toBe(200);
+    expect((await call(basic('u', 'Contrasena-n'), { STAGING_PASSWORD: password })).status).toBe(401);
+  });
+
   test('passwords containing colons work', async () => {
     const res = await call(basic('u', 'a:b:c'), { STAGING_PASSWORD: 'a:b:c' });
     expect(res.status).toBe(200);

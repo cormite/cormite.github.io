@@ -29,10 +29,15 @@ jobs:
   guard:
     runs-on: ubuntu-24.04
     steps:
+      # Values reach the shell through environment variables, never by expanding ${{ }} inside the script, so a crafted
+      # input cannot become shell code (script injection).
       - name: Require explicit confirmation, master ref and a known target
+        env:
+          CONFIRM: ${{ inputs.confirm }}
+          REF: ${{ github.ref }}
         run: |
-          [ "${{ inputs.confirm }}" = "DEPLOY" ] || { echo "Confirmation text must be DEPLOY"; exit 1; }
-          [ "${{ github.ref }}" = "refs/heads/master" ] || { echo "Production deploys only from master"; exit 1; }
+          [ "$CONFIRM" = "DEPLOY" ] || { echo "Confirmation text must be DEPLOY"; exit 1; }
+          [ "$REF" = "refs/heads/master" ] || { echo "Production deploys only from master"; exit 1; }
           case "$PRODUCTION_TARGET" in github-pages|cloudflare) echo "Target: $PRODUCTION_TARGET";; *) echo "PRODUCTION_TARGET must be github-pages or cloudflare"; exit 1;; esac
 
   # Same verification as CI, run again on master before anything is published: static checks and the test groups run

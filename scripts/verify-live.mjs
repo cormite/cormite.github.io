@@ -11,7 +11,8 @@ if (!/^https:\/\//.test(base)) {
 
 const problems = [];
 const check = (ok, message) => { if (!ok) problems.push(message); };
-const get = (path, init) => fetch(base + path, { redirect: 'manual', ...init });
+// Every request is bounded: a hung edge must fail the check, not hold the deploy until the job timeout.
+const get = (path, init) => fetch(base + path, { redirect: 'manual', signal: AbortSignal.timeout(20000), ...init });
 
 const home = await get('/');
 check(home.status === 200, `GET / returned ${home.status}, expected 200`);

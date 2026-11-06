@@ -5,3 +5,7 @@ test-results/
 playwright-report/
 _site/
 _staging/
+# Local debug output (for example Pi-hole diagnostics, which list LAN addresses): never commit logs to a public repository
+*.log
+# Stale early copy of the site kept next to the repo (superseded by the tracked files in the repository root)
+/site/

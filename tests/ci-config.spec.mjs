@@ -48,3 +48,22 @@ test('every spec file belongs to exactly one group (unlisted files go to "rest")
     expect(hits.length, `${spec} is in groups: ${hits.join(', ')}`).toBeLessThanOrEqual(1);
   }
 });
+
+// Script injection: ${{ ... }} expressions are expanded BEFORE the shell sees the script, so a crafted value (a dispatch
+// input, a branch name, a PR title) could become code. Untrusted values must reach `run:` scripts through env: instead.
+test('no workflow expands untrusted values (inputs, event data, branch names) inside a run script', () => {
+  const UNTRUSTED = /\$\{\{\s*(inputs\.|github\.event\.|github\.head_ref|github\.ref_name)/;
+  const offenders = [];
+  for (const file of fs.readdirSync('.github/workflows').filter((f) => f.endsWith('.yml'))) {
+    const lines = read(`.github/workflows/${file}`).split('\n');
+    let runIndent = -1;
+    lines.forEach((line, i) => {
+      const indent = line.length - line.trimStart().length;
+      if (runIndent >= 0 && line.trim() && indent <= runIndent) runIndent = -1;
+      const start = line.match(/^(\s*)(?:- )?run:\s*(.*)$/);
+      if (start) { runIndent = start[1].length; if (UNTRUSTED.test(start[2])) offenders.push(`${file}:${i + 1}`); return; }
+      if (runIndent >= 0 && UNTRUSTED.test(line)) offenders.push(`${file}:${i + 1}`);
+    });
+  }
+  expect(offenders, 'move these into an env: variable and use "$NAME" in the script').toEqual([]);
+});

@@ -81,10 +81,6 @@
     return DEFAULT_LANG;
   }
 
-  function updateLanguageInUrl() {
-    // Static localized pages own the canonical URL.
-  }
-
   function getLanguageUrl(lang) {
     return `${SITE_CONFIG.siteUrl}${getPathForLanguage(lang)}`;
   }

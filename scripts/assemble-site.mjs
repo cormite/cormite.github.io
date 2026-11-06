@@ -15,7 +15,13 @@ const staging = args.includes('--staging');
 const cloudflare = args.includes('--cloudflare');
 if (staging && cloudflare) throw new Error('Use either --staging or --cloudflare, not both');
 const outIdx = args.indexOf('--out');
+if (outIdx >= 0 && !args[outIdx + 1]) throw new Error('--out needs a folder');
 const out = path.resolve(root, outIdx >= 0 ? args[outIdx + 1] : '_site');
+// The output folder is deleted and recreated, so it must never be the project itself or any folder that contains it
+// (for example `--out .` or `--out ..` would wipe the repository).
+if (out === root || root.startsWith(out + path.sep) || out === path.parse(out).root) {
+  throw new Error(`Refusing to use "${out}" as the output folder: it is, or contains, the project`);
+}
 
 const ALLOW = [
   'index.html', '404.html', 'es', 'it',
@@ -56,7 +62,7 @@ if (!staging && !cloudflare) fs.writeFileSync(path.join(out, '.nojekyll'), '');
 
 // Verify every local reference in the pages resolves to a file in the output.
 const missing = [];
-for (const page of ['index.html', 'es/index.html', 'it/index.html']) {
+for (const page of ['index.html', 'es/index.html', 'it/index.html', '404.html']) {
   const html = fs.readFileSync(path.join(out, page), 'utf8');
   const dir = path.dirname(path.join(out, page));
   const refs = [...html.matchAll(/(?:src|href|srcset|imagesrcset)="([^"]+)"/g)].flatMap((m) => m[1].split(',').map((s) => s.trim().split(/\s+/)[0]));

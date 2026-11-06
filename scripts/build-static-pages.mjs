@@ -445,7 +445,6 @@ function injectPerformanceAndSecurity(document, prefix, bundles) {
 }
 
 function build404(siteContent, bundles) {
-  const base = siteContent.SITE_CONFIG.siteUrl;
   return `<!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -551,35 +550,6 @@ Canonical: ${SITE_CONFIG.siteUrl}/.well-known/security.txt
 `;
 }
 
-function updateAssetPaths(document, lang) {
-  const prefix = relativePrefix(lang);
-  if (!prefix) return;
-
-  document.querySelectorAll('link[href^="assets/"]').forEach((node) => {
-    node.setAttribute('href', `${prefix}${node.getAttribute('href')}`);
-  });
-  document.querySelectorAll('script[src^="assets/"]').forEach((node) => {
-    node.setAttribute('src', `${prefix}${node.getAttribute('src')}`);
-  });
-  document.querySelectorAll('source').forEach((node) => {
-    const srcset = node.getAttribute('srcset');
-    if (srcset === './photo.webp' || srcset === 'photo.webp') {
-      node.setAttribute('srcset', `${prefix}photo.webp`);
-    }
-  });
-  document.querySelectorAll('img').forEach((node) => {
-    const src = node.getAttribute('src');
-    if (src === './photo.jpg' || src === 'photo.jpg') {
-      node.setAttribute('src', `${prefix}photo.jpg`);
-    }
-  });
-  const preload = Array.from(document.querySelectorAll('link[rel="preload"]')).find((node) => {
-    const href = node.getAttribute('href');
-    return href === './photo.webp' || href === 'photo.webp';
-  });
-  if (preload) preload.setAttribute('href', `${prefix}photo.webp`);
-}
-
 function sanitizeTemplate(document) {
   [
     'nav-links-desktop', 'nav-links-mobile', 'social-links-hero', 'hero-badge-list', 'about-feature-list',
@@ -587,10 +557,19 @@ function sanitizeTemplate(document) {
   ].forEach((id) => setHtml(document, id, ''));
 }
 
+// The footer's "Updated" month and the copyright year come from the pinned build date, in UTC. The client renderer that runs at
+// build time stamps them from the wall clock and the local time zone instead, which made the committed pages differ from a
+// reproducible rebuild on the first day of a month (and of a year), so buildPage() re-applies these values after it runs.
+function footerDate(content) {
+  return {
+    date: BUILD_DATE.toLocaleDateString(content.locale, { month: 'short', year: 'numeric', timeZone: 'UTC' }),
+    year: String(BUILD_DATE.getUTCFullYear())
+  };
+}
+
 function populateDocument(document, siteContent, lang, bundles) {
   const content = siteContent.I18N[lang];
-  const currentDate = BUILD_DATE.toLocaleDateString(content.locale, { month: 'short', year: 'numeric' });
-  const currentYear = String(BUILD_DATE.getFullYear());
+  const { date: currentDate, year: currentYear } = footerDate(content);
   const canonical = canonicalUrl(siteContent.SITE_CONFIG, lang);
   const prefix = relativePrefix(lang);
 
@@ -703,7 +682,6 @@ function populateDocument(document, siteContent, lang, bundles) {
   setText(document, 'current-date', currentDate);
   setHtml(document, 'footer-copyright', `&copy; <span id="current-year">${currentYear}</span> ${content.staticText.footerCopyright}`);
 
-  updateAssetPaths(document, lang);
   injectPerformanceAndSecurity(document, prefix, bundles);
 }
 
@@ -727,6 +705,10 @@ function buildPage(siteContent, lang, bundles) {
   ['hero-download-button', 'about-download-button'].forEach((id) => {
     setHref(dom.window.document, id, `${relativePrefix(lang)}carlos-fernandez-san-millan-${lang}.pdf`);
   });
+
+  const footer = footerDate(siteContent.I18N[lang]);
+  setText(dom.window.document, 'current-date', footer.date);
+  setText(dom.window.document, 'current-year', footer.year);
 
   // Convert legacy <i class="fas ..."> icons to inline SVG now, so the browser never has to.
   dom.window.__SITE_ICONS.upgradeLegacyIcons();
