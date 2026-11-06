@@ -61,4 +61,40 @@
     <xhtml:link rel="alternate" hreflang="es" href="https://carlosfernandezsanmillan.com/es/trust/" />
     <xhtml:link rel="alternate" hreflang="it" href="https://carlosfernandezsanmillan.com/it/trust/" />
   </url>
+  <url>
+    <loc>https://carlosfernandezsanmillan.com/stack/</loc>
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://carlosfernandezsanmillan.com/stack/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://carlosfernandezsanmillan.com/stack/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://carlosfernandezsanmillan.com/es/stack/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://carlosfernandezsanmillan.com/it/stack/" />
+  </url>
+  <url>
+    <loc>https://carlosfernandezsanmillan.com/es/stack/</loc>
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://carlosfernandezsanmillan.com/stack/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://carlosfernandezsanmillan.com/stack/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://carlosfernandezsanmillan.com/es/stack/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://carlosfernandezsanmillan.com/it/stack/" />
+  </url>
+  <url>
+    <loc>https://carlosfernandezsanmillan.com/it/stack/</loc>
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://carlosfernandezsanmillan.com/stack/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://carlosfernandezsanmillan.com/stack/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://carlosfernandezsanmillan.com/es/stack/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://carlosfernandezsanmillan.com/it/stack/" />
+  </url>
+  <url>
+    <loc>https://carlosfernandezsanmillan.com/changelog/</loc>
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.4</priority>
+  </url>
 </urlset>

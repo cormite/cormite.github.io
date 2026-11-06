@@ -7,6 +7,8 @@ import { JSDOM } from 'jsdom';
 import { transformSync } from 'esbuild';
 import { CSP } from './security-headers.mjs';
 import { TRUST, REPOSITORY_URL } from './trust-content.mjs';
+import { STACK } from './stack-content.mjs';
+import { CHANGELOG } from './changelog-content.mjs';
 
 // Deterministic builds: set SOURCE_DATE (ISO 8601) to pin the generated date.
 const BUILD_DATE = process.env.SOURCE_DATE ? new Date(process.env.SOURCE_DATE) : new Date();
@@ -475,37 +477,38 @@ function build404(siteContent, bundles) {
 // ---------------------------------------------------------------------------
 const htmlEscape = (value) => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-function trustUrl(siteContent, lang) { return `${siteContent.SITE_CONFIG.siteUrl}/${TRUST[lang].path}`; }
+function pageUrl(siteContent, route) { return `${siteContent.SITE_CONFIG.siteUrl}/${route}`; }
+function trustUrl(siteContent, lang) { return pageUrl(siteContent, TRUST[lang].path); }
+const LANG_NAMES = { en: 'English', es: 'Español', it: 'Italiano' };
+const link = (href, label) => `<a href="${href}">${htmlEscape(label)}</a>`;
+// Paragraph text with the two machine-readable references turned into links.
+function richParagraph(text) {
+  return `<p>${htmlEscape(text).replace(/\/\.well-known\/security\.txt/, '<a href="/.well-known/security.txt">/.well-known/security.txt</a>').replace(/(security@[a-z0-9-]+(?:\.[a-z0-9-]+)+)/, '<a href="mailto:$1">$1</a>')}</p>`;
+}
 
-function buildTrustPage(siteContent, lang, bundles) {
+// Shared shell of the static document pages (trust, build notes, engineering log): one stylesheet, no script, a language
+// switcher when the page exists in several languages.
+function renderDocPage(siteContent, bundles, { lang, route, title, description, bodyHtml, footerHtml, homeHref, alternates, langNav, extraHead = '' }) {
   const { SITE_CONFIG, I18N } = siteContent;
-  const security = `security@${SITE_CONFIG.siteHost}`;
-  const text = JSON.parse(JSON.stringify(TRUST[lang]).replace(/\{security\}/g, security));
   const content = I18N[lang];
-  const homeHref = lang === 'en' ? '/' : `/${lang}/`;
-  const url = trustUrl(siteContent, lang);
+  const url = pageUrl(siteContent, route);
   const image = (SITE_CONFIG.socialImages && SITE_CONFIG.socialImages[lang]) || SITE_CONFIG.defaultImage;
-  const names = { en: 'English', es: 'Español', it: 'Italiano' };
-  const alternates = ['x-default', ...Object.keys(TRUST)].map((code) => `<link rel="alternate" hreflang="${code}" href="${trustUrl(siteContent, code === 'x-default' ? 'en' : code)}">`).join('\n');
-  const langNav = Object.keys(TRUST).map((code) => `<a href="/${TRUST[code].path}" lang="${code}"${code === lang ? ' aria-current="page"' : ''}>${code.toUpperCase()}</a>`).join('');
-  const title = `${text.title} | ${SITE_CONFIG.siteName}`;
-  const sections = text.sections.map((section, index) => {
-    const paragraphs = section.p.map((p) => `<p>${htmlEscape(p).replace(/\/\.well-known\/security\.txt/, '<a href="/.well-known/security.txt">/.well-known/security.txt</a>').replace(/(security@[a-z0-9-]+(?:\.[a-z0-9-]+)+)/, '<a href="mailto:$1">$1</a>')}</p>`).join('\n');
-    const extra = index === text.sections.length - 1 ? `\n<p><a href="${REPOSITORY_URL}" rel="noopener noreferrer">${REPOSITORY_URL.replace('https://', '')}</a></p>` : '';
-    return `<section class="doc-section" aria-labelledby="doc-s${index}"><h2 id="doc-s${index}">${htmlEscape(section.h)}</h2>\n${paragraphs}${extra}</section>`;
-  }).join('\n');
-  const built = BUILD_DATE.toLocaleDateString(content.locale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  const alternateTags = alternates.map(({ code, href }) => `<link rel="alternate" hreflang="${code}" href="${href}">`).join('\n');
+  const nav = langNav
+    ? `<nav class="doc-langs" aria-label="${htmlEscape(Object.values(LANG_NAMES).join(' / '))}">${langNav.map(({ code, href }) => `<a href="${href}" lang="${code}"${code === lang ? ' aria-current="page"' : ''}>${code.toUpperCase()}</a>`).join('')}</nav>`
+    : '';
+  const fullTitle = `${title} | ${SITE_CONFIG.siteName}`;
   return `<!DOCTYPE html>
 <html lang="${lang}"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Security-Policy" content="${CSP}">
-<title>${htmlEscape(title)}</title>
-<meta name="description" content="${htmlEscape(text.description)}">
+<title>${htmlEscape(fullTitle)}</title>
+<meta name="description" content="${htmlEscape(description)}">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="theme-color" content="#0B1B3D">
 <link rel="canonical" href="${url}">
-${alternates}
-<meta property="og:title" content="${htmlEscape(title)}"><meta property="og:description" content="${htmlEscape(text.description)}">
+${alternateTags}
+${extraHead}<meta property="og:title" content="${htmlEscape(fullTitle)}"><meta property="og:description" content="${htmlEscape(description)}">
 <meta property="og:type" content="website"><meta property="og:url" content="${url}"><meta property="og:image" content="${image}">
 <meta property="og:site_name" content="${htmlEscape(SITE_CONFIG.siteName)}">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${image}">
@@ -516,16 +519,108 @@ ${alternates}
 </head>
 <body class="doc-body">
 <a class="skip-link" href="#main-content">${htmlEscape((content.staticText.ui && content.staticText.ui.skipLink) || 'Skip to main content')}</a>
-<header class="doc-header"><a class="doc-brand display-font" href="${homeHref}" aria-label="CF. ${htmlEscape(SITE_CONFIG.siteName)}">CF<span>.</span></a><nav class="doc-langs" aria-label="${htmlEscape(Object.values(names).join(' / '))}">${langNav}</nav></header>
+<header class="doc-header"><a class="doc-brand display-font" href="${homeHref}" aria-label="CF. ${htmlEscape(SITE_CONFIG.siteName)}">CF<span>.</span></a>${nav}</header>
 <main id="main-content" class="doc-main" tabindex="-1">
-<h1 class="display-font">${htmlEscape(text.title)}</h1>
+${bodyHtml}
+</main>
+<footer class="doc-footer">${footerHtml}</footer>
+</body></html>
+`;
+}
+
+const withSecurity = (siteContent, value) => JSON.parse(JSON.stringify(value).replace(/\{security\}/g, `security@${siteContent.SITE_CONFIG.siteHost}`));
+const homeOf = (lang) => (lang === 'en' ? '/' : `/${lang}/`);
+const langNavFor = (siteContent, registry) => Object.keys(registry).map((code) => ({ code, href: `/${registry[code].path}` }));
+const alternatesFor = (siteContent, registry) => [{ code: 'x-default', href: pageUrl(siteContent, registry.en.path) }, ...Object.keys(registry).map((code) => ({ code, href: pageUrl(siteContent, registry[code].path) }))];
+
+function buildTrustPage(siteContent, lang, bundles) {
+  const text = withSecurity(siteContent, TRUST[lang]);
+  const content = siteContent.I18N[lang];
+  const built = BUILD_DATE.toLocaleDateString(content.locale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  const sections = text.sections.map((section, index) => {
+    const extra = index === text.sections.length - 1 ? `\n<p><a href="${REPOSITORY_URL}" rel="noopener noreferrer">${REPOSITORY_URL.replace('https://', '')}</a></p>` : '';
+    return `<section class="doc-section" aria-labelledby="doc-s${index}"><h2 id="doc-s${index}">${htmlEscape(section.h)}</h2>\n${section.p.map(richParagraph).join('\n')}${extra}</section>`;
+  }).join('\n');
+  const body = `<h1 class="display-font">${htmlEscape(text.title)}</h1>
 <p class="doc-intro">${htmlEscape(text.intro)}</p>
 ${sections}
-<section class="doc-section doc-callout" aria-labelledby="doc-report"><h2 id="doc-report">${htmlEscape(text.reportTitle)}</h2><p>${htmlEscape(text.reportText).replace(/(security@[a-z0-9-]+(?:\.[a-z0-9-]+)+)/, '<a href="mailto:$1">$1</a>')}</p></section>
-<p class="doc-back"><a href="${homeHref}">&larr; ${htmlEscape(text.home)}</a></p>
-</main>
-<footer class="doc-footer"><p>${htmlEscape(text.updated)}: ${built}</p></footer>
-</body></html>
+<section class="doc-section doc-callout" aria-labelledby="doc-report"><h2 id="doc-report">${htmlEscape(text.reportTitle)}</h2>${richParagraph(text.reportText)}</section>
+<p class="doc-related">${link(`/${STACK[lang].path}`, STACK[lang].linkLabel)} &middot; ${link('/changelog/', lang === 'en' ? 'Engineering log' : lang === 'es' ? 'Registro de ingeniería (en inglés)' : 'Registro di ingegneria (in inglese)')}</p>
+<p class="doc-back"><a href="${homeOf(lang)}">&larr; ${htmlEscape(text.home)}</a></p>`;
+  return renderDocPage(siteContent, bundles, {
+    lang, route: text.path, title: text.title, description: text.description, bodyHtml: body,
+    footerHtml: `<p>${htmlEscape(text.updated)}: ${built}</p>`, homeHref: homeOf(lang),
+    alternates: alternatesFor(siteContent, TRUST), langNav: langNavFor(siteContent, TRUST)
+  });
+}
+
+function buildStackPage(siteContent, lang, bundles) {
+  const text = STACK[lang];
+  const content = siteContent.I18N[lang];
+  const built = BUILD_DATE.toLocaleDateString(content.locale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  const flow = `<section class="doc-section" aria-labelledby="doc-flow"><h2 id="doc-flow">${htmlEscape(text.flowTitle)}</h2>\n<ol class="doc-flow">${text.flow.map((step) => `<li>${htmlEscape(step)}</li>`).join('')}</ol></section>`;
+  const sections = text.sections.map((section, index) =>
+    `<section class="doc-section" aria-labelledby="doc-s${index}"><h2 id="doc-s${index}">${htmlEscape(section.h)}</h2>\n${section.p.map((p) => `<p>${htmlEscape(p)}</p>`).join('\n')}</section>`).join('\n');
+  const body = `<h1 class="display-font">${htmlEscape(text.title)}</h1>
+<p class="doc-intro">${htmlEscape(text.intro)}</p>
+${flow}
+${sections}
+<p class="doc-related">${link(`/${TRUST[lang].path}`, TRUST[lang].linkLabel)} &middot; ${link('/changelog/', text.related[1][1])}</p>
+<p class="doc-back"><a href="${homeOf(lang)}">&larr; ${htmlEscape(text.home)}</a></p>`;
+  return renderDocPage(siteContent, bundles, {
+    lang, route: text.path, title: text.title, description: text.description, bodyHtml: body,
+    footerHtml: `<p>${htmlEscape(content.staticText.footerUpdated)} ${built}</p>`, homeHref: homeOf(lang),
+    alternates: alternatesFor(siteContent, STACK), langNav: langNavFor(siteContent, STACK)
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Engineering log: English only (an engineering record, like a release note), with an Atom feed.
+// ---------------------------------------------------------------------------
+function changelogEntries(siteContent) {
+  return CHANGELOG.map((entry) => ({ ...entry, body: entry.body.replace(/\{host\}/g, siteContent.SITE_CONFIG.siteHost) }));
+}
+
+function buildChangelogPage(siteContent, bundles) {
+  const entries = changelogEntries(siteContent);
+  const longDate = (iso) => new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  const list = entries.map((entry, index) =>
+    `<article class="doc-entry" aria-labelledby="log-${index}"><time datetime="${entry.date}">${longDate(entry.date)}</time><h2 id="log-${index}">${htmlEscape(entry.title)}</h2><p>${htmlEscape(entry.body)}</p></article>`).join('\n');
+  const body = `<h1 class="display-font">Engineering log</h1>
+<p class="doc-intro">What changed on this site, when, and what it did to speed, security or reliability. Mistakes are logged like everything else. This page is in English; <a href="/changelog/feed.xml">subscribe by feed</a>.</p>
+${list}
+<p class="doc-related">${link('/trust/', 'Trust and security')} &middot; ${link('/stack/', 'How this site is built')}</p>
+<p class="doc-back"><a href="/">&larr; Back to the home page</a></p>`;
+  return renderDocPage(siteContent, bundles, {
+    lang: 'en', route: 'changelog/', title: 'Engineering log', description: 'Dated notes on what changed on this site and what it did to speed, security and reliability.',
+    bodyHtml: body, footerHtml: `<p>Latest entry: ${longDate(entries[0].date)}</p>`, homeHref: '/',
+    alternates: [], langNav: null,
+    extraHead: `<link rel="alternate" type="application/atom+xml" title="Engineering log" href="${pageUrl(siteContent, 'changelog/feed.xml')}">\n`
+  });
+}
+
+// Atom 1.0. Every date comes from the entries (never the build clock), so the file is reproducible.
+function buildChangelogFeed(siteContent) {
+  const entries = changelogEntries(siteContent);
+  const site = siteContent.SITE_CONFIG;
+  const stamp = (iso, index) => `${iso}T${String(12 - Math.min(index, 11)).padStart(2, '0')}:00:00Z`;
+  const items = entries.map((entry, index) => `  <entry>
+    <id>tag:${site.siteHost},${entry.date}:log-${entries.length - index}</id>
+    <title>${htmlEscape(entry.title)}</title>
+    <link href="${pageUrl(siteContent, 'changelog/')}#log-${index}"/>
+    <updated>${stamp(entry.date, index)}</updated>
+    <summary>${htmlEscape(entry.body)}</summary>
+  </entry>`).join('\n');
+  return `<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>${htmlEscape(site.siteName)}: engineering log</title>
+  <id>tag:${site.siteHost},2026:engineering-log</id>
+  <link rel="self" href="${pageUrl(siteContent, 'changelog/feed.xml')}"/>
+  <link href="${pageUrl(siteContent, 'changelog/')}"/>
+  <updated>${stamp(entries[0].date, 0)}</updated>
+  <author><name>${htmlEscape(site.siteName)}</name></author>
+${items}
+</feed>
 `;
 }
 
@@ -534,15 +629,25 @@ function buildSitemap(siteContent) {
   const lastmod = BUILD_DATE.toISOString().slice(0, 10);
   const alternates = [['x-default', `${base}/`], ['en', `${base}/`], ['es', `${base}/es/`], ['it', `${base}/it/`]]
     .map(([l, h]) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${h}" />`).join('\n');
-  const trustAlternates = ['x-default', 'en', 'es', 'it']
-    .map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${trustUrl(siteContent, l === 'x-default' ? 'en' : l)}" />`).join('\n');
-  const trustUrls = Object.keys(TRUST).map((l) => `  <url>
-    <loc>${trustUrl(siteContent, l)}</loc>
+  // Document pages that exist in three languages (trust, build notes) get hreflang alternates; the English-only log does not.
+  const registryUrls = [TRUST, STACK].flatMap((registry) => {
+    const alt = ['x-default', 'en', 'es', 'it']
+      .map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${pageUrl(siteContent, registry[l === 'x-default' ? 'en' : l].path)}" />`).join('\n');
+    return Object.keys(registry).map((l) => `  <url>
+    <loc>${pageUrl(siteContent, registry[l].path)}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-${trustAlternates}
-  </url>`).join('\n');
+${alt}
+  </url>`);
+  });
+  const logLastmod = CHANGELOG[0].date;
+  const trustUrls = [...registryUrls, `  <url>
+    <loc>${pageUrl(siteContent, 'changelog/')}</loc>
+    <lastmod>${logLastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.4</priority>
+  </url>`].join('\n');
   const urls = [['', '1.0'], ['es/', '0.9'], ['it/', '0.9']].map(([p, prio]) => `  <url>
     <loc>${base}/${p}</loc>
     <lastmod>${lastmod}</lastmod>
@@ -591,6 +696,8 @@ Based in ${en.profile.location}. ${en.profile.availability}. Contact: ${en.profi
 
 ## Trust and security
 - [How the site protects visitors, ships changes and is monitored](${base}/${TRUST.en.path})
+- [How the site is built: each decision and what it costs](${base}/${STACK.en.path})
+- [Engineering log (Atom feed: ${base}/changelog/feed.xml)](${base}/changelog/)
 - Source code and tests: ${REPOSITORY_URL}
 
 ## Curriculum vitae (PDF)
@@ -844,3 +951,11 @@ for (const lang of Object.keys(TRUST)) {
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'index.html'), buildTrustPage(siteContent, lang, bundles));
 }
+for (const lang of Object.keys(STACK)) {
+  const dir = path.join(rootDir, STACK[lang].path);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, 'index.html'), buildStackPage(siteContent, lang, bundles));
+}
+fs.mkdirSync(path.join(rootDir, 'changelog'), { recursive: true });
+fs.writeFileSync(path.join(rootDir, 'changelog', 'index.html'), buildChangelogPage(siteContent, bundles));
+fs.writeFileSync(path.join(rootDir, 'changelog', 'feed.xml'), buildChangelogFeed(siteContent));

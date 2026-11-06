@@ -11,6 +11,8 @@ Based in Milan, Italy. Available for Executive & Advisory Opportunities. Contact
 
 ## Trust and security
 - [How the site protects visitors, ships changes and is monitored](https://carlosfernandezsanmillan.com/trust/)
+- [How the site is built: each decision and what it costs](https://carlosfernandezsanmillan.com/stack/)
+- [Engineering log (Atom feed: https://carlosfernandezsanmillan.com/changelog/feed.xml)](https://carlosfernandezsanmillan.com/changelog/)
 - Source code and tests: https://github.com/cormite/cormite.github.io
 
 ## Curriculum vitae (PDF)

@@ -11,7 +11,7 @@
   const render = global.__SITE_RENDER || {};
   const dom = global.__SITE_DOM || {};
   const utils = global.__SITE_UTILS || {};
-  const { I18N, DEFAULT_LANG, NAV_ITEMS, SOCIAL_LINKS } = content;
+  const { I18N, DEFAULT_LANG, NAV_ITEMS, SOCIAL_LINKS, SITE_PAGES } = content;
   const { byId } = dom;
   const { prefersReducedMotion } = utils;
 
@@ -80,6 +80,13 @@
       keywords: 'email mail correo contact contacto',
       run: () => { global.location.href = `mailto:${content_.profile.contactEmail}`; }
     });
+
+    if (SITE_PAGES) {
+      const lang = render.getCurrentLanguage();
+      [[ui.paletteTrust, SITE_PAGES.trust[lang], 'trust security privacy confianza sicurezza'], [ui.paletteStack, SITE_PAGES.stack[lang], 'stack built architecture decisions framework'], [ui.paletteChangelog, SITE_PAGES.changelog, 'changelog log releases updates feed']]
+        .forEach(([label, href, keywords]) => out.push({ group: ui.paletteGroupSite, label, keywords, run: () => { global.location.href = href; } }));
+    }
+    out.push({ group: ui.paletteGroupSite, label: ui.paletteKeys, keywords: 'keyboard shortcuts keys help teclado tastiera', run: () => openKeys() });
 
     if (global.__SITE_COLOPHON) {
       out.push({ group: ui.paletteGroupSite, label: ui.colophonOpen, keywords: 'performance speed engineering weight requests latency build', run: () => global.__SITE_COLOPHON.open() });
@@ -228,6 +235,91 @@
     return node.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(node.tagName);
   }
 
+  /* ---------- Keyboard shortcuts: ? lists them, l switches language, g then a letter jumps to a section ---------- */
+  const SECTION_IDS = Object.freeze({ h: 'home', a: 'about', e: 'experience', r: 'achievements', s: 'skills', c: 'contact' });
+  const KEYS_STORAGE = 'cormite-keys';
+  let keysDialog = null;
+  let goPending = 0;
+
+  // WCAG 2.1.4 (single-character key shortcuts): they can be switched off, and the choice is remembered on this device.
+  function keysEnabled() {
+    try { return global.localStorage.getItem(KEYS_STORAGE) !== 'off'; } catch (e) { return true; }
+  }
+  function setKeysEnabled(on) {
+    try { global.localStorage.setItem(KEYS_STORAGE, on ? 'on' : 'off'); } catch (e) { /* storage blocked: lasts for this page only */ }
+  }
+
+  function openKeys() {
+    if (typeof doc.createElement('dialog').showModal !== 'function') return;
+    if (keysDialog && keysDialog.open) return;
+    const ui = (I18N[render.getCurrentLanguage()] || I18N[DEFAULT_LANG]).staticText.ui;
+    if (!keysDialog) {
+      keysDialog = doc.createElement('dialog');
+      keysDialog.className = 'palette colophon';
+      keysDialog.setAttribute('aria-labelledby', 'keys-title');
+      keysDialog.addEventListener('mousedown', (event) => { if (event.target === keysDialog) keysDialog.close(); });
+    }
+    const panel = doc.createElement('div');
+    panel.className = 'palette-panel colophon-panel';
+    const title = doc.createElement('h2');
+    title.id = 'keys-title';
+    title.className = 'colophon-title';
+    title.textContent = ui.keysTitle;
+    const list = doc.createElement('dl');
+    list.className = 'colophon-list keys-list';
+    const row = (keys, label) => {
+      const dt = doc.createElement('dt');
+      dt.textContent = label;
+      const dd = doc.createElement('dd');
+      keys.forEach((key, i) => { if (i) dd.append(' '); const k = doc.createElement('kbd'); k.textContent = key; dd.append(k); });
+      list.append(dt, dd);
+    };
+    row(['?'], ui.keysHelp);
+    row(['/'], ui.paletteTitle);
+    row(['l'], ui.keysLanguage);
+    Object.keys(SECTION_IDS).forEach((key) => row(['g', key], `${ui.keysGo.replace(/[:,].*$/, '')}: ${ui.keysSections[key]}`));
+    const close = doc.createElement('button');
+    close.type = 'button';
+    close.className = 'colophon-close';
+    close.textContent = ui.keysClose;
+    close.addEventListener('click', () => keysDialog.close());
+    const toggle = doc.createElement('label');
+    toggle.className = 'keys-toggle';
+    const box = doc.createElement('input');
+    box.type = 'checkbox';
+    box.checked = keysEnabled();
+    box.addEventListener('change', () => setKeysEnabled(box.checked));
+    toggle.append(box, ` ${ui.keysToggle}`);
+    panel.append(title, list, toggle, close);
+    keysDialog.textContent = '';
+    keysDialog.appendChild(panel);
+    if (!keysDialog.isConnected) doc.body.appendChild(keysDialog);
+    keysDialog.showModal();
+    close.focus();
+  }
+
+  function nextLanguage() {
+    const links = Array.from(doc.querySelectorAll('#nav-links-desktop .lang-btn'));
+    const at = links.findIndex((link) => link.getAttribute('aria-current') === 'true');
+    const target = links[(at + 1) % links.length];
+    if (target) target.click();
+  }
+
+  function onShortcut(event) {
+    if (event.metaKey || event.ctrlKey || event.altKey || isEditable(event.target) || !keysEnabled()) return false;
+    if (doc.querySelector('dialog[open]')) return false;
+    const key = event.key;
+    if (goPending && Date.now() < goPending) {
+      goPending = 0;
+      const id = SECTION_IDS[key.toLowerCase()];
+      if (id) { event.preventDefault(); goToSection(`#${id}`); return true; }
+    }
+    if (key === '?') { event.preventDefault(); openKeys(); return true; }
+    if (key === 'l') { event.preventDefault(); nextLanguage(); return true; }
+    if (key === 'g') { goPending = Date.now() + 1500; return true; }
+    return false;
+  }
+
   function init() {
     if (bound) return;
     bound = true;
@@ -247,10 +339,12 @@
         if (dialog && dialog.open) dialog.close(); else open('shortcut');
         return;
       }
-      if (event.key === '/' && !event.metaKey && !event.ctrlKey && !event.altKey && !isEditable(event.target)) {
+      if (event.key === '/' && !event.metaKey && !event.ctrlKey && !event.altKey && !isEditable(event.target) && keysEnabled()) {
         event.preventDefault();
         open('slash');
+        return;
       }
+      onShortcut(event);
     });
   }
 

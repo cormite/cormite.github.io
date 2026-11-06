@@ -43,7 +43,7 @@ for (const p of ['/_headers', '/docs/RELEASE.md', '/package.json', '/functions/_
   const r = await get(p);
   check(r.status === 404, `${p} returned ${r.status}, expected 404`);
 }
-for (const p of ['/es/', '/it/', '/trust/', '/es/trust/', '/it/trust/', '/favicon.ico', '/site.webmanifest', '/sitemap.xml']) {
+for (const p of ['/es/', '/it/', '/trust/', '/es/trust/', '/it/trust/', '/stack/', '/es/stack/', '/it/stack/', '/changelog/', '/changelog/feed.xml', '/favicon.ico', '/site.webmanifest', '/sitemap.xml']) {
   const r = await get(p);
   check(r.status === 200, `${p} returned ${r.status}, expected 200`);
 }

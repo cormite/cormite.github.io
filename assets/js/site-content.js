@@ -35,6 +35,12 @@ const VCARD_FILES = Object.freeze({
   it: 'carlos-fernandez-san-millan-it.vcf'
 });
 
+const SITE_PAGES = Object.freeze({
+  trust: Object.freeze({ en: '/trust/', es: '/es/trust/', it: '/it/trust/' }),
+  stack: Object.freeze({ en: '/stack/', es: '/es/stack/', it: '/it/stack/' }),
+  changelog: '/changelog/'
+});
+
 const NAV_ITEMS = Object.freeze([
   Object.freeze({ href: '#home', key: 'home' }),
   Object.freeze({ href: '#about', key: 'about' }),
@@ -140,7 +146,8 @@ const I18N = Object.freeze({
         paletteDownloadCv: 'Download CV',
         paletteEmail: 'Send an email',
         paletteSwitchTo: 'Switch language to',
-        paletteGroupSite: 'This site', contactCardLabel: 'Contact card', contactCardAction: 'Save to contacts', paletteSaveContact: 'Save contact card', colophonOpen: 'How this page performed', colophonTitle: 'How this page performed', colophonIntro: 'Measured by your browser during this visit. Nothing is estimated and nothing is sent anywhere.',
+        paletteGroupSite: 'This site', paletteTrust: 'Trust and security', paletteStack: 'How this site is built', paletteChangelog: 'Engineering log (English)', paletteKeys: 'Keyboard shortcuts',
+        keysTitle: 'Keyboard shortcuts', keysHelp: 'Show this list', keysLanguage: 'Next language', keysGo: 'Go to a section, then press', keysClose: 'Close', keysToggle: 'Single-key shortcuts (/ ? l g)', keysSections: { h: 'Home', a: 'About', e: 'Experience', r: 'Results', s: 'Skills', c: 'Contact' }, contactCardLabel: 'Contact card', contactCardAction: 'Save to contacts', paletteSaveContact: 'Save contact card', colophonOpen: 'How this page performed', colophonTitle: 'How this page performed', colophonIntro: 'Measured by your browser during this visit. Nothing is estimated and nothing is sent anywhere.',
         colophonWeight: 'Data transferred', colophonRequests: 'Requests', colophonTtfb: 'Time to first byte', colophonFcp: 'First paint', colophonLcp: 'Largest paint', colophonCls: 'Layout shift',
         colophonProtocol: 'Protocol', colophonSource: 'Served from', colophonBuild: 'Build', colophonBudget: 'Budget', colophonCache: 'Browser cache', colophonNetwork: 'Network',
         colophonPrerendered: 'Prerendered, shown instantly', colophonFromCache: 'Browser cache (0 bytes)', colophonClose: 'Close', colophonNote: 'The test suite fails the build if a first visit in its test browser goes over 200 KB or 12 requests. Your own numbers can differ a little: a sharper screen loads a larger photo, and browsers add the icon and manifest.',
@@ -267,7 +274,8 @@ const I18N = Object.freeze({
         paletteDownloadCv: 'Descargar CV',
         paletteEmail: 'Enviar un correo',
         paletteSwitchTo: 'Cambiar idioma a',
-        paletteGroupSite: 'Este sitio', contactCardLabel: 'Tarjeta de contacto', contactCardAction: 'Guardar en contactos', paletteSaveContact: 'Guardar tarjeta de contacto', colophonOpen: 'Cómo se ha comportado esta página', colophonTitle: 'Cómo se ha comportado esta página', colophonIntro: 'Medido por tu navegador durante esta visita. Nada se estima y nada se envía a ningún sitio.',
+        paletteGroupSite: 'Este sitio', paletteTrust: 'Confianza y seguridad', paletteStack: 'Cómo está construido este sitio', paletteChangelog: 'Registro de ingeniería (en inglés)', paletteKeys: 'Atajos de teclado',
+        keysTitle: 'Atajos de teclado', keysHelp: 'Mostrar esta lista', keysLanguage: 'Idioma siguiente', keysGo: 'Ir a una sección: pulsa g y después', keysClose: 'Cerrar', keysToggle: 'Atajos de una sola tecla (/ ? l g)', keysSections: { h: 'Inicio', a: 'Perfil', e: 'Experiencia', r: 'Logros', s: 'Capacidades', c: 'Contacto' }, contactCardLabel: 'Tarjeta de contacto', contactCardAction: 'Guardar en contactos', paletteSaveContact: 'Guardar tarjeta de contacto', colophonOpen: 'Cómo se ha comportado esta página', colophonTitle: 'Cómo se ha comportado esta página', colophonIntro: 'Medido por tu navegador durante esta visita. Nada se estima y nada se envía a ningún sitio.',
         colophonWeight: 'Datos transferidos', colophonRequests: 'Peticiones', colophonTtfb: 'Tiempo hasta el primer byte', colophonFcp: 'Primer pintado', colophonLcp: 'Mayor pintado', colophonCls: 'Desplazamiento de diseño',
         colophonProtocol: 'Protocolo', colophonSource: 'Servida desde', colophonBuild: 'Versión', colophonBudget: 'Presupuesto', colophonCache: 'Caché del navegador', colophonNetwork: 'Red',
         colophonPrerendered: 'Pre-renderizada, mostrada al instante', colophonFromCache: 'Caché del navegador (0 bytes)', colophonClose: 'Cerrar', colophonNote: 'Las pruebas automáticas hacen fallar la compilación si una primera visita en su navegador de pruebas supera 200 KB o 12 peticiones. Tus cifras pueden diferir un poco: una pantalla más nítida carga una foto mayor y los navegadores añaden el icono y el manifiesto.',
@@ -394,7 +402,8 @@ const I18N = Object.freeze({
         paletteDownloadCv: 'Scarica il CV',
         paletteEmail: 'Invia una email',
         paletteSwitchTo: 'Cambia lingua in',
-        paletteGroupSite: 'Questo sito', contactCardLabel: 'Biglietto da visita', contactCardAction: 'Salva nei contatti', paletteSaveContact: 'Salva biglietto da visita', colophonOpen: 'Come è andata questa pagina', colophonTitle: 'Come è andata questa pagina', colophonIntro: 'Misurato dal tuo browser durante questa visita. Nulla è stimato e nulla viene inviato altrove.',
+        paletteGroupSite: 'Questo sito', paletteTrust: 'Fiducia e sicurezza', paletteStack: 'Come è costruito questo sito', paletteChangelog: 'Registro di ingegneria (in inglese)', paletteKeys: 'Scorciatoie da tastiera',
+        keysTitle: 'Scorciatoie da tastiera', keysHelp: 'Mostra questo elenco', keysLanguage: 'Lingua successiva', keysGo: 'Vai a una sezione: premi g e poi', keysClose: 'Chiudi', keysToggle: 'Scorciatoie a tasto singolo (/ ? l g)', keysSections: { h: 'Home', a: 'Profilo', e: 'Esperienza', r: 'Risultati', s: 'Competenze', c: 'Contatti' }, contactCardLabel: 'Biglietto da visita', contactCardAction: 'Salva nei contatti', paletteSaveContact: 'Salva biglietto da visita', colophonOpen: 'Come è andata questa pagina', colophonTitle: 'Come è andata questa pagina', colophonIntro: 'Misurato dal tuo browser durante questa visita. Nulla è stimato e nulla viene inviato altrove.',
         colophonWeight: 'Dati trasferiti', colophonRequests: 'Richieste', colophonTtfb: 'Tempo al primo byte', colophonFcp: 'Primo rendering', colophonLcp: 'Rendering maggiore', colophonCls: 'Spostamento del layout',
         colophonProtocol: 'Protocollo', colophonSource: 'Servita da', colophonBuild: 'Versione', colophonBudget: 'Budget', colophonCache: 'Cache del browser', colophonNetwork: 'Rete',
         colophonPrerendered: 'Pre-renderizzata, mostrata subito', colophonFromCache: 'Cache del browser (0 byte)', colophonClose: 'Chiudi', colophonNote: 'I test automatici fanno fallire la build se una prima visita nel loro browser di prova supera 200 KB o 12 richieste. I tuoi numeri possono differire un poco: uno schermo più nitido carica una foto più grande e i browser aggiungono icona e manifest.',
@@ -442,6 +451,7 @@ global.__SITE_CONTENT = Object.freeze({
   SITE_CONFIG,
   CV_FILES,
   VCARD_FILES,
+  SITE_PAGES,
   NAV_ITEMS,
   SOCIAL_LINKS,
   I18N

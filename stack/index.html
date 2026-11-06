@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data: https://*.google-analytics.com https://*.googletagmanager.com; font-src 'self'; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>How this site is built | Carlos Fernández San Millán</title>
+<meta name="description" content="The decisions behind this site: what was chosen, why, and what each choice costs.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="theme-color" content="#0B1B3D">
+<link rel="canonical" href="https://carlosfernandezsanmillan.com/stack/">
+<link rel="alternate" hreflang="x-default" href="https://carlosfernandezsanmillan.com/stack/">
+<link rel="alternate" hreflang="en" href="https://carlosfernandezsanmillan.com/stack/">
+<link rel="alternate" hreflang="es" href="https://carlosfernandezsanmillan.com/es/stack/">
+<link rel="alternate" hreflang="it" href="https://carlosfernandezsanmillan.com/it/stack/">
+<meta property="og:title" content="How this site is built | Carlos Fernández San Millán"><meta property="og:description" content="The decisions behind this site: what was chosen, why, and what each choice costs.">
+<meta property="og:type" content="website"><meta property="og:url" content="https://carlosfernandezsanmillan.com/stack/"><meta property="og:image" content="https://carlosfernandezsanmillan.com/assets/og/og-card.jpg">
+<meta property="og:site_name" content="Carlos Fernández San Millán">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://carlosfernandezsanmillan.com/assets/og/og-card.jpg">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/dist/site.ea1341afc1.css">
+</head>
+<body class="doc-body">
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<header class="doc-header"><a class="doc-brand display-font" href="/" aria-label="CF. Carlos Fernández San Millán">CF<span>.</span></a><nav class="doc-langs" aria-label="English / Español / Italiano"><a href="/stack/" lang="en" aria-current="page">EN</a><a href="/es/stack/" lang="es">ES</a><a href="/it/stack/" lang="it">IT</a></nav></header>
+<main id="main-content" class="doc-main" tabindex="-1">
+<h1 class="display-font">How this site is built</h1>
+<p class="doc-intro">Each section is a decision: what I needed, what I chose, and what that choice costs. The costs matter more than the choices.</p>
+<section class="doc-section" aria-labelledby="doc-flow"><h2 id="doc-flow">What happens when you open a page</h2>
+<ol class="doc-flow"><li>Your browser asks the nearest Cloudflare location. While it prepares the answer, it already tells your browser which files to fetch first (an early hint).</li><li>The page arrives as finished HTML with the security headers attached. There is no application server behind it.</li><li>The stylesheet, script and fonts come from the same place. Their names carry a fingerprint of their content, so your browser can keep them for a year.</li><li>In browsers that support it, resting your pointer on a link prepares the next page in the background, so it opens instantly.</li></ol></section>
+<section class="doc-section" aria-labelledby="doc-s0"><h2 id="doc-s0">No framework</h2>
+<p>A page about one person should open at once, even on a poor connection. So the site is plain HTML, one stylesheet and one script that stays under 30 KB compressed, and the pages are built in advance: the same code that would draw the page in your browser draws it at build time, so you receive finished HTML.</p>
+<p>The cost is a small build script that I maintain myself instead of leaning on a framework’s conventions.</p></section>
+<section class="doc-section" aria-labelledby="doc-s1"><h2 id="doc-s1">Static files and no server code</h2>
+<p>With no database and no application server there is nothing to patch in the request path. The contact form opens your mail program with a prepared draft rather than posting to a service I would have to defend.</p>
+<p>The cost is that the site cannot store anything for me, such as messages.</p></section>
+<section class="doc-section" aria-labelledby="doc-s2"><h2 id="doc-s2">Cloudflare for production, with a fallback</h2>
+<p>Cloudflare Pages lets me send real security headers and keep fingerprinted files for a year; the free static hosting I started on cannot set headers at all.</p>
+<p>The cost is one more vendor and a secret to protect. The earlier hosting stays ready as a fallback, so going back takes minutes.</p></section>
+<section class="doc-section" aria-labelledby="doc-s3"><h2 id="doc-s3">A strict Content Security Policy</h2>
+<p>Scripts may only come from this site, plus Google’s analytics once you accept. That rules out whole classes of attack.</p>
+<p>The cost is that convenient shortcuts such as inline scripts are not allowed, so every behaviour lives in a file the policy can name.</p></section>
+<section class="doc-section" aria-labelledby="doc-s4"><h2 id="doc-s4">Analytics only after consent</h2>
+<p>Knowing how the site is used is useful; tracking people without asking is not. Analytics stays off until you accept.</p>
+<p>The cost is that my numbers undercount, and I accept that.</p></section>
+<section class="doc-section" aria-labelledby="doc-s5"><h2 id="doc-s5">Speed as a tested requirement</h2>
+<p>A budget written in a document is forgotten; a budget in the test suite stops the release. A first visit may use 200 KB and 12 requests in the test browser, and a change that goes over does not ship.</p>
+<p>The cost is that some things, such as large images or extra fonts, have to be justified before they are added.</p></section>
+<section class="doc-section" aria-labelledby="doc-s6"><h2 id="doc-s6">Two gates before production</h2>
+<p>Every change is published to a password-protected copy first. Production needs a separate manual step with a typed confirmation and a reviewer’s approval.</p>
+<p>The cost is speed: publishing is slower than releasing on every merge, deliberately.</p></section>
+<section class="doc-section" aria-labelledby="doc-s7"><h2 id="doc-s7">Tests for what visitors feel</h2>
+<p>The suite checks accessibility, colour contrast, security headers, the three languages, the printed page, the transitions and the performance budget, in desktop and phone layouts.</p>
+<p>The cost is a few minutes of waiting, kept low by running the test groups in parallel.</p></section>
+<p class="doc-related"><a href="/trust/">Trust and security</a> &middot; <a href="/changelog/">Engineering log</a></p>
+<p class="doc-back"><a href="/">&larr; Back to the home page</a></p>
+</main>
+<footer class="doc-footer"><p>Updated: November 6, 2026</p></footer>
+</body></html>
