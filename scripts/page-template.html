@@ -49,13 +49,13 @@
                 <!-- Command menu trigger + menus -->
                 <div class="flex items-center gap-2">
                         <!-- Desktop Menu -->
-                    <div class="hidden md:block">
+                    <div class="hidden xl:block">
                         <div id="nav-links-desktop" class="ml-10 flex items-baseline space-x-8"><a href="/#home" class="text-white hover:text-accent px-3 py-2 rounded-md text-base font-semibold transition-colors">Home</a><a href="/#about" class="text-white hover:text-accent px-3 py-2 rounded-md text-base font-semibold transition-colors">About</a><a href="/#experience" class="text-white hover:text-accent px-3 py-2 rounded-md text-base font-semibold transition-colors">Experience</a><a href="/#achievements" class="text-white hover:text-accent px-3 py-2 rounded-md text-base font-semibold transition-colors">Achievements</a><a href="/#skills" class="text-white hover:text-accent px-3 py-2 rounded-md text-base font-semibold transition-colors">Skills</a><a href="/#contact" class="text-white hover:text-accent px-3 py-2 rounded-md text-base font-semibold transition-colors">Contact</a><div class="ml-6 flex gap-2" aria-label="Language switcher"><a href="/" class="lang-btn px-3 py-1 rounded-full text-xs font-semibold transition-colors border bg-accent text-white border-accent" data-lang="en" aria-current="true">EN</a><a href="/es/" class="lang-btn px-3 py-1 rounded-full text-xs font-semibold transition-colors border bg-transparent text-white/80 border-white/20 hover:text-white hover:border-accent" data-lang="es">ES</a><a href="/it/" class="lang-btn px-3 py-1 rounded-full text-xs font-semibold transition-colors border bg-transparent text-white/80 border-white/20 hover:text-white hover:border-accent" data-lang="it">IT</a></div></div>
                     </div>
                 
                     <button id="palette-btn" type="button" class="palette-btn" aria-haspopup="dialog" aria-label="Open command menu"><svg class="palette-btn-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><kbd id="palette-kbd" class="palette-kbd" aria-hidden="true"></kbd></button>
                     <!-- Mobile Menu Button -->
-                    <div class="md:hidden">
+                    <div class="xl:hidden">
                         <button id="mobile-menu-btn" type="button" aria-expanded="false" aria-controls="mobile-menu" class="text-white hover:text-accent p-2" aria-label="Open navigation menu">
                             <i class="fas fa-bars text-2xl" aria-hidden="true"></i>
                         </button>
@@ -67,7 +67,7 @@
 
     <!-- Mobile menu: deliberately OUTSIDE the nav. The nav gets backdrop-filter when scrolled, and a filter makes
          position:fixed descendants size to the nav bar instead of the screen (the drawer collapsed to an 80px strip). -->
-        <div id="mobile-menu" role="dialog" aria-modal="true" aria-hidden="true" class="mobile-menu fixed top-0 right-0 h-full w-64 bg-primary shadow-2xl md:hidden z-50" aria-label="Mobile navigation">
+        <div id="mobile-menu" role="dialog" aria-modal="true" aria-hidden="true" class="mobile-menu fixed top-0 right-0 h-full w-64 bg-primary shadow-2xl xl:hidden z-50" aria-label="Mobile navigation">
             <div class="p-6">
                 <button id="close-menu" type="button" class="absolute top-4 right-4 text-white hover:text-accent" aria-label="Close navigation menu">
                     <i class="fas fa-times text-2xl" aria-hidden="true"></i>
@@ -134,7 +134,7 @@
             </div>
             
             <!-- Photo with Non-Overlapping Badges -->
-            <div class="relative flex justify-center lg:justify-end" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+            <div class="relative flex justify-center lg:justify-end lg:pr-20" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
                 <div class="relative photo-stage">
                     <!-- Decorative Ring -->
                     <div class="absolute inset-0 rounded-full border-4 border-accent/30 animate-pulse-slow"></div>
@@ -168,7 +168,7 @@
                 <div data-aos="fade-right">
                     <div class="relative">
                         <picture data-photo="about"></picture>
-                        <div class="absolute -bottom-6 -right-6 bg-primary text-white p-6 rounded-2xl shadow-xl">
+                        <div class="absolute bottom-3 right-3 sm:-bottom-6 sm:-right-6 bg-primary text-white p-6 rounded-2xl shadow-xl">
                             <div id="about-years-value" class="text-4xl font-bold text-accent">15+</div>
                             <div id="about-years-label" class="text-sm text-white/80">Years Experience</div>
                         </div>
@@ -182,7 +182,7 @@
                     
                     <p id="about-summary-2" class="text-lg text-soft-text mb-8 leading-relaxed">Proven track record of aligning technology strategy with institutional objectives, delivering measurable business outcomes, and building high-performing teams. Expertise spans IT governance, digital transformation, HPC/data center operations, cybersecurity frameworks, and research technology enablement.</p>
                     
-                    <ul id="about-feature-list" class="grid grid-cols-2 gap-6 mb-8" aria-label="Core profile highlights"><li class="profile-feature-item flex items-start"><div class="profile-feature-icon"><i class="fas fa-server text-accent text-xl" aria-hidden="true"></i></div><div><h3 class="font-bold text-primary text-lg">Data Centers</h3><p class="text-sm text-soft-text">HPC &amp; Enterprise</p></div></li><li class="profile-feature-item flex items-start"><div class="profile-feature-icon"><i class="fas fa-shield-alt text-accent text-xl" aria-hidden="true"></i></div><div><h3 class="font-bold text-primary text-lg">Cybersecurity</h3><p class="text-sm text-soft-text">GDPR &amp; Compliance</p></div></li><li class="profile-feature-item flex items-start"><div class="profile-feature-icon"><i class="fas fa-cloud text-accent text-xl" aria-hidden="true"></i></div><div><h3 class="font-bold text-primary text-lg">Cloud</h3><p class="text-sm text-soft-text">Hybrid Architecture</p></div></li><li class="profile-feature-item flex items-start"><div class="profile-feature-icon"><i class="fas fa-users-cog text-accent text-xl" aria-hidden="true"></i></div><div><h3 class="font-bold text-primary text-lg">Leadership</h3><p class="text-sm text-soft-text">25+ FTEs Managed</p></div></li></ul>
+                    <ul id="about-feature-list" class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8" aria-label="Core profile highlights"><li class="profile-feature-item flex items-start"><div class="profile-feature-icon"><i class="fas fa-server text-accent text-xl" aria-hidden="true"></i></div><div><h3 class="font-bold text-primary text-lg">Data Centers</h3><p class="text-sm text-soft-text">HPC &amp; Enterprise</p></div></li><li class="profile-feature-item flex items-start"><div class="profile-feature-icon"><i class="fas fa-shield-alt text-accent text-xl" aria-hidden="true"></i></div><div><h3 class="font-bold text-primary text-lg">Cybersecurity</h3><p class="text-sm text-soft-text">GDPR &amp; Compliance</p></div></li><li class="profile-feature-item flex items-start"><div class="profile-feature-icon"><i class="fas fa-cloud text-accent text-xl" aria-hidden="true"></i></div><div><h3 class="font-bold text-primary text-lg">Cloud</h3><p class="text-sm text-soft-text">Hybrid Architecture</p></div></li><li class="profile-feature-item flex items-start"><div class="profile-feature-icon"><i class="fas fa-users-cog text-accent text-xl" aria-hidden="true"></i></div><div><h3 class="font-bold text-primary text-lg">Leadership</h3><p class="text-sm text-soft-text">25+ FTEs Managed</p></div></li></ul>
                     
                     <a id="about-download-button" href="carlos-fernandez-san-millan-en.pdf" class="action-button action-button-primary"><i class="fas fa-download mr-2" aria-hidden="true"></i>Download CV</a>
                 </div>

@@ -662,7 +662,7 @@ html {
 
 .privacy-settings-btn {
   display: block;
-  margin: 0.75rem auto 0;
+  margin: 0.25rem auto 0;
   background: none;
   border: 0;
   padding: 0.25rem 0.5rem;
@@ -1039,3 +1039,9 @@ footer .text-accent,
 }
 .keys-toggle { display: block; margin-top: 0.9rem; font-size: 0.9rem; color: rgba(255, 255, 255, 0.9); cursor: pointer; }
 .keys-toggle input { accent-color: var(--color-accent); margin-right: 0.25rem; }
+
+/* The scroll cue is a link: give it a comfortable touch target (24 px is the WCAG minimum, 44 px is the comfortable size). */
+#scroll-to-about-link { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; }
+
+/* The chips row needs air before the buttons (the reset above removes the utility margin). */
+.hero-stat-list { margin-bottom: 1.75rem; }
