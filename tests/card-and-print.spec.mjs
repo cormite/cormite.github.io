@@ -12,7 +12,10 @@ for (const [url, lang] of LANGS) {
   test(`${url} offers a valid contact card in its own language`, async ({ page, request }) => {
     await page.goto(url);
     const link = page.locator('#contact-card-link');
-    await expect(link).toHaveAttribute('href', `carlos-fernandez-san-millan-${lang}.vcf`);
+    await expect(link).toHaveAttribute('href', `/carlos-fernandez-san-millan-${lang}.vcf`);
+    // The link as a browser resolves it from THIS page must work (a relative path under /es/ would be a 404).
+    const resolved = await link.evaluate((a) => a.href);
+    expect((await request.get(resolved)).status(), resolved).toBe(200);
     await expect(link).toHaveAttribute('download', '');
     const res = await request.get(`/carlos-fernandez-san-millan-${lang}.vcf`);
     expect(res.status()).toBe(200);

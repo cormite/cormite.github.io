@@ -297,7 +297,7 @@ ${message}`);
     item.querySelector('p').textContent = ui.contactCardLabel;
     const link = item.querySelector('a');
     link.textContent = ui.contactCardAction;
-    link.href = content.VCARD_FILES[lang] || content.VCARD_FILES[content.DEFAULT_LANG];
+    link.href = '/' + (content.VCARD_FILES[lang] || content.VCARD_FILES[content.DEFAULT_LANG]); // root-relative: the files live at the site root, not under /es/ or /it/
     list.appendChild(item);
   }
 
