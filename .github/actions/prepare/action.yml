@@ -1,0 +1,50 @@
+name: Prepare
+description: Node 22 with cached npm dependencies and, optionally, Playwright Chromium (browser cached, OS packages always installed)
+inputs:
+  browser:
+    description: 'Install Playwright Chromium and its OS dependencies ("true" or "false")'
+    default: 'false'
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v7
+      with:
+        node-version: 22
+        cache: npm
+    - run: npm ci
+      shell: bash
+    - name: Playwright version
+      if: inputs.browser == 'true'
+      id: playwright
+      shell: bash
+      run: echo "version=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
+    - name: Cache Playwright Chromium
+      if: inputs.browser == 'true'
+      id: browsers
+      uses: actions/cache@v6
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+    # No apt in the normal case. The runner image already has every library Chromium needs; `--with-deps` only adds CJK/Thai/X11
+    # font packages (about 21 MB from an Ubuntu mirror) that this site never uses, and that download once stalled for 8+ minutes
+    # and, on retry, deadlocked on the dpkg lock. Install the browser alone (cached by version), prove it starts, and only if
+    # it does not (a changed runner image) fall back to Playwright's OS-dependency install.
+    - name: Install Playwright Chromium (browser only, cached)
+      if: inputs.browser == 'true' && steps.browsers.outputs.cache-hit != 'true'
+      shell: bash
+      run: npx playwright install chromium
+    - name: Check that Chromium starts (installs OS dependencies only if it does not)
+      if: inputs.browser == 'true'
+      shell: bash
+      run: |
+        check() { node -e "require('playwright').chromium.launch().then((b) => b.close()).catch((e) => { console.error(e.message.split('\n')[0]); process.exit(1); })"; }
+        if check; then echo "Chromium starts; no OS packages needed"; exit 0; fi
+        echo "::warning::Chromium did not start; installing OS dependencies (the runner image may have changed)"
+        for attempt in 1 2 3; do
+          sudo pkill -9 -x apt-get 2>/dev/null || true   # a stalled earlier attempt would hold the dpkg lock
+          if timeout --kill-after=15 180 npx playwright install-deps chromium && check; then exit 0; fi
+          echo "::warning::attempt $attempt failed; retrying"
+          sleep 5
+        done
+        echo "::error::Chromium could not be made to start after 3 attempts"
+        exit 1
