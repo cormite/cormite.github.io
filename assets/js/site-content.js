@@ -332,7 +332,7 @@ const I18N = Object.freeze({
       heroSummary: 'Executive tecnologico con oltre 15 anni di leadership in IT enterprise, trasformazione digitale e calcolo scientifico in organizzazioni internazionali mission-driven.',
       aboutSummary1: 'Senior technology executive con oltre 15 anni di esperienza in IT enterprise, calcolo scientifico, cybersecurity e trasformazione digitale in organizzazioni complesse e internazionali.',
       aboutSummary2: 'Track record consolidato nell\'allineare la strategia tecnologica agli obiettivi istituzionali, generando risultati misurabili e costruendo team ad alte prestazioni. Competenze su governance IT, trasformazione digitale, operations HPC/data center e cybersecurity.',
-      footerRole: 'Technology Executive & Digital Transformation Leader',
+      footerRole: 'Executive Tecnologico e Leader della Trasformazione Digitale',
       footerOpportunity: 'Disponibile per ruoli executive on-site e/o remote in aziende e istituti tech/research',
       contactEmail: 'hello@carlosfernandezsanmillan.com',
       badges: Object.freeze({
