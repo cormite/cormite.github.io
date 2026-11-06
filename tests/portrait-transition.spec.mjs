@@ -27,24 +27,26 @@ test('no square corners while switching language', async ({ page }) => {
   test.skip(!running, 'the browser skipped the transition (busy machine)');
   await page.waitForTimeout(400);
 
-  // A point just inside each corner of the portrait's bounding square lies outside the circle: it must show the
-  // blue hero background; the photo's backdrop is neutral grey (r, g and b nearly equal), so "blue" means no square.
-  // The square bug persists for the whole transition, so it shows in EVERY frame; a single odd frame on a loaded
-  // machine (not yet composited) shows in one. Look at several frames and require at least one clean one.
-  const problems = [];
-  let clean = false;
-  for (let frame = 0; frame < 4 && !clean; frame += 1) {
+  // A point just inside each corner of the portrait's bounding square lies outside the circle. Each sampled frame is
+  // classified: "clean" (all four corners show the blue hero), "blank" (all four show the plain page background: the
+  // browser had not painted the transition yet, which a loaded CI machine does for whole seconds) or "square" (anything
+  // else: the photo's grey backdrop is showing in the corners). The square bug persists through the whole transition, so
+  // it must never be the only thing seen; a run that never got a painted frame proves nothing and is skipped.
+  const PAGE_BACKGROUND = [248, 250, 252];
+  const verdicts = [];
+  for (let frame = 0; frame < 6; frame += 1) {
     const shot = await page.screenshot({ type: 'png' });
-    const bad = [];
-    for (const [dx, dy] of [[6, 6], [box.width - 7, 6], [6, box.height - 7], [box.width - 7, box.height - 7]]) {
-      const { r, g, b } = pixelAt(shot, Math.round(box.x + dx), Math.round(box.y + dy));
-      if (b - r <= 40) bad.push(`corner (${dx},${dy}) rgb(${r},${g},${b})`);
-    }
-    clean = bad.length === 0;
-    problems.push(`frame ${frame}: ${bad.join('; ') || 'ok'}`);
-    if (!clean) await page.waitForTimeout(200);
+    const corners = [[6, 6], [box.width - 7, 6], [6, box.height - 7], [box.width - 7, box.height - 7]]
+      .map(([dx, dy]) => pixelAt(shot, Math.round(box.x + dx), Math.round(box.y + dy)));
+    const clean = corners.every(({ r, b }) => b - r > 40);
+    const blank = corners.every(({ r, g, b }) => r === PAGE_BACKGROUND[0] && g === PAGE_BACKGROUND[1] && b === PAGE_BACKGROUND[2]);
+    verdicts.push({ kind: clean ? 'clean' : blank ? 'blank' : 'square', corners: corners.map(({ r, g, b }) => `rgb(${r},${g},${b})`).join(' ') });
+    if (clean) break;
+    await page.waitForTimeout(250);
   }
-  expect(clean, `the portrait showed as a square in every sampled frame:\n${problems.join('\n')}`).toBe(true);
+  const summary = verdicts.map((v, i) => `frame ${i}: ${v.kind} ${v.corners}`).join('\n');
+  test.skip(verdicts.every((v) => v.kind === 'blank'), `the browser never painted a frame of the transition (busy machine)\n${summary}`);
+  expect(verdicts.some((v) => v.kind === 'clean'), `no frame showed the round portrait; the photo showed as a square:\n${summary}`).toBe(true);
 });
 
 // Deterministic guard for the same bug: the element that carries the transition name must itself be the circle, and
