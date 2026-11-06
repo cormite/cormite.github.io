@@ -46,13 +46,15 @@
     const script = (doc.querySelector('script[src*="app."]') || {}).src || '';
     const extras = own.filter((r) => EXTRAS.test(new URL(r.name).pathname));
     const page = own.filter((r) => !extras.includes(r));
-    const wire = nav ? nav.transferSize + page.reduce((sum, r) => sum + r.transferSize, 0) : 0;
+    // Compressed body sizes, not transferSize: files the host announces with Early Hints (103) and files served from the browser
+    // cache both report transferSize 0, which made the page look four times lighter than it is. The cache state is read separately.
+    const wire = nav ? nav.encodedBodySize + page.reduce((sum, r) => sum + r.encodedBodySize, 0) : 0;
     const activation = nav && nav.activationStart ? nav.activationStart : 0; // > 0: the page was prerendered and shown instantly
     return {
       bytes: wire,
       requests: page.length + 1,
       extraRequests: extras.length,
-      extraBytes: extras.reduce((sum, r) => sum + r.transferSize, 0),
+      extraBytes: extras.reduce((sum, r) => sum + r.encodedBodySize, 0),
       cached: Boolean(nav) && nav.transferSize === 0 && nav.decodedBodySize > 0,
       ttfb: nav ? Math.max(0, nav.responseStart - activation) : null,
       fcp: paint ? Math.max(0, paint.startTime - activation) : null,
@@ -69,7 +71,7 @@
   function rows(ui, lang, m) {
     const number = (value, digits) => new Intl.NumberFormat(lang, { maximumFractionDigits: digits }).format(value);
     const ms = (value) => (value === null ? '—' : `${number(value, 0)} ms`);
-    const kb = m.bytes > 0 ? `${number(m.bytes / 1024, 1)} KB` : (m.cached ? ui.colophonFromCache : '—');
+    const kb = m.bytes > 0 ? `${number(m.bytes / 1024, 1)} KB` : '—';
     return [
       [ui.colophonWeight, kb],
       [ui.colophonRequests, number(m.requests, 0)],

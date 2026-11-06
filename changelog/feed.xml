@@ -7,121 +7,128 @@
   <updated>2026-11-06T12:00:00Z</updated>
   <author><name>Carlos Fernández San Millán</name></author>
   <entry>
-    <id>tag:carlosfernandezsanmillan.com,2026-11-06:log-17</id>
-    <title>Performance panel: the budget now compares like with like</title>
+    <id>tag:carlosfernandezsanmillan.com,2026-11-06:log-18</id>
+    <title>Performance panel was undercounting the page weight</title>
     <link href="https://carlosfernandezsanmillan.com/changelog/#log-0"/>
     <updated>2026-11-06T12:00:00Z</updated>
+    <summary>On the live site the panel showed about 40 KB for a page that weighs about 150 KB. Files announced with Early Hints (and files served from the browser cache) report a transfer size of zero, so they were left out. The panel now adds up the compressed body sizes, labels the figure as page weight, and reads the cache state separately. A test forces every transfer size to zero and checks that the figure does not collapse.</summary>
+  </entry>
+  <entry>
+    <id>tag:carlosfernandezsanmillan.com,2026-11-06:log-17</id>
+    <title>Performance panel: the budget now compares like with like</title>
+    <link href="https://carlosfernandezsanmillan.com/changelog/#log-1"/>
+    <updated>2026-11-06T11:00:00Z</updated>
     <summary>The panel showed 13 requests next to a limit of 12. The extra requests were the icon, the web manifest, the prefetch rules and Cloudflare’s own script: things that depend on the browser and the host, not on the page. They are now listed on their own line with their size, and the budget is compared with the page itself. A test keeps the pattern that separates them in sync with the shipped script.</summary>
   </entry>
   <entry>
     <id>tag:carlosfernandezsanmillan.com,2026-11-06:log-16</id>
     <title>Layout fixes from a visual pass on phones, tablets and laptops</title>
-    <link href="https://carlosfernandezsanmillan.com/changelog/#log-1"/>
-    <updated>2026-11-06T11:00:00Z</updated>
+    <link href="https://carlosfernandezsanmillan.com/changelog/#log-2"/>
+    <updated>2026-11-06T10:00:00Z</updated>
     <summary>The navigation was cut off on tablets (the links and the search button ran past the screen between 768 and about 1100 pixels), and the floating badges around the portrait were cut off on 1280-pixel laptops. The links now show from 1280 pixels and a menu below that; the badges keep clear of the screen edge and of the text. On phones the years badge no longer hangs off the screen, the profile highlights stack one per row so long words such as Ciberseguridad fit, the scroll cue is a 44-pixel target, and the Italian footer line is in Italian. Ten layout tests across the three languages fail on the old layout.</summary>
   </entry>
   <entry>
     <id>tag:carlosfernandezsanmillan.com,2026-11-06:log-15</id>
     <title>Engineering log, build notes and keyboard shortcuts</title>
-    <link href="https://carlosfernandezsanmillan.com/changelog/#log-2"/>
-    <updated>2026-11-06T10:00:00Z</updated>
+    <link href="https://carlosfernandezsanmillan.com/changelog/#log-3"/>
+    <updated>2026-11-06T09:00:00Z</updated>
     <summary>This log, a page on how the site is built (decisions and what each one costs), and keyboard shortcuts: ? lists them, l switches language, g then a letter jumps to a section.</summary>
   </entry>
   <entry>
     <id>tag:carlosfernandezsanmillan.com,2026-11-06:log-14</id>
     <title>Contact card link fixed on the Spanish and Italian pages</title>
-    <link href="https://carlosfernandezsanmillan.com/changelog/#log-3"/>
-    <updated>2026-11-06T09:00:00Z</updated>
+    <link href="https://carlosfernandezsanmillan.com/changelog/#log-4"/>
+    <updated>2026-11-06T08:00:00Z</updated>
     <summary>The Save to contacts link of the release below pointed at /es/ and /it/ paths that do not exist (404). It is root-relative now, and the test requests the link as the browser resolves it from each page. Found by checking the live site after the deploy.</summary>
   </entry>
   <entry>
     <id>tag:carlosfernandezsanmillan.com,2026-11-06:log-13</id>
     <title>Instant navigation, a live performance panel, trust pages, contact card</title>
-    <link href="https://carlosfernandezsanmillan.com/changelog/#log-4"/>
-    <updated>2026-11-06T08:00:00Z</updated>
+    <link href="https://carlosfernandezsanmillan.com/changelog/#log-5"/>
+    <updated>2026-11-06T07:00:00Z</updated>
     <summary>Chromium prerenders the next page when you rest on a link; analytics and the consent banner wait until the page is actually shown. Early Hints send the critical file list before the page is ready. A footer panel shows what your own visit cost, from the browser’s Performance API. Trust pages in three languages state how the site protects visitors and ships changes. A vCard per language, and a clean printed page.</summary>
   </entry>
   <entry>
     <id>tag:carlosfernandezsanmillan.com,2026-11-06:log-12</id>
     <title>Page transitions made reliable</title>
-    <link href="https://carlosfernandezsanmillan.com/changelog/#log-5"/>
-    <updated>2026-11-06T07:00:00Z</updated>
+    <link href="https://carlosfernandezsanmillan.com/changelog/#log-6"/>
+    <updated>2026-11-06T06:00:00Z</updated>
     <summary>The cross-fade between languages sometimes did not run. Cause: the opt-in rule sat inside a reduced-motion media query, which Chromium can evaluate too late on the new page. It is now one top-level rule, and reduced motion switches the animation off instead. Failures at the top of the page under heavy load fell from about 58% to about 12%; the rest is Chromium skipping transitions on a saturated machine, which gives an ordinary page load.</summary>
   </entry>
   <entry>
     <id>tag:carlosfernandezsanmillan.com,2026-11-06:log-11</id>
     <title>Test suite 4 minutes to about 77 seconds</title>
-    <link href="https://carlosfernandezsanmillan.com/changelog/#log-6"/>
-    <updated>2026-11-06T06:00:00Z</updated>
+    <link href="https://carlosfernandezsanmillan.com/changelog/#log-7"/>
+    <updated>2026-11-06T05:00:00Z</updated>
     <summary>The suite runs as parallel groups behind one required check, and the CI browser is installed without the system package manager, which had stalled one run for 8 minutes. Production deploys run the same groups.</summary>
   </entry>
   <entry>
     <id>tag:carlosfernandezsanmillan.com,2026-11-06:log-10</id>
     <title>Whole head visible in the About portrait</title>
-    <link href="https://carlosfernandezsanmillan.com/changelog/#log-7"/>
-    <updated>2026-11-06T05:00:00Z</updated>
+    <link href="https://carlosfernandezsanmillan.com/changelog/#log-8"/>
+    <updated>2026-11-06T04:00:00Z</updated>
     <summary>On desktop the photo was cropped at the forehead; it is now aligned to the top.</summary>
   </entry>
   <entry>
     <id>tag:carlosfernandezsanmillan.com,2026-11-05:log-9</id>
     <title>Portrait no longer flashes square when switching language</title>
-    <link href="https://carlosfernandezsanmillan.com/changelog/#log-8"/>
-    <updated>2026-11-05T04:00:00Z</updated>
+    <link href="https://carlosfernandezsanmillan.com/changelog/#log-9"/>
+    <updated>2026-11-05T03:00:00Z</updated>
     <summary>The transition snapshot was taken of the image inside the round frame. The name now sits on the circle itself, and a test fails if anything inside it is named.</summary>
   </entry>
   <entry>
     <id>tag:carlosfernandezsanmillan.com,2026-11-05:log-8</id>
     <title>Performance budget enforced in tests</title>
-    <link href="https://carlosfernandezsanmillan.com/changelog/#log-9"/>
-    <updated>2026-11-05T03:00:00Z</updated>
+    <link href="https://carlosfernandezsanmillan.com/changelog/#log-10"/>
+    <updated>2026-11-05T02:00:00Z</updated>
     <summary>A first visit may use 200 KB, 12 requests, 30 KB of script, 11 KB of CSS, 110 KB of fonts and 25 KB of images; a change over any limit fails the build. At the time of writing a visit is 9 requests and about 152 KB.</summary>
   </entry>
   <entry>
     <id>tag:carlosfernandezsanmillan.com,2026-11-05:log-7</id>
     <title>Cross-fade between language pages</title>
-    <link href="https://carlosfernandezsanmillan.com/changelog/#log-10"/>
-    <updated>2026-11-05T02:00:00Z</updated>
+    <link href="https://carlosfernandezsanmillan.com/changelog/#log-11"/>
+    <updated>2026-11-05T01:00:00Z</updated>
     <summary>Switching language fades instead of flashing white, with the navigation bar and portrait held in place. Pure CSS, no library.</summary>
   </entry>
   <entry>
     <id>tag:carlosfernandezsanmillan.com,2026-11-05:log-6</id>
     <title>Production health check every 30 minutes</title>
-    <link href="https://carlosfernandezsanmillan.com/changelog/#log-11"/>
+    <link href="https://carlosfernandezsanmillan.com/changelog/#log-12"/>
     <updated>2026-11-05T01:00:00Z</updated>
     <summary>An automatic check confirms the site and its security headers, the redirects from the old and www addresses, certificate validity (at least 14 days), mail routing and the security contact file. A failure sends an alert.</summary>
   </entry>
   <entry>
     <id>tag:carlosfernandezsanmillan.com,2026-11-05:log-5</id>
     <title>Link previews in the page language</title>
-    <link href="https://carlosfernandezsanmillan.com/changelog/#log-12"/>
+    <link href="https://carlosfernandezsanmillan.com/changelog/#log-13"/>
     <updated>2026-11-05T01:00:00Z</updated>
     <summary>Each language page shares its own 1200 by 630 card, rendered at build time from the page content.</summary>
   </entry>
   <entry>
     <id>tag:carlosfernandezsanmillan.com,2026-11-05:log-4</id>
     <title>Command menu, live Milan time, llms.txt and security.txt</title>
-    <link href="https://carlosfernandezsanmillan.com/changelog/#log-13"/>
+    <link href="https://carlosfernandezsanmillan.com/changelog/#log-14"/>
     <updated>2026-11-05T01:00:00Z</updated>
     <summary>Ctrl or Cmd K opens a menu to jump anywhere; the hero shows the time in Milan. /llms.txt summarises the site for AI assistants and /.well-known/security.txt gives a security contact (RFC 9116).</summary>
   </entry>
   <entry>
     <id>tag:carlosfernandezsanmillan.com,2026-11-05:log-3</id>
     <title>Mobile menu readable after scrolling</title>
-    <link href="https://carlosfernandezsanmillan.com/changelog/#log-14"/>
+    <link href="https://carlosfernandezsanmillan.com/changelog/#log-15"/>
     <updated>2026-11-05T01:00:00Z</updated>
     <summary>The drawer was clipped by the blurred navigation bar once the page had scrolled. It now sits outside the bar.</summary>
   </entry>
   <entry>
     <id>tag:carlosfernandezsanmillan.com,2026-11-05:log-2</id>
     <title>New primary domain</title>
-    <link href="https://carlosfernandezsanmillan.com/changelog/#log-15"/>
+    <link href="https://carlosfernandezsanmillan.com/changelog/#log-16"/>
     <updated>2026-11-05T01:00:00Z</updated>
     <summary>The site moved to carlosfernandezsanmillan.com. The previous domain and the www address redirect permanently, keeping path and query. Mail addresses on the new domain forward to the owner and cannot be used to send.</summary>
   </entry>
   <entry>
     <id>tag:carlosfernandezsanmillan.com,2026-11-05:log-1</id>
     <title>Production on Cloudflare Pages</title>
-    <link href="https://carlosfernandezsanmillan.com/changelog/#log-16"/>
+    <link href="https://carlosfernandezsanmillan.com/changelog/#log-17"/>
     <updated>2026-11-05T01:00:00Z</updated>
     <summary>Real security headers (a strict Content Security Policy, HSTS, no framing) and one-year caching for fingerprinted files. Publishing needs a typed confirmation and a reviewer’s approval; the previous hosting stays available as a fallback.</summary>
   </entry>
