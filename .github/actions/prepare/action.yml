@@ -25,20 +25,26 @@ runs:
       with:
         path: ~/.cache/ms-playwright
         key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
-    # The browser download is cached; the OS libraries it needs live outside that folder, so they are installed every run.
-    # apt on a fresh runner occasionally stalls for minutes (seen once: 8 min 33 s instead of 20 s), and this step runs in
-    # every parallel test job, so each attempt is capped at 120 s and retried; a healthy run is unaffected.
-    - name: Install Playwright Chromium and OS dependencies (capped, retried)
+    # No apt in the normal case. The runner image already has every library Chromium needs; `--with-deps` only adds CJK/Thai/X11
+    # font packages (about 21 MB from an Ubuntu mirror) that this site never uses, and that download once stalled for 8+ minutes
+    # and, on retry, deadlocked on the dpkg lock. Install the browser alone (cached by version), prove it starts, and only if
+    # it does not (a changed runner image) fall back to Playwright's OS-dependency install.
+    - name: Install Playwright Chromium (browser only, cached)
+      if: inputs.browser == 'true' && steps.browsers.outputs.cache-hit != 'true'
+      shell: bash
+      run: npx playwright install chromium
+    - name: Check that Chromium starts (installs OS dependencies only if it does not)
       if: inputs.browser == 'true'
       shell: bash
-      env:
-        BROWSER_CACHE_HIT: ${{ steps.browsers.outputs.cache-hit }}
       run: |
-        if [ "$BROWSER_CACHE_HIT" = "true" ]; then cmd="npx playwright install-deps chromium"; else cmd="npx playwright install --with-deps chromium"; fi
+        check() { node -e "require('playwright').chromium.launch().then((b) => b.close()).catch((e) => { console.error(e.message.split('\n')[0]); process.exit(1); })"; }
+        if check; then echo "Chromium starts; no OS packages needed"; exit 0; fi
+        echo "::warning::Chromium did not start; installing OS dependencies (the runner image may have changed)"
         for attempt in 1 2 3; do
-          if timeout --kill-after=15 120 $cmd; then exit 0; fi
-          echo "::warning::attempt $attempt of '$cmd' failed or took over 120 s; retrying"
+          sudo pkill -9 -x apt-get 2>/dev/null || true   # a stalled earlier attempt would hold the dpkg lock
+          if timeout --kill-after=15 180 npx playwright install-deps chromium && check; then exit 0; fi
+          echo "::warning::attempt $attempt failed; retrying"
           sleep 5
         done
-        echo "::error::could not install Playwright dependencies after 3 attempts"
+        echo "::error::Chromium could not be made to start after 3 attempts"
         exit 1
