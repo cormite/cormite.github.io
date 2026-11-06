@@ -295,7 +295,7 @@
     keysDialog.appendChild(panel);
     if (!keysDialog.isConnected) doc.body.appendChild(keysDialog);
     keysDialog.showModal();
-    close.focus();
+    close.focus({ preventScroll: true });
   }
 
   function nextLanguage() {
