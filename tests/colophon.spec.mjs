@@ -79,3 +79,27 @@ test('on a small phone the panel opens at its top: the title is visible, not scr
   expect(box.y).toBeGreaterThanOrEqual(dialog.y); // not hidden above the panel's scroll position
   await expect(page.locator('dialog.colophon .colophon-close')).toBeAttached();
 });
+
+// Regression: on production the page weight read about 40 KB because Chromium reports transferSize 0 for files fetched during the
+// Early Hints stage. The panel must report the compressed body sizes, which is what the budget is about.
+test('page weight uses compressed body sizes even when transferSize is 0 (Early Hints, cache)', async ({ page }) => {
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+  await page.locator('#colophon-btn').click();
+  const shown = parseFloat((await page.locator('dialog.colophon .colophon-list dd').first().textContent()).replace(',', '.'));
+  const expected = await page.evaluate(() => {
+    const nav = performance.getEntriesByType('navigation')[0];
+    const own = performance.getEntriesByType('resource').filter((r) => r.name.startsWith(location.origin) && !/favicon\.ico|site\.webmanifest|speculation-rules\.json|\/cdn-cgi\//.test(r.name));
+    return (nav.encodedBodySize + own.reduce((sum, r) => sum + r.encodedBodySize, 0)) / 1024;
+  });
+  expect(Math.abs(shown - expected)).toBeLessThan(0.2);
+  // with every transferSize forced to 0 (what Early Hints and the cache report) the figure must not collapse
+  await page.keyboard.press('Escape');
+  await page.evaluate(() => {
+    const real = performance.getEntriesByType.bind(performance);
+    performance.getEntriesByType = (type) => real(type).map((e) => new Proxy(e, { get: (t, k) => { const v = t[k]; return k === 'transferSize' ? 0 : (typeof v === 'function' ? v.bind(t) : v); } }));
+  });
+  await page.locator('#colophon-btn').click();
+  const again = parseFloat((await page.locator('dialog.colophon .colophon-list dd').first().textContent()).replace(',', '.'));
+  expect(again).toBeGreaterThan(60); // the real page is far above this; the broken version showed 0 to 40
+});
