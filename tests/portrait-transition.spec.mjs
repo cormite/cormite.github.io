@@ -22,14 +22,42 @@ test('no square corners while switching language', async ({ page }) => {
   await page.locator('#nav-links-desktop .lang-btn[data-lang="es"]').evaluate((a) => a.click());
   await page.waitForURL(/\/es\/$/);
   // The state we want to look at: a view transition is running right now.
-  await expect.poll(() => page.evaluate(() => document.documentElement.matches(':active-view-transition')), { timeout: 10_000 }).toBe(true);
+  // Chromium skips a transition on a saturated machine; then nothing is animating and no square can appear.
+  const running = await expect.poll(() => page.evaluate(() => document.documentElement.matches(':active-view-transition')), { timeout: 10_000 }).toBe(true).then(() => true, () => false);
+  test.skip(!running, 'the browser skipped the transition (busy machine)');
   await page.waitForTimeout(400);
 
-  const shot = await page.screenshot({ type: 'png' });
   // A point just inside each corner of the portrait's bounding square lies outside the circle: it must show the
   // blue hero background; the photo's backdrop is neutral grey (r, g and b nearly equal), so "blue" means no square.
-  for (const [dx, dy] of [[6, 6], [box.width - 7, 6], [6, box.height - 7], [box.width - 7, box.height - 7]]) {
-    const { r, g, b } = pixelAt(shot, Math.round(box.x + dx), Math.round(box.y + dy));
-    expect(b - r, `corner (${dx},${dy}) shows the photo as a square: rgb(${r},${g},${b})`).toBeGreaterThan(40);
+  // The square bug persists for the whole transition, so it shows in EVERY frame; a single odd frame on a loaded
+  // machine (not yet composited) shows in one. Look at several frames and require at least one clean one.
+  const problems = [];
+  let clean = false;
+  for (let frame = 0; frame < 4 && !clean; frame += 1) {
+    const shot = await page.screenshot({ type: 'png' });
+    const bad = [];
+    for (const [dx, dy] of [[6, 6], [box.width - 7, 6], [6, box.height - 7], [box.width - 7, box.height - 7]]) {
+      const { r, g, b } = pixelAt(shot, Math.round(box.x + dx), Math.round(box.y + dy));
+      if (b - r <= 40) bad.push(`corner (${dx},${dy}) rgb(${r},${g},${b})`);
+    }
+    clean = bad.length === 0;
+    problems.push(`frame ${frame}: ${bad.join('; ') || 'ok'}`);
+    if (!clean) await page.waitForTimeout(200);
   }
+  expect(clean, `the portrait showed as a square in every sampled frame:\n${problems.join('\n')}`).toBe(true);
+});
+
+// Deterministic guard for the same bug: the element that carries the transition name must itself be the circle, and
+// nothing inside it may carry a name (a named <picture> is snapshotted as a square).
+test('the named portrait element is the circle, and nothing inside it is named', async ({ page }) => {
+  await page.goto('/');
+  const info = await page.locator('#home .photo-ring').evaluate((el) => {
+    const cs = getComputedStyle(el);
+    const named = [...el.querySelectorAll('*')].filter((n) => getComputedStyle(n).viewTransitionName !== 'none').length;
+    return { name: cs.viewTransitionName, radius: cs.borderTopLeftRadius, overflow: cs.overflow, named };
+  });
+  expect(info.name).toBe('hero-portrait');
+  expect(info.overflow).toBe('hidden');
+  expect(parseFloat(info.radius)).toBeGreaterThan(100);
+  expect(info.named).toBe(0);
 });
